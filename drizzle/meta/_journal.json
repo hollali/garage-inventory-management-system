@@ -1,0 +1,27 @@
+{
+  "version": "7",
+  "dialect": "postgresql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "7",
+      "when": 1786152421710,
+      "tag": "0000_ordinary_shockwave",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1786169808672,
+      "tag": "0001_swift_living_tribunal",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1786236644686,
+      "tag": "0002_loud_azazel",
+      "breakpoints": true
+    }
+  ]
+}

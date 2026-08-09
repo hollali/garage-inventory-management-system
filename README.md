@@ -1,36 +1,123 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Garage Inventory Management System
 
-## Getting Started
+A multi-shop inventory and sales management app for garage chains. Admins manage shops, attendants, and inventory; shop attendants track stock and record sales. Built with Next.js (App Router), NextAuth, Drizzle ORM, and PostgreSQL (Neon).
 
-First, run the development server:
+## Features
+
+- **Role-based auth** — Admins and shop attendants get separate dashboards; route guards redirect on both sides (see `src/proxy.ts`).
+- **Shops & attendants** — Admin can create shops, invite/assign attendants, reassign attendants between shops.
+- **Inventory** — Attendants create items, adjust stock (with reason + movement history), and see low-stock warnings.
+- **Sales** — Multi-line sale recording with automatic stock decrement and per-sale detail rows.
+- **Activity log** — Admin-facing audit trail of all actions across the system.
+- **Password reset** — Forgot-password flow via email (Resend) + signed reset tokens.
+
+## Tech stack
+
+- **Next.js 16** (App Router, React Server Components, Turbopack)
+- **NextAuth v5** (beta) — credentials + JWT sessions, augmented roles
+- **Drizzle ORM** + **PostgreSQL** (`@neondatabase/serverless` / `pg`)
+- **Zod** for server-side validation, **Tailwind CSS v4** for styling
+- **Resend** for transactional email
+
+## Getting started
+
+### 1. Install dependencies
+
+```bash
+npm install
+```
+
+### 2. Configure environment variables
+
+Copy the `.env` template into place and fill in the values:
+
+```bash
+cp .env.example .env
+```
+
+| Variable             | Description                                             |
+| -------------------- | ------------------------------------------------------- |
+| `DATABASE_URL`       | PostgreSQL connection string (Neon works great)         |
+| `AUTH_SECRET`        | `openssl rand -base64 32`                               |
+| `AUTH_TRUST_HOST`    | `true` for local development                            |
+| `APP_URL`            | e.g. `http://localhost:3000`                            |
+| `APP_NAME`           | Brand name shown in the UI / emails                     |
+| `NEXT_PUBLIC_APP_CURRENCY` | ISO code used for money formatting (default `USD`) — must keep the `NEXT_PUBLIC_` prefix so client and server render the same currency |
+| `RESEND_API_KEY`     | Resend API key for password-reset emails (optional in dev) |
+| `RESEND_FROM`        | Sender address for reset emails                         |
+| `SEED_ADMIN_PASSWORD`    | Override the seeded admin password (optional)       |
+| `SEED_ATTENDANT_PASSWORD`| Override the seeded attendant password (optional)   |
+
+> **Tip:** for local development, run `openssl rand -base64 32` to generate `AUTH_SECRET`. Password-reset emails are sent through Resend, so set a `RESEND_API_KEY` if you want to test that flow.
+
+### 3. Set up the database
+
+Generate and push the schema, then seed demo data:
+
+```bash
+npm run db:generate
+npm run db:push
+npm run db:seed
+```
+
+- `db:seed` is idempotent — it skips if shops already exist.
+- `npm run db:seed:reset` wipes and reseeds from scratch.
+- `npm run db:studio` opens Drizzle Studio to inspect the data.
+
+### 4. Run the dev server
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000). Unauthenticated users are redirected to `/login`.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Demo credentials
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+After running `npm run db:seed`, log in with any of these accounts:
 
-## Learn More
+| Role      | Email            | Password        |
+| --------- | ---------------- | --------------- |
+| Admin     | `admin@garage.io` | `admin1234`    |
+| Attendant | `jordan@garage.io` | `attendant1234` |
+| Attendant | `alex@garage.io`   | `attendant1234` |
+| Attendant | `sam@garage.io`    | `attendant1234` |
+| Attendant | `priya@garage.io`  | `attendant1234` |
 
-To learn more about Next.js, take a look at the following resources:
+- **Admin** (`admin@garage.io`) lands on `/admin` and manages shops, attendants, and the activity log.
+- **Attendants** land on `/shop` and manage inventory and sales for their assigned shop.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Override the passwords at seed time with `SEED_ADMIN_PASSWORD` / `SEED_ATTENDANT_PASSWORD`.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Project structure
 
-## Deploy on Vercel
+```
+src/
+  app/                  # App Router pages
+    admin/              # Admin dashboard, shops, attendants, activity log
+    shop/               # Attendant dashboard, inventory, sales
+    api/auth/[...nextauth]/  # NextAuth route handler
+  components/           # UI + feature components (forms, layouts, etc.)
+  db/                   # Drizzle schema, seed script, db client
+  lib/
+    actions/            # Server actions (admin.ts, attendant.ts, auth.ts)
+    auth.ts             # NextAuth config (credentials provider, JWT, roles)
+    dal.ts              # Data access / auth guards (requireAdmin, requireAttendant)
+    queries.ts          # Read queries
+    activity.ts         # Activity log helper
+proxy.ts                # Edge middleware for auth + role-based routing
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Scripts
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+| Command                | Description                              |
+| ---------------------- | ---------------------------------------- |
+| `npm run dev`          | Start the dev server                     |
+| `npm run build`        | Create a production build                |
+| `npm run start`        | Serve the production build               |
+| `npm run lint`         | Run ESLint                               |
+| `npm run db:generate`  | Generate a Drizzle migration             |
+| `npm run db:push`      | Push schema changes to the database      |
+| `npm run db:studio`    | Open Drizzle Studio                      |
+| `npm run db:seed`      | Seed demo data (idempotent)              |
+| `npm run db:seed:reset`| Wipe and reseed demo data                |
