@@ -61,12 +61,12 @@ export function CustomerHistoryModal({
         ) : history.length === 0 ? (
           <EmptyState title="No past sales" description={`No prior purchases found for ${customerName}.`} />
         ) : (
-          <ul className="divide-y divide-slate-100">
+          <ul className="divide-y divide-zinc-100 dark:divide-zinc-800/70">
             {history.map((sale) => (
               <li key={sale.id} className="flex items-center justify-between gap-4 py-3">
                 <div className="min-w-0">
                   <div className="flex flex-wrap items-center gap-2">
-                    <span className="font-mono text-xs font-medium text-slate-500">
+                    <span className="font-mono text-xs font-medium text-zinc-500 dark:text-zinc-400">
                       #{sale.id.slice(0, 8).toUpperCase()}
                     </span>
                     {sale.status === "refunded" ? (
@@ -81,7 +81,7 @@ export function CustomerHistoryModal({
                   </p>
                 </div>
                 <div className="shrink-0 text-right">
-                  <p className="text-sm font-semibold tabular-nums text-slate-900">
+                  <p className="text-sm font-semibold tabular-nums text-zinc-900 dark:text-zinc-100">
                     {formatMoney(sale.totalCents)}
                   </p>
                   {sale.vehicleReg && (

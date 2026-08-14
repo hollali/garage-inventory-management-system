@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { ArrowDown, ArrowUp, ChevronsUpDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export function SortableTh({
@@ -31,23 +32,27 @@ export function SortableTh({
   return (
     <th
       scope="col"
-      aria-sort={
-        active ? (dir === "asc" ? "ascending" : "descending") : "none"
-      }
-      className="px-4 py-2.5 text-xs font-semibold uppercase tracking-wide text-muted"
+      aria-sort={active ? (dir === "asc" ? "ascending" : "descending") : "none"}
+      className="px-3 py-2.5 text-[11px] font-medium tracking-wide text-zinc-500 uppercase dark:text-zinc-400"
     >
       <Link
         href={href}
         className={cn(
-          "inline-flex items-center gap-1 hover:text-slate-900",
+          "inline-flex items-center gap-1 rounded-sm transition-colors hover:text-zinc-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand dark:hover:text-zinc-100",
           align === "right" && "justify-end",
-          active && "text-brand",
+          active && "text-zinc-900 dark:text-zinc-100",
         )}
       >
         {label}
-        <span className="text-[10px] leading-none" aria-hidden>
-          {active ? (dir === "asc" ? "↑" : "↓") : "↕"}
-        </span>
+        {active ? (
+          dir === "asc" ? (
+            <ArrowUp className="size-3" aria-hidden />
+          ) : (
+            <ArrowDown className="size-3" aria-hidden />
+          )
+        ) : (
+          <ChevronsUpDown className="size-3 text-zinc-400" aria-hidden />
+        )}
       </Link>
     </th>
   );

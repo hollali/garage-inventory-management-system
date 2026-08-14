@@ -12,7 +12,7 @@ import { StatCard } from "@/components/ui/stat";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { EmptyState, BoxIcon } from "@/components/ui/empty-state";
-import { FiPlus, FiTrendingUp, FiCalendar, FiClock, FiFlag } from "react-icons/fi";
+import { Plus, TrendingUp, Calendar, Clock, Flag } from "lucide-react";
 
 const paymentLabels: Record<string, string> = {
   cash: "Cash",
@@ -63,24 +63,24 @@ export default async function ShopSalesPage({
     <div className="flex flex-col gap-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-slate-900">Sales</h1>
+          <h1 className="text-2xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-100">Sales</h1>
           <p className="text-sm text-muted">{shop.name}</p>
         </div>
         <SaleModal
           items={saleOptions}
           trigger={
             <Button>
-              <FiPlus className="size-4" /> Record sale
+              <Plus className="size-4" /> Record sale
             </Button>
           }
         />
       </div>
 
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
-        <StatCard label="Revenue today" value={formatMoney(summary.todayCents)} icon={<FiTrendingUp className="size-5" />} accent="success" />
-        <StatCard label="This week" value={formatMoney(summary.weekCents)} icon={<FiCalendar className="size-5" />} />
-        <StatCard label="This month" value={formatMoney(summary.monthCents)} icon={<FiClock className="size-5" />} />
-        <StatCard label="All time" value={formatMoney(summary.allTimeCents)} icon={<FiFlag className="size-5" />} />
+        <StatCard label="Revenue today" value={formatMoney(summary.todayCents)} icon={<TrendingUp className="size-5" />} accent="success" />
+        <StatCard label="This week" value={formatMoney(summary.weekCents)} icon={<Calendar className="size-5" />} />
+        <StatCard label="This month" value={formatMoney(summary.monthCents)} icon={<Clock className="size-5" />} />
+        <StatCard label="All time" value={formatMoney(summary.allTimeCents)} icon={<Flag className="size-5" />} />
       </div>
 
       <SalesFilter />
@@ -104,9 +104,9 @@ export default async function ShopSalesPage({
           }
         />
       ) : (
-        <div className="overflow-hidden rounded-xl border border-slate-200 bg-surface shadow-sm">
+        <div className="overflow-hidden rounded-lg border border-zinc-200 dark:border-zinc-800 bg-surface shadow-sm">
           <table className="w-full text-sm">
-            <thead className="border-b border-slate-200 bg-slate-50/70 text-left">
+            <thead className="border-b border-zinc-200 dark:border-zinc-800 bg-zinc-50/70 dark:bg-zinc-800/40 text-left">
               <tr>
                 <th className="px-4 py-2.5 text-xs font-semibold uppercase tracking-wide text-muted">
                   Transaction
@@ -130,7 +130,7 @@ export default async function ShopSalesPage({
                 </th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100">
+            <tbody className="divide-y divide-zinc-100 dark:divide-zinc-800/70">
               {rows.map(({ sale, receipt }) => (
                 <SaleRow key={sale.id} sale={sale} receipt={receipt} shopName={shop.name} />
               ))}
@@ -157,23 +157,23 @@ function SaleRow({
     <tr>
       <td className="p-0 align-top">
         <details className="group">
-          <summary className="flex cursor-pointer list-none items-center gap-2 px-4 py-3 hover:bg-slate-50">
-            <span className="font-mono text-xs font-medium text-slate-500">
+          <summary className="flex cursor-pointer list-none items-center gap-2 px-4 py-3 hover:bg-zinc-50 dark:hover:bg-zinc-800/40">
+            <span className="font-mono text-xs font-medium text-zinc-500 dark:text-zinc-400">
               #{sale.id.slice(0, 8).toUpperCase()}
             </span>
             <span className="text-xs text-muted transition-transform group-open:rotate-180">▾</span>
           </summary>
-          <div className="bg-slate-50/60 px-4 py-3">
+          <div className="bg-zinc-50/60 dark:bg-zinc-800/40 px-4 py-3">
             <ul className="space-y-1">
               {receipt.items.map((line) => (
                 <li
                   key={line.id}
                   className="flex items-center justify-between text-sm"
                 >
-                  <span className="text-slate-700">
+                  <span className="text-zinc-700 dark:text-zinc-300">
                     {line.quantity} × {line.itemName}
                   </span>
-                  <span className="tabular-nums text-slate-600">
+                  <span className="tabular-nums text-zinc-600 dark:text-zinc-400">
                     {formatMoney(line.unitPriceCents * line.quantity)}
                   </span>
                 </li>
@@ -193,7 +193,7 @@ function SaleRow({
               trigger={
                 <button
                   type="button"
-                  className="text-sm font-medium text-slate-900 hover:text-brand"
+                  className="text-sm font-medium text-zinc-900 dark:text-zinc-100 hover:text-brand"
                 >
                   {sale.customerName}
                 </button>
@@ -204,7 +204,7 @@ function SaleRow({
             )}
           </>
         ) : (
-          <span className="text-sm text-slate-600">Walk-in customer</span>
+          <span className="text-sm text-zinc-600 dark:text-zinc-400">Walk-in customer</span>
         )}
       </td>
       <td>
@@ -221,14 +221,14 @@ function SaleRow({
       </td>
       <td>
         {sale.vehicleReg ? (
-          <span className="font-mono text-xs text-slate-600">{sale.vehicleReg}</span>
+          <span className="font-mono text-xs text-zinc-600 dark:text-zinc-400">{sale.vehicleReg}</span>
         ) : (
-          <span className="text-xs text-slate-300">—</span>
+          <span className="text-xs text-zinc-400 dark:text-zinc-500">—</span>
         )}
       </td>
       <td className="text-xs text-muted">{formatDateTime(sale.createdAt)}</td>
       <td className="text-right">
-        <span className="text-sm font-semibold tabular-nums text-slate-900">
+        <span className="text-sm font-semibold tabular-nums text-zinc-900 dark:text-zinc-100">
           {formatMoney(sale.totalCents)}
         </span>
       </td>

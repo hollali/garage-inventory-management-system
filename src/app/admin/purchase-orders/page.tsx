@@ -17,7 +17,7 @@ import { Button, IconButton } from "@/components/ui/button";
 import { ConfirmAction } from "@/components/confirm-action";
 import { EmptyState, BoxIcon } from "@/components/ui/empty-state";
 import { Table, TBody, TD, THead, TH, TR } from "@/components/ui/table";
-import { FiCheckCircle, FiPlus, FiXCircle } from "react-icons/fi";
+import { CheckCircle2, Plus, XCircle } from "lucide-react";
 
 function StatusBadge({ status }: { status: string }) {
   if (status === "received") return <Badge variant="success">Received</Badge>;
@@ -62,7 +62,7 @@ export default async function AdminPurchaseOrdersPage({
     <div className="flex flex-col gap-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-slate-900">Purchase orders</h1>
+          <h1 className="text-2xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-100">Purchase orders</h1>
           <p className="text-sm text-muted">
             {total} order{total === 1 ? "" : "s"} · {suppliers.length} supplier
             {suppliers.length === 1 ? "" : "s"}
@@ -74,7 +74,7 @@ export default async function AdminPurchaseOrdersPage({
           items={items}
           trigger={
             <Button>
-              <FiPlus className="size-4" /> New purchase order
+              <Plus className="size-4" /> New purchase order
             </Button>
           }
         />
@@ -92,7 +92,7 @@ export default async function AdminPurchaseOrdersPage({
               items={items}
               trigger={
                 <Button>
-                  <FiPlus className="size-4" /> Create order
+                  <Plus className="size-4" /> Create order
                 </Button>
               }
             />
@@ -117,7 +117,7 @@ export default async function AdminPurchaseOrdersPage({
                 {rows.map((po) => (
                   <TR key={po.id}>
                     <TD>
-                      <span className="font-medium text-slate-900">{poNumber(po.id)}</span>
+                      <span className="font-medium text-zinc-900 dark:text-zinc-100">{poNumber(po.id)}</span>
                       {po.createdByName && (
                         <span className="block text-xs text-muted">by {po.createdByName}</span>
                       )}
@@ -127,7 +127,7 @@ export default async function AdminPurchaseOrdersPage({
                     </TD>
                     <TD>
                       {po.shopId && po.shopName ? (
-                        <span className="text-slate-900">{po.shopName}</span>
+                        <span className="text-zinc-900 dark:text-zinc-100">{po.shopName}</span>
                       ) : (
                         <Badge variant="info">Central</Badge>
                       )}
@@ -149,7 +149,7 @@ export default async function AdminPurchaseOrdersPage({
                               lines={linesByPo.get(po.id) ?? []}
                               trigger={
                                 <Button size="sm" variant="secondary">
-                                  <FiCheckCircle className="size-4" /> Receive
+                                  <CheckCircle2 className="size-4" /> Receive
                                 </Button>
                               }
                             />
@@ -164,7 +164,7 @@ export default async function AdminPurchaseOrdersPage({
                                 label="Cancel order"
                                 className="text-red-600 hover:text-red-700"
                               >
-                                <FiXCircle className="size-4" />
+                                <XCircle className="size-4" />
                               </IconButton>
                             </ConfirmAction>
                           </>

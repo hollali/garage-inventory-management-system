@@ -13,7 +13,7 @@ import { Modal } from "@/components/ui/modal";
 import { Button } from "@/components/ui/button";
 import { Input, Label, Select, Textarea, FormError } from "@/components/ui/forms";
 import { WorkOrderStatusBadge, type WorkOrderStatus } from "./work-order-status";
-import { FiCheckCircle, FiPlay, FiXCircle } from "react-icons/fi";
+import { CheckCircle2, Play, XCircle } from "lucide-react";
 
 export type WorkOrderPart = {
   id: string;
@@ -109,9 +109,9 @@ export function WorkOrderDetailModal({
         size="lg"
       >
         <div className="flex flex-col gap-5">
-          <div className="rounded-lg border border-slate-200 p-4">
+          <div className="rounded-lg border border-zinc-200 dark:border-zinc-800 p-4">
             <div className="flex flex-wrap items-center justify-between gap-2">
-              <p className="font-mono text-lg font-semibold text-slate-900">
+              <p className="font-mono text-lg font-semibold text-zinc-900 dark:text-zinc-100">
                 {workOrder.vehicleReg || "—"}
               </p>
               <WorkOrderStatusBadge status={workOrder.status} />
@@ -119,55 +119,55 @@ export function WorkOrderDetailModal({
             <dl className="mt-3 grid grid-cols-2 gap-x-6 gap-y-2 text-sm sm:grid-cols-4">
               <div>
                 <dt className="text-xs uppercase tracking-wide text-muted">Customer</dt>
-                <dd className="text-slate-900">{workOrder.customerName || "—"}</dd>
+                <dd className="text-zinc-900 dark:text-zinc-100">{workOrder.customerName || "—"}</dd>
               </div>
               <div>
                 <dt className="text-xs uppercase tracking-wide text-muted">Contact</dt>
-                <dd className="text-slate-900">{workOrder.customerContact || "—"}</dd>
+                <dd className="text-zinc-900 dark:text-zinc-100">{workOrder.customerContact || "—"}</dd>
               </div>
               <div>
                 <dt className="text-xs uppercase tracking-wide text-muted">Created</dt>
-                <dd className="text-slate-900">{workOrder.createdAt}</dd>
+                <dd className="text-zinc-900 dark:text-zinc-100">{workOrder.createdAt}</dd>
               </div>
               <div>
                 <dt className="text-xs uppercase tracking-wide text-muted">Created by</dt>
-                <dd className="text-slate-900">{workOrder.createdByName || "—"}</dd>
+                <dd className="text-zinc-900 dark:text-zinc-100">{workOrder.createdByName || "—"}</dd>
               </div>
             </dl>
             {workOrder.notes && (
-              <p className="mt-3 border-t border-slate-100 pt-3 text-sm text-slate-700">
+              <p className="mt-3 border-t border-zinc-100 dark:border-zinc-800/70 pt-3 text-sm text-zinc-700 dark:text-zinc-300">
                 {workOrder.notes}
               </p>
             )}
-            <div className="mt-3 flex flex-wrap gap-x-6 gap-y-1 border-t border-slate-100 pt-3 text-sm">
+            <div className="mt-3 flex flex-wrap gap-x-6 gap-y-1 border-t border-zinc-100 dark:border-zinc-800/70 pt-3 text-sm">
               <span className="text-muted">
                 Labour{" "}
-                <span className="font-medium text-slate-900">
+                <span className="font-medium text-zinc-900 dark:text-zinc-100">
                   {formatMoney(workOrder.labourCents)}
                 </span>
               </span>
               <span className="text-muted">
                 Parts{" "}
-                <span className="font-medium text-slate-900">
+                <span className="font-medium text-zinc-900 dark:text-zinc-100">
                   {formatMoney(workOrder.partsTotalCents)}
                 </span>
               </span>
-              <span className="font-semibold text-slate-900">
+              <span className="font-semibold text-zinc-900 dark:text-zinc-100">
                 Total {formatMoney(totalCents)}
               </span>
             </div>
           </div>
 
           <div>
-            <h3 className="mb-2 text-sm font-semibold text-slate-900">Parts</h3>
+            <h3 className="mb-2 text-sm font-semibold text-zinc-900 dark:text-zinc-100">Parts</h3>
             {parts.length === 0 ? (
-              <p className="rounded-lg border border-dashed border-slate-300 px-4 py-6 text-center text-sm text-muted">
+              <p className="rounded-lg border border-dashed border-zinc-300 dark:border-zinc-700 px-4 py-6 text-center text-sm text-muted">
                 No parts added yet.
               </p>
             ) : (
-              <div className="overflow-hidden rounded-lg border border-slate-200">
+              <div className="overflow-hidden rounded-lg border border-zinc-200 dark:border-zinc-800">
                 <table className="w-full text-sm">
-                  <thead className="bg-slate-50 text-left text-xs uppercase tracking-wide text-muted">
+                  <thead className="bg-zinc-50 dark:bg-zinc-800/40 text-left text-xs uppercase tracking-wide text-muted">
                     <tr>
                       <th className="px-3 py-2">Item</th>
                       <th className="px-3 py-2 text-right">Qty</th>
@@ -175,15 +175,15 @@ export function WorkOrderDetailModal({
                       <th className="px-3 py-2 text-right">Total</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-slate-100">
+                  <tbody className="divide-y divide-zinc-100 dark:divide-zinc-800/70">
                     {parts.map((p) => (
                       <tr key={p.id}>
-                        <td className="px-3 py-2 font-medium text-slate-900">{p.itemName}</td>
+                        <td className="px-3 py-2 font-medium text-zinc-900 dark:text-zinc-100">{p.itemName}</td>
                         <td className="px-3 py-2 text-right tabular-nums">{p.quantity}</td>
                         <td className="px-3 py-2 text-right tabular-nums">
                           {formatMoney(p.unitPriceCents)}
                         </td>
-                        <td className="px-3 py-2 text-right font-medium tabular-nums text-slate-900">
+                        <td className="px-3 py-2 text-right font-medium tabular-nums text-zinc-900 dark:text-zinc-100">
                           {formatMoney(p.unitPriceCents * p.quantity)}
                         </td>
                       </tr>
@@ -196,9 +196,9 @@ export function WorkOrderDetailModal({
 
           {canEdit && !locked && (
             <div>
-              <h3 className="mb-2 text-sm font-semibold text-slate-900">Add part</h3>
+              <h3 className="mb-2 text-sm font-semibold text-zinc-900 dark:text-zinc-100">Add part</h3>
               {inStockItems.length === 0 ? (
-                <p className="rounded-lg border border-dashed border-slate-300 px-4 py-6 text-center text-sm text-muted">
+                <p className="rounded-lg border border-dashed border-zinc-300 dark:border-zinc-700 px-4 py-6 text-center text-sm text-muted">
                   No items in stock to add.
                 </p>
               ) : (
@@ -243,7 +243,7 @@ export function WorkOrderDetailModal({
 
           {canEdit && !locked && (
             <div>
-              <h3 className="mb-2 text-sm font-semibold text-slate-900">Labour & notes</h3>
+              <h3 className="mb-2 text-sm font-semibold text-zinc-900 dark:text-zinc-100">Labour & notes</h3>
               <form action={updateAction} className="flex flex-col gap-3">
                 <input type="hidden" name="id" value={workOrder.id} />
                 <input type="hidden" name="vehicleReg" value={workOrder.vehicleReg ?? ""} />
@@ -282,7 +282,7 @@ export function WorkOrderDetailModal({
 
           {(canStart || canComplete || canCancel) && (
             <div>
-              <h3 className="mb-2 text-sm font-semibold text-slate-900">Status</h3>
+              <h3 className="mb-2 text-sm font-semibold text-zinc-900 dark:text-zinc-100">Status</h3>
               {statusResult?.error && <FormError>{statusResult.error}</FormError>}
               <div className="flex flex-wrap gap-2">
                 {canStart && (
@@ -290,7 +290,7 @@ export function WorkOrderDetailModal({
                     <input type="hidden" name="id" value={workOrder.id} />
                     <input type="hidden" name="status" value="in_progress" />
                     <Button type="submit" variant="secondary" loading={statusPending}>
-                      <FiPlay className="size-4" /> Start
+                      <Play className="size-4" /> Start
                     </Button>
                   </form>
                 )}
@@ -299,7 +299,7 @@ export function WorkOrderDetailModal({
                     <input type="hidden" name="id" value={workOrder.id} />
                     <input type="hidden" name="status" value="completed" />
                     <Button type="submit" loading={statusPending}>
-                      <FiCheckCircle className="size-4" /> Complete
+                      <CheckCircle2 className="size-4" /> Complete
                     </Button>
                   </form>
                 )}
@@ -308,7 +308,7 @@ export function WorkOrderDetailModal({
                     <input type="hidden" name="id" value={workOrder.id} />
                     <input type="hidden" name="status" value="cancelled" />
                     <Button type="submit" variant="danger" loading={statusPending}>
-                      <FiXCircle className="size-4" /> Cancel
+                      <XCircle className="size-4" /> Cancel
                     </Button>
                   </form>
                 )}

@@ -72,7 +72,7 @@ export function BarChart({
                 x2="100"
                 y1={(i / GRID_TICKS) * 100}
                 y2={(i / GRID_TICKS) * 100}
-                className="stroke-slate-200"
+                className="stroke-zinc-200 dark:stroke-zinc-800"
                 strokeWidth="0.5"
                 vectorEffect="non-scaling-stroke"
               />

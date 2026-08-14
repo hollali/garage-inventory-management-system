@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { refundSale } from "@/lib/actions/sales";
 import { ReceiptModal } from "@/components/sales/receipt-modal";
 import { IconButton } from "@/components/ui/button";
-import { FiFileText, FiRotateCcw } from "react-icons/fi";
+import { FileText, RotateCcw } from "lucide-react";
 import type { SaleReceipt } from "@/lib/queries/sales";
 
 export function SaleRowActions({
@@ -46,7 +46,7 @@ export function SaleRowActions({
   return (
     <div className="flex items-center justify-end gap-1">
       <IconButton label="View receipt" onClick={() => setReceiptOpen(true)}>
-        <FiFileText className="size-4" />
+        <FileText className="size-4" />
       </IconButton>
       {status === "complete" && (
         <IconButton
@@ -55,7 +55,7 @@ export function SaleRowActions({
           loading={pending}
           className="text-red-600 hover:text-red-700"
         >
-          <FiRotateCcw className="size-4" />
+          <RotateCcw className="size-4" />
         </IconButton>
       )}
       <ReceiptModal

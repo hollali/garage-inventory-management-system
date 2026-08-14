@@ -3,7 +3,7 @@
 import { formatDateTime, formatMoney } from "@/lib/utils";
 import { Modal } from "@/components/ui/modal";
 import { Button } from "@/components/ui/button";
-import { FiPrinter } from "react-icons/fi";
+import { Printer } from "lucide-react";
 import type { SaleReceipt } from "@/lib/queries/sales";
 
 const paymentLabels: Record<string, string> = {
@@ -38,8 +38,8 @@ export function ReceiptModal({
         }
       `}</style>
       <div className="print-receipt">
-        <div className="border-b border-dashed border-slate-200 pb-4 text-center">
-          <p className="text-lg font-bold text-slate-900">{shopName}</p>
+        <div className="border-b border-dashed border-zinc-200 dark:border-zinc-800 pb-4 text-center">
+          <p className="text-lg font-bold text-zinc-900 dark:text-zinc-100">{shopName}</p>
           <p className="mt-1 font-mono text-xs text-muted">
             #{sale.id.slice(0, 8).toUpperCase()}
           </p>
@@ -50,40 +50,40 @@ export function ReceiptModal({
           {sale.customerName && (
             <>
               <dt className="text-muted">Customer</dt>
-              <dd className="text-right font-medium text-slate-900">{sale.customerName}</dd>
+              <dd className="text-right font-medium text-zinc-900 dark:text-zinc-100">{sale.customerName}</dd>
             </>
           )}
           {sale.customerContact && (
             <>
               <dt className="text-muted">Contact</dt>
-              <dd className="text-right text-slate-700">{sale.customerContact}</dd>
+              <dd className="text-right text-zinc-700 dark:text-zinc-300">{sale.customerContact}</dd>
             </>
           )}
           {sale.vehicleReg && (
             <>
               <dt className="text-muted">Vehicle</dt>
-              <dd className="text-right font-mono text-slate-700">{sale.vehicleReg}</dd>
+              <dd className="text-right font-mono text-zinc-700 dark:text-zinc-300">{sale.vehicleReg}</dd>
             </>
           )}
           <dt className="text-muted">Payment</dt>
-          <dd className="text-right font-medium text-slate-900">
+          <dd className="text-right font-medium text-zinc-900 dark:text-zinc-100">
             {paymentLabels[sale.paymentMethod] ?? sale.paymentMethod}
           </dd>
         </dl>
 
         <table className="mt-4 w-full text-sm">
           <thead>
-            <tr className="border-b border-slate-200 text-left text-xs uppercase tracking-wide text-muted">
+            <tr className="border-b border-zinc-200 dark:border-zinc-800 text-left text-xs uppercase tracking-wide text-muted">
               <th className="py-2">Item</th>
               <th className="py-2 text-right">Qty</th>
               <th className="py-2 text-right">Price</th>
               <th className="py-2 text-right">Total</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-slate-100">
+          <tbody className="divide-y divide-zinc-100 dark:divide-zinc-800/70">
             {items.map((line) => (
               <tr key={line.id}>
-                <td className="py-1.5 text-slate-900">{line.itemName}</td>
+                <td className="py-1.5 text-zinc-900 dark:text-zinc-100">{line.itemName}</td>
                 <td className="py-1.5 text-right tabular-nums">{line.quantity}</td>
                 <td className="py-1.5 text-right tabular-nums">{formatMoney(line.unitPriceCents)}</td>
                 <td className="py-1.5 text-right tabular-nums">
@@ -94,8 +94,8 @@ export function ReceiptModal({
           </tbody>
         </table>
 
-        <div className="mt-3 space-y-1 border-t border-dashed border-slate-200 pt-3 text-sm">
-          <div className="flex justify-between text-slate-600">
+        <div className="mt-3 space-y-1 border-t border-dashed border-zinc-200 dark:border-zinc-800 pt-3 text-sm">
+          <div className="flex justify-between text-zinc-600 dark:text-zinc-400">
             <span>Subtotal</span>
             <span className="tabular-nums">{formatMoney(subtotalCents)}</span>
           </div>
@@ -105,7 +105,7 @@ export function ReceiptModal({
               <span className="tabular-nums">−{formatMoney(sale.discountCents)}</span>
             </div>
           )}
-          <div className="flex justify-between text-base font-bold text-slate-900">
+          <div className="flex justify-between text-base font-bold text-zinc-900 dark:text-zinc-100">
             <span>Total</span>
             <span className="tabular-nums">{formatMoney(sale.totalCents)}</span>
           </div>
@@ -135,12 +135,12 @@ export function ReceiptModal({
         </p>
       </div>
 
-      <div className="print-hide mt-4 flex justify-end gap-3 border-t border-slate-100 pt-4">
+      <div className="print-hide mt-4 flex justify-end gap-3 border-t border-zinc-100 dark:border-zinc-800/70 pt-4">
         <Button type="button" variant="outline" onClick={onClose}>
           Close
         </Button>
         <Button type="button" onClick={() => window.print()}>
-          <FiPrinter className="size-4" /> Print
+          <Printer className="size-4" /> Print
         </Button>
       </div>
     </Modal>

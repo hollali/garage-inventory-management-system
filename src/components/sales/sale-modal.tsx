@@ -132,9 +132,9 @@ export function SaleModal({
             </div>
 
             {lines.length > 0 ? (
-              <div className="overflow-hidden rounded-lg border border-slate-200">
+              <div className="overflow-hidden rounded-lg border border-zinc-200 dark:border-zinc-800">
                 <table className="w-full text-sm">
-                  <thead className="bg-slate-50 text-left text-xs uppercase tracking-wide text-muted">
+                  <thead className="bg-zinc-50 dark:bg-zinc-800/40 text-left text-xs uppercase tracking-wide text-muted">
                     <tr>
                       <th className="px-3 py-2">Item</th>
                       <th className="px-3 py-2 text-right">Unit price</th>
@@ -143,13 +143,13 @@ export function SaleModal({
                       <th className="px-3 py-2" />
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-slate-100">
+                  <tbody className="divide-y divide-zinc-100 dark:divide-zinc-800/70">
                     {lines.map((line) => {
                       const item = itemById.get(line.itemId);
                       if (!item) return null;
                       return (
                         <tr key={line.itemId}>
-                          <td className="px-3 py-2 font-medium text-slate-900">{item.name}</td>
+                          <td className="px-3 py-2 font-medium text-zinc-900 dark:text-zinc-100">{item.name}</td>
                           <td className="px-3 py-2 text-right tabular-nums">
                             {formatMoney(item.unitPriceCents)}
                           </td>
@@ -162,10 +162,10 @@ export function SaleModal({
                               onChange={(e) =>
                                 updateQuantity(line.itemId, Math.max(1, Number(e.target.value) || 1))
                               }
-                              className="w-16 rounded border border-slate-300 px-2 py-1 text-right text-sm"
+                              className="w-16 rounded border border-zinc-300 dark:border-zinc-700 px-2 py-1 text-right text-sm"
                             />
                           </td>
-                          <td className="px-3 py-2 text-right font-medium tabular-nums text-slate-900">
+                          <td className="px-3 py-2 text-right font-medium tabular-nums text-zinc-900 dark:text-zinc-100">
                             {formatMoney(item.unitPriceCents * line.quantity)}
                           </td>
                           <td className="px-3 py-2 text-right">
@@ -181,10 +181,10 @@ export function SaleModal({
                       );
                     })}
                   </tbody>
-                  <tfoot className="bg-slate-50">
+                  <tfoot className="bg-zinc-50 dark:bg-zinc-800/40">
                     {discountCents > 0 && (
                       <tr>
-                        <td colSpan={3} className="px-3 py-1 text-right text-slate-600">
+                        <td colSpan={3} className="px-3 py-1 text-right text-zinc-600 dark:text-zinc-400">
                           Discount
                         </td>
                         <td className="px-3 py-1 text-right tabular-nums text-red-600">
@@ -194,10 +194,10 @@ export function SaleModal({
                       </tr>
                     )}
                     <tr>
-                      <td colSpan={3} className="px-3 py-2 text-right font-semibold text-slate-900">
+                      <td colSpan={3} className="px-3 py-2 text-right font-semibold text-zinc-900 dark:text-zinc-100">
                         Total
                       </td>
-                      <td className="px-3 py-2 text-right text-base font-bold tabular-nums text-slate-900">
+                      <td className="px-3 py-2 text-right text-base font-bold tabular-nums text-zinc-900 dark:text-zinc-100">
                         {formatMoney(netTotalCents)}
                       </td>
                       <td />
@@ -206,7 +206,7 @@ export function SaleModal({
                 </table>
               </div>
             ) : (
-              <div className="rounded-lg border border-dashed border-slate-300 px-4 py-8 text-center text-sm text-muted">
+              <div className="rounded-lg border border-dashed border-zinc-300 dark:border-zinc-700 px-4 py-8 text-center text-sm text-muted">
                 No items added yet — select items above.
               </div>
             )}

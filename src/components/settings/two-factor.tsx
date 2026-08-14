@@ -94,7 +94,7 @@ export function TwoFactor({ initialEnabled }: { initialEnabled: boolean }) {
   return (
     <div className="flex flex-col gap-6">
       <div>
-        <h1 className="text-2xl font-bold tracking-tight text-slate-900">Settings</h1>
+        <h1 className="text-2xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-100">Settings</h1>
         <p className="text-sm text-muted">
           Manage your account security and preferences.
         </p>
@@ -124,7 +124,7 @@ export function TwoFactor({ initialEnabled }: { initialEnabled: boolean }) {
               <div>
                 <Label>Setup secret</Label>
                 <div className="flex items-center gap-2">
-                  <code className="flex-1 break-all rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 font-mono text-sm text-slate-900">
+                  <code className="flex-1 break-all rounded-lg border border-zinc-200 dark:border-zinc-800 bg-zinc-50 dark:bg-zinc-800/40 px-3 py-2 font-mono text-sm text-zinc-900 dark:text-zinc-100">
                     {setup.secret}
                   </code>
                   <Button variant="secondary" size="sm" onClick={handleCopy}>
@@ -140,7 +140,7 @@ export function TwoFactor({ initialEnabled }: { initialEnabled: boolean }) {
                   alt="QR code for two-factor authentication"
                   width={220}
                   height={220}
-                  className="rounded-lg border border-slate-200"
+                  className="rounded-lg border border-zinc-200 dark:border-zinc-800"
                 />
               </div>
               <div>

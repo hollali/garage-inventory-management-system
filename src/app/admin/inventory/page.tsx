@@ -23,14 +23,14 @@ import { ConfirmAction } from "@/components/confirm-action";
 import { EmptyState, BoxIcon } from "@/components/ui/empty-state";
 import { Table, TBody, TD, THead, TH, TR } from "@/components/ui/table";
 import {
-  FiDownload,
-  FiEdit3,
-  FiPlus,
-  FiRefreshCw,
-  FiShuffle,
-  FiTrash2,
-  FiUpload,
-} from "react-icons/fi";
+  Download,
+  Pencil,
+  Plus,
+  RefreshCw,
+  Shuffle,
+  Trash2,
+  Upload,
+} from "lucide-react";
 
 export default async function AdminInventoryPage({
   searchParams,
@@ -72,7 +72,7 @@ export default async function AdminInventoryPage({
     <div className="flex flex-col gap-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-slate-900">Inventory</h1>
+          <h1 className="text-2xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-100">Inventory</h1>
           <p className="text-sm text-muted">
             Central pool + stock across {shops.length} shop{shops.length === 1 ? "" : "s"} ·{" "}
             {total} item{total === 1 ? "" : "s"}
@@ -81,17 +81,17 @@ export default async function AdminInventoryPage({
         <div className="flex flex-wrap items-center justify-end gap-2">
           <BarcodeScanner basePath="/admin/inventory" />
           <ButtonLink href="/api/export/items" variant="outline">
-            <FiDownload className="size-4" /> Export CSV
+            <Download className="size-4" /> Export CSV
           </ButtonLink>
           <ImportCsvModal
             shops={shops}
             trigger={
               <Button variant="outline">
-                <FiUpload className="size-4" /> Import CSV
+                <Upload className="size-4" /> Import CSV
               </Button>
             }
           />
-          <AdminItemModal shops={shops} categories={categories} trigger={<Button><FiPlus className="size-4" /> Add item</Button>} />
+          <AdminItemModal shops={shops} categories={categories} trigger={<Button><Plus className="size-4" /> Add item</Button>} />
         </div>
       </div>
 
@@ -106,7 +106,7 @@ export default async function AdminInventoryPage({
             <AdminItemModal
               shops={shops}
               categories={categories}
-              trigger={<Button><FiPlus className="size-4" /> Add item</Button>}
+              trigger={<Button><Plus className="size-4" /> Add item</Button>}
             />
           }
         />
@@ -140,7 +140,7 @@ export default async function AdminInventoryPage({
                           />
                         )}
                         <div className="min-w-0">
-                          <span className="font-medium text-slate-900">{item.name}</span>
+                          <span className="font-medium text-zinc-900 dark:text-zinc-100">{item.name}</span>
                           {item.sku && <span className="ml-2 text-xs text-muted">{item.sku}</span>}
                           {item.barcode && (
                             <span className="ml-2 text-xs text-muted">Barcode: {item.barcode}</span>
@@ -182,7 +182,7 @@ export default async function AdminInventoryPage({
                           itemId={item.id}
                           trigger={
                             <IconButton label="Move stock">
-                              <FiShuffle className="size-4" />
+                              <Shuffle className="size-4" />
                             </IconButton>
                           }
                         />
@@ -192,7 +192,7 @@ export default async function AdminInventoryPage({
                           item={item}
                           trigger={
                             <IconButton label="Edit">
-                              <FiEdit3 className="size-4" />
+                              <Pencil className="size-4" />
                             </IconButton>
                           }
                         />
@@ -200,7 +200,7 @@ export default async function AdminInventoryPage({
                           item={item}
                           trigger={
                             <IconButton label="Adjust stock">
-                              <FiRefreshCw className="size-4" />
+                              <RefreshCw className="size-4" />
                             </IconButton>
                           }
                         />
@@ -212,7 +212,7 @@ export default async function AdminInventoryPage({
                           buttonProps={{ className: "text-red-600 hover:text-red-700" }}
                         >
                           <IconButton label="Delete" className="text-red-600 hover:text-red-700">
-                            <FiTrash2 className="size-4" />
+                            <Trash2 className="size-4" />
                           </IconButton>
                         </ConfirmAction>
                       </div>

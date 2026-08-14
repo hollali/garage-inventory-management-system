@@ -10,7 +10,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { EmptyState, BoxIcon } from "@/components/ui/empty-state";
 import { Table, TBody, TD, THead, TH, TR } from "@/components/ui/table";
-import { FiCheck, FiX } from "react-icons/fi";
+import { Check, X } from "lucide-react";
 
 const VALID_STATUSES: TransferRequestStatus[] = [
   "pending",
@@ -47,7 +47,7 @@ export default async function AdminTransfersPage({
   return (
     <div className="flex flex-col gap-6">
       <div>
-        <h1 className="text-2xl font-bold tracking-tight text-slate-900">Transfer requests</h1>
+        <h1 className="text-2xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-100">Transfer requests</h1>
         <p className="text-sm text-muted">
           Attendants request stock moved from their shop to another shop or the central pool.
           Approving a request executes the stock movement immediately.
@@ -66,7 +66,7 @@ export default async function AdminTransfersPage({
               className={
                 active
                   ? "rounded-lg bg-brand px-3 py-1.5 text-sm font-medium text-white shadow-sm"
-                  : "rounded-lg border border-slate-300 bg-surface px-3 py-1.5 text-sm font-medium text-slate-700 hover:bg-slate-50"
+                  : "rounded-lg border border-zinc-300 dark:border-zinc-700 bg-surface px-3 py-1.5 text-sm font-medium text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-800/40"
               }
             >
               {f.label}
@@ -104,7 +104,7 @@ export default async function AdminTransfersPage({
               <TBody>
                 {rows.map((request) => (
                   <TR key={request.id}>
-                    <TD className="font-medium text-slate-900">{request.fromShopName}</TD>
+                    <TD className="font-medium text-zinc-900 dark:text-zinc-100">{request.fromShopName}</TD>
                     <TD>
                       {request.itemName}
                       {request.note && (
@@ -140,7 +140,7 @@ export default async function AdminTransfersPage({
                             confirmTitle="Approve transfer?"
                             confirmBody="Approving immediately moves this stock. This cannot be undone."
                           >
-                            <FiCheck className="size-4" /> Approve
+                            <Check className="size-4" /> Approve
                           </ConfirmAction>
                           <ConfirmAction
                             action={rejectTransfer}
@@ -148,7 +148,7 @@ export default async function AdminTransfersPage({
                             confirmTitle="Reject transfer?"
                             buttonProps={{ variant: "outline" }}
                           >
-                            <FiX className="size-4" /> Reject
+                            <X className="size-4" /> Reject
                           </ConfirmAction>
                         </div>
                       )}

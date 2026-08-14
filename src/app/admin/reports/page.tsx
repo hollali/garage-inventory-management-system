@@ -21,7 +21,7 @@ import { Table, TBody, TD, THead, TH, TR } from "@/components/ui/table";
 import { BarChart } from "@/components/charts/bar-chart";
 import { LineChart } from "@/components/charts/line-chart";
 import { RevenueFilter } from "@/components/reports/revenue-filter";
-import { FiAlertTriangle, FiDollarSign, FiDownload, FiPercent, FiShoppingCart, FiTrendingUp } from "react-icons/fi";
+import { AlertTriangle, DollarSign, Download, Percent, ShoppingCart, TrendingUp } from "lucide-react";
 
 function shortDate(date: string): string {
   return date.slice(5).replace("-", "/");
@@ -69,7 +69,7 @@ export default async function AdminReportsPage({
   return (
     <div className="flex flex-col gap-6">
       <div>
-        <h1 className="text-2xl font-bold tracking-tight text-slate-900">Reports</h1>
+        <h1 className="text-2xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-100">Reports</h1>
         <p className="text-sm text-muted">
           Revenue analytics, margins, and reorder suggestions.
         </p>
@@ -79,23 +79,23 @@ export default async function AdminReportsPage({
         <StatCard
           label="Total revenue"
           value={formatMoney(totalRevenue)}
-          icon={<FiTrendingUp className="size-5" />}
+          icon={<TrendingUp className="size-5" />}
           accent="success"
         />
         <StatCard
           label="Inventory value (retail)"
           value={formatMoney(margin.retailValueCents)}
-          icon={<FiShoppingCart className="size-5" />}
+          icon={<ShoppingCart className="size-5" />}
         />
         <StatCard
           label="Inventory value (cost)"
           value={formatMoney(margin.costValueCents)}
-          icon={<FiDollarSign className="size-5" />}
+          icon={<DollarSign className="size-5" />}
         />
         <StatCard
           label="Potential margin"
           value={formatMoney(margin.potentialMarginCents)}
-          icon={<FiPercent className="size-5" />}
+          icon={<Percent className="size-5" />}
           accent="warning"
         />
       </div>
@@ -147,7 +147,7 @@ export default async function AdminReportsPage({
                     <TBody>
                       {topSellers.map((t) => (
                         <TR key={t.itemName}>
-                          <TD className="font-medium text-slate-900">{t.itemName}</TD>
+                          <TD className="font-medium text-zinc-900 dark:text-zinc-100">{t.itemName}</TD>
                           <TD className="text-right tabular-nums">{t.quantity}</TD>
                           <TD className="text-right tabular-nums">{formatMoney(t.revenueCents)}</TD>
                         </TR>
@@ -193,7 +193,7 @@ export default async function AdminReportsPage({
           </div>
           <div className="flex flex-wrap items-center gap-2">
             <ButtonLink href="/api/export/report?reorder=1" variant="outline" size="sm">
-              <FiDownload className="size-4" /> Export CSV
+              <Download className="size-4" /> Export CSV
             </ButtonLink>
             <ConfirmAction
               action={sendLowStockAlert}
@@ -201,7 +201,7 @@ export default async function AdminReportsPage({
               confirmBody="This emails the current low-stock list to all admins."
               buttonProps={{ variant: "danger", size: "sm" }}
             >
-              <FiAlertTriangle className="size-4" /> Send low stock alert
+              <AlertTriangle className="size-4" /> Send low stock alert
             </ConfirmAction>
           </div>
         </CardHeader>
@@ -229,7 +229,7 @@ export default async function AdminReportsPage({
                 {reorder.map((it) => (
                   <TR key={it.itemId}>
                     <TD>
-                      <span className="font-medium text-slate-900">{it.itemName}</span>
+                      <span className="font-medium text-zinc-900 dark:text-zinc-100">{it.itemName}</span>
                       <Badge variant="neutral" className="ml-2">
                         {it.category}
                       </Badge>

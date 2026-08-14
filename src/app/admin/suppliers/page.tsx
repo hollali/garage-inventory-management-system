@@ -7,7 +7,7 @@ import { Button, IconButton } from "@/components/ui/button";
 import { ConfirmAction } from "@/components/confirm-action";
 import { EmptyState, BoxIcon } from "@/components/ui/empty-state";
 import { Table, TBody, TD, THead, TH, TR } from "@/components/ui/table";
-import { FiPlus, FiTrash2 } from "react-icons/fi";
+import { Plus, Trash2 } from "lucide-react";
 
 export default async function AdminSuppliersPage() {
   await requireAdmin();
@@ -17,7 +17,7 @@ export default async function AdminSuppliersPage() {
     <div className="flex flex-col gap-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-slate-900">Suppliers</h1>
+          <h1 className="text-2xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-100">Suppliers</h1>
           <p className="text-sm text-muted">
             {suppliers.length} supplier{suppliers.length === 1 ? "" : "s"} · used to create
             purchase orders.
@@ -26,7 +26,7 @@ export default async function AdminSuppliersPage() {
         <SupplierModal
           trigger={
             <Button>
-              <FiPlus className="size-4" /> New supplier
+              <Plus className="size-4" /> New supplier
             </Button>
           }
         />
@@ -41,7 +41,7 @@ export default async function AdminSuppliersPage() {
             <SupplierModal
               trigger={
                 <Button>
-                  <FiPlus className="size-4" /> Add supplier
+                  <Plus className="size-4" /> Add supplier
                 </Button>
               }
             />
@@ -64,7 +64,7 @@ export default async function AdminSuppliersPage() {
                 {suppliers.map((supplier) => (
                   <TR key={supplier.id}>
                     <TD>
-                      <span className="font-medium text-slate-900">{supplier.name}</span>
+                      <span className="font-medium text-zinc-900 dark:text-zinc-100">{supplier.name}</span>
                       {supplier.notes && (
                         <span className="ml-2 text-xs text-muted">{supplier.notes}</span>
                       )}
@@ -89,7 +89,7 @@ export default async function AdminSuppliersPage() {
                         buttonProps={{ className: "text-red-600 hover:text-red-700" }}
                       >
                         <IconButton label="Delete" className="text-red-600 hover:text-red-700">
-                          <FiTrash2 className="size-4" />
+                          <Trash2 className="size-4" />
                         </IconButton>
                       </ConfirmAction>
                     </TD>

@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Table, TBody, TD, THead, TH, TR } from "@/components/ui/table";
 import { EmptyState, BoxIcon } from "@/components/ui/empty-state";
-import { FiEye, FiPlus } from "react-icons/fi";
+import { Eye, Plus } from "lucide-react";
 
 export default async function ShopWorkOrdersPage({
   searchParams,
@@ -39,13 +39,13 @@ export default async function ShopWorkOrdersPage({
     <div className="flex flex-col gap-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-slate-900">Work orders</h1>
+          <h1 className="text-2xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-100">Work orders</h1>
           <p className="text-sm text-muted">{shop.name}</p>
         </div>
         <WorkOrderModal
           trigger={
             <Button>
-              <FiPlus className="size-4" /> New work order
+              <Plus className="size-4" /> New work order
             </Button>
           }
         />
@@ -60,7 +60,7 @@ export default async function ShopWorkOrdersPage({
             <WorkOrderModal
               trigger={
                 <Button>
-                  <FiPlus className="size-4" /> Create your first work order
+                  <Plus className="size-4" /> Create your first work order
                 </Button>
               }
             />
@@ -84,12 +84,12 @@ export default async function ShopWorkOrdersPage({
                 {rows.map(({ workOrder, parts }) => (
                   <TR key={workOrder.id}>
                     <TD>
-                      <span className="font-mono text-sm font-medium text-slate-900">
+                      <span className="font-mono text-sm font-medium text-zinc-900 dark:text-zinc-100">
                         {workOrder.vehicleReg || "—"}
                       </span>
                     </TD>
                     <TD>
-                      <span className="text-slate-900">{workOrder.customerName || "—"}</span>
+                      <span className="text-zinc-900 dark:text-zinc-100">{workOrder.customerName || "—"}</span>
                       {workOrder.customerContact && (
                         <span className="ml-2 text-xs text-muted">{workOrder.customerContact}</span>
                       )}
@@ -102,7 +102,7 @@ export default async function ShopWorkOrdersPage({
                         L {formatMoney(workOrder.labourCents)} · P{" "}
                         {formatMoney(workOrder.partsTotalCents)}
                       </div>
-                      <div className="font-semibold text-slate-900">
+                      <div className="font-semibold text-zinc-900 dark:text-zinc-100">
                         {formatMoney(workOrder.labourCents + workOrder.partsTotalCents)}
                       </div>
                     </TD>
@@ -115,7 +115,7 @@ export default async function ShopWorkOrdersPage({
                         canEdit
                         trigger={
                           <Button variant="outline" size="sm">
-                            <FiEye className="size-4" /> View
+                            <Eye className="size-4" /> View
                           </Button>
                         }
                       />

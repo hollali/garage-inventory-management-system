@@ -35,7 +35,7 @@ export default async function ActivityLogPage({
   return (
     <div className="flex flex-col gap-6">
       <div>
-        <h1 className="text-2xl font-bold tracking-tight text-slate-900">Activity log</h1>
+        <h1 className="text-2xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-100">Activity log</h1>
         <p className="text-sm text-muted">
           Chronological audit trail of actions across all shops and accounts.
         </p>
@@ -56,14 +56,14 @@ export default async function ActivityLogPage({
             <CardDescription>{logData.total} event(s) total</CardDescription>
           </CardHeader>
           <CardContent className="p-0">
-            <ul className="divide-y divide-slate-100">
+            <ul className="divide-y divide-zinc-100 dark:divide-zinc-800/70">
               {log.map((entry) => (
                 <li key={entry.id} className="flex flex-col gap-1 px-5 py-3.5 sm:flex-row sm:items-center sm:gap-3">
                   <div className="flex items-center gap-3 sm:w-28 sm:shrink-0">
                     <Badge variant={actionTone(entry.action)}>{actionLabel(entry.action)}</Badge>
                   </div>
                   <div className="min-w-0 flex-1">
-                    <p className="text-sm text-slate-900">
+                    <p className="text-sm text-zinc-900 dark:text-zinc-100">
                       <span className="font-medium">{entry.actorName}</span>
                       {entry.shopId && shopName.has(entry.shopId) && (
                         <span className="text-muted"> · {shopName.get(entry.shopId)}</span>

@@ -10,7 +10,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Badge, LowStockBadge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { EmptyState, BoxIcon } from "@/components/ui/empty-state";
-import { FiEdit3, FiPackage } from "react-icons/fi";
+import { Pencil, Package } from "lucide-react";
 
 export default async function ItemDetailPage({
   params,
@@ -32,7 +32,7 @@ export default async function ItemDetailPage({
           ← Back to inventory
         </Link>
         <div className="mt-1 flex flex-wrap items-center gap-3">
-          <h1 className="text-2xl font-bold tracking-tight text-slate-900">{item.name}</h1>
+          <h1 className="text-2xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-100">{item.name}</h1>
           <LowStockBadge quantity={item.quantity} threshold={item.lowStockThreshold} />
         </div>
         <div className="mt-2 flex flex-wrap items-center justify-between gap-3">
@@ -46,7 +46,7 @@ export default async function ItemDetailPage({
             item={item}
             trigger={
               <Button variant="outline">
-                <FiEdit3 className="size-4" /> Edit item
+                <Pencil className="size-4" /> Edit item
               </Button>
             }
           />
@@ -67,7 +67,7 @@ export default async function ItemDetailPage({
               action={adjustStock}
               trigger={
                 <Button>
-                  <FiPackage className="size-4" /> Record movement
+                  <Package className="size-4" /> Record movement
                 </Button>
               }
             />
@@ -83,7 +83,7 @@ export default async function ItemDetailPage({
             {movements.length === 0 ? (
               <EmptyState icon={<BoxIcon className="size-6" />} title="No movements yet" />
             ) : (
-              <ul className="divide-y divide-slate-100">
+              <ul className="divide-y divide-zinc-100 dark:divide-zinc-800/70">
                 {movements.map((m) => (
                   <li key={m.id} className="flex items-center justify-between gap-3 py-2.5">
                     <div className="min-w-0">
@@ -91,7 +91,7 @@ export default async function ItemDetailPage({
                         <Badge variant={m.type === "in" ? "success" : "danger"}>
                           {m.type === "in" ? "In" : "Out"}
                         </Badge>
-                        <span className="text-xs capitalize text-slate-600">{m.reason}</span>
+                        <span className="text-xs capitalize text-zinc-600 dark:text-zinc-400">{m.reason}</span>
                       </div>
                       <p className="mt-0.5 text-xs text-muted">{formatDateTime(m.createdAt)}</p>
                     </div>

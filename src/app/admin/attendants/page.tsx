@@ -8,7 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Button, IconButton } from "@/components/ui/button";
 import { Table, TBody, TD, THead, TH, TR } from "@/components/ui/table";
-import { FiPlus, FiToggleLeft, FiToggleRight, FiTrash2 } from "react-icons/fi";
+import { Plus, ToggleLeft, ToggleRight, Trash2 } from "lucide-react";
 
 export default async function AdminAttendantsPage() {
   await requireAdmin();
@@ -18,7 +18,7 @@ export default async function AdminAttendantsPage() {
     <div className="flex flex-col gap-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-slate-900">Attendants</h1>
+          <h1 className="text-2xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-100">Attendants</h1>
           <p className="text-sm text-muted">
             Shop attendant accounts and their shop assignments.
           </p>
@@ -27,7 +27,7 @@ export default async function AdminAttendantsPage() {
           shops={shops}
           trigger={
             <Button>
-              <FiPlus className="size-4" /> Add attendant
+              <Plus className="size-4" /> Add attendant
             </Button>
           }
         />
@@ -58,7 +58,7 @@ export default async function AdminAttendantsPage() {
                 {attendants.map(({ user, shop }) => (
                   <TR key={user.id}>
                     <TD>
-                      <p className="font-medium text-slate-900">{user.name}</p>
+                      <p className="font-medium text-zinc-900 dark:text-zinc-100">{user.name}</p>
                       <p className="text-xs text-muted">{user.email}</p>
                     </TD>
                     <TD>{shop ? shop.name : <span className="text-muted">Unassigned</span>}</TD>
@@ -84,7 +84,7 @@ export default async function AdminAttendantsPage() {
                               label="Deactivate"
                               className="text-amber-600 hover:text-amber-700"
                             >
-                              <FiToggleRight className="size-4" />
+                              <ToggleRight className="size-4" />
                             </IconButton>
                           </ConfirmAction>
                         ) : (
@@ -99,7 +99,7 @@ export default async function AdminAttendantsPage() {
                               label="Reactivate"
                               className="text-emerald-600 hover:text-emerald-700"
                             >
-                              <FiToggleLeft className="size-4" />
+                              <ToggleLeft className="size-4" />
                             </IconButton>
                           </ConfirmAction>
                         )}
@@ -111,7 +111,7 @@ export default async function AdminAttendantsPage() {
                           buttonProps={{ className: "text-red-600 hover:text-red-700" }}
                         >
                           <IconButton label="Delete" className="text-red-600 hover:text-red-700">
-                            <FiTrash2 className="size-4" />
+                            <Trash2 className="size-4" />
                           </IconButton>
                         </ConfirmAction>
                       </div>

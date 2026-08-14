@@ -30,7 +30,6 @@ export function LineChart({
   className?: string;
 }) {
   const id = React.useId().replace(/[^a-zA-Z0-9]/g, "");
-  const gradId = `${id}-grad`;
   const max = niceMax(Math.max(0, ...data.map((d) => d.value)));
 
   const summary = data.map((d) => `${d.label}=${formatValue(d.value)}`).join(", ");
@@ -77,12 +76,6 @@ export function LineChart({
             preserveAspectRatio="none"
             className="h-full w-full overflow-visible"
           >
-            <defs>
-              <linearGradient id={gradId} x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="var(--color-brand)" stopOpacity="0.22" />
-                <stop offset="100%" stopColor="var(--color-brand)" stopOpacity="0" />
-              </linearGradient>
-            </defs>
             {Array.from({ length: GRID_TICKS + 1 }, (_, i) => (
               <line
                 key={i}
@@ -90,12 +83,15 @@ export function LineChart({
                 x2="100"
                 y1={(i / GRID_TICKS) * 100}
                 y2={(i / GRID_TICKS) * 100}
-                className="stroke-slate-200"
+                className="stroke-zinc-200 dark:stroke-zinc-800"
                 strokeWidth="0.5"
                 vectorEffect="non-scaling-stroke"
               />
             ))}
-            <path d={areaPath} fill={`url(#${gradId})`} />
+            <path
+              d={areaPath}
+              className="fill-zinc-900/[0.07] dark:fill-zinc-100/[0.07]"
+            />
             <path
               d={linePath}
               fill="none"

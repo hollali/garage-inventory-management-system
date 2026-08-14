@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Table, TBody, TD, THead, TH, TR } from "@/components/ui/table";
 import { EmptyState, BoxIcon } from "@/components/ui/empty-state";
-import { FiEye } from "react-icons/fi";
+import { Eye } from "lucide-react";
 
 export default async function AdminWorkOrdersPage({
   searchParams,
@@ -36,7 +36,7 @@ export default async function AdminWorkOrdersPage({
     <div className="flex flex-col gap-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-slate-900">Work orders</h1>
+          <h1 className="text-2xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-100">Work orders</h1>
           <p className="text-sm text-muted">Job cards across all shops</p>
         </div>
         <WorkOrdersFilter />
@@ -71,12 +71,12 @@ export default async function AdminWorkOrdersPage({
                 {rows.map(({ workOrder, parts }) => (
                   <TR key={workOrder.id}>
                     <TD>
-                      <span className="font-medium text-slate-900">
+                      <span className="font-medium text-zinc-900 dark:text-zinc-100">
                         {workOrder.shopName || "—"}
                       </span>
                     </TD>
                     <TD>
-                      <span className="font-mono text-sm text-slate-900">
+                      <span className="font-mono text-sm text-zinc-900 dark:text-zinc-100">
                         {workOrder.vehicleReg || "—"}
                       </span>
                     </TD>
@@ -84,7 +84,7 @@ export default async function AdminWorkOrdersPage({
                     <TD>
                       <WorkOrderStatusBadge status={workOrder.status} />
                     </TD>
-                    <TD className="text-right font-semibold tabular-nums text-slate-900">
+                    <TD className="text-right font-semibold tabular-nums text-zinc-900 dark:text-zinc-100">
                       {formatMoney(workOrder.labourCents + workOrder.partsTotalCents)}
                     </TD>
                     <TD className="text-xs text-muted">{formatDateTime(workOrder.createdAt)}</TD>
@@ -96,7 +96,7 @@ export default async function AdminWorkOrdersPage({
                         canEdit={false}
                         trigger={
                           <Button variant="outline" size="sm">
-                            <FiEye className="size-4" /> View
+                            <Eye className="size-4" /> View
                           </Button>
                         }
                       />

@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
+import { RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export function ServiceWorkerRegister() {
@@ -54,20 +56,25 @@ export function ServiceWorkerRegister() {
   }
 
   return (
-    <>
+    <AnimatePresence>
       {waiting && (
-        <div
+        <motion.div
           role="status"
-          className="fixed inset-x-4 bottom-20 z-50 mx-auto flex max-w-sm items-center justify-between gap-3 rounded-xl border border-slate-200 bg-white p-3 shadow-lg lg:bottom-6"
+          initial={{ opacity: 0, y: 12, scale: 0.98 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          exit={{ opacity: 0, y: 12, scale: 0.98 }}
+          transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
+          className="fixed inset-x-4 bottom-20 z-50 mx-auto flex max-w-sm items-center justify-between gap-3 rounded-lg border border-zinc-200 bg-surface p-3 shadow-lg lg:bottom-6 dark:border-zinc-800"
         >
-          <p className="text-sm font-medium text-slate-700">
+          <p className="flex items-center gap-2 text-sm font-medium text-zinc-800 dark:text-zinc-200">
+            <RefreshCw className="size-4 shrink-0 text-zinc-400" aria-hidden />
             A new version is available.
           </p>
-          <Button type="button" onClick={reload} className="shrink-0">
+          <Button type="button" onClick={reload} size="sm" className="shrink-0">
             Reload
           </Button>
-        </div>
+        </motion.div>
       )}
-    </>
+    </AnimatePresence>
   );
 }

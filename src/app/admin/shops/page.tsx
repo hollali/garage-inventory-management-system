@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { EmptyState, BoxIcon } from "@/components/ui/empty-state";
-import { FiPlus } from "react-icons/fi";
+import { Plus } from "lucide-react";
 
 export default async function AdminShopsPage() {
   await requireAdmin();
@@ -26,7 +26,7 @@ export default async function AdminShopsPage() {
     <div className="flex flex-col gap-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-slate-900">Shops</h1>
+          <h1 className="text-2xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-100">Shops</h1>
           <p className="text-sm text-muted">
             {shops.length} shop{shops.length === 1 ? "" : "s"} · one attendant per shop.
           </p>
@@ -35,7 +35,7 @@ export default async function AdminShopsPage() {
           attendants={options}
           trigger={
             <Button>
-              <FiPlus className="size-4" /> New shop
+              <Plus className="size-4" /> New shop
             </Button>
           }
         />
@@ -51,7 +51,7 @@ export default async function AdminShopsPage() {
               attendants={options}
               trigger={
                 <Button>
-                  <FiPlus className="size-4" /> Create shop
+                  <Plus className="size-4" /> Create shop
                 </Button>
               }
             />
@@ -79,24 +79,24 @@ export default async function AdminShopsPage() {
                       <div className="space-y-1">
                         <p className="text-muted">
                           Attendant:{" "}
-                          <span className="font-medium text-slate-900">
+                          <span className="font-medium text-zinc-900 dark:text-zinc-100">
                             {attendantName ?? "Unassigned"}
                           </span>
                         </p>
                         <p className="text-muted">
-                          Items: <span className="font-medium text-slate-900">{itemCount}</span>
+                          Items: <span className="font-medium text-zinc-900 dark:text-zinc-100">{itemCount}</span>
                         </p>
                       </div>
                       <div className="space-y-1 text-right">
                         <p className="text-muted">
                           Value:{" "}
-                          <span className="font-medium text-slate-900">
+                          <span className="font-medium text-zinc-900 dark:text-zinc-100">
                             {formatMoney(inventoryValueCents)}
                           </span>
                         </p>
                         <p className="text-muted">
                           Revenue:{" "}
-                          <span className="font-medium text-slate-900">
+                          <span className="font-medium text-zinc-900 dark:text-zinc-100">
                             {formatMoney(revenueCents)}
                           </span>
                         </p>

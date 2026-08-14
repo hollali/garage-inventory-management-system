@@ -11,7 +11,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { EmptyState, BoxIcon } from "@/components/ui/empty-state";
 import { Table, TBody, TD, THead, TH, TR } from "@/components/ui/table";
-import { FiPlus } from "react-icons/fi";
+import { Plus } from "lucide-react";
 
 export default async function ShopTransfersPage({
   searchParams,
@@ -37,7 +37,7 @@ export default async function ShopTransfersPage({
     <div className="flex flex-col gap-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-slate-900">Transfers</h1>
+          <h1 className="text-2xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-100">Transfers</h1>
           <p className="text-sm text-muted">
             Request stock from {shop.name} to another shop or the central pool. An admin approves
             each request before stock moves.
@@ -48,7 +48,7 @@ export default async function ShopTransfersPage({
           otherShops={otherShops}
           trigger={
             <Button disabled={items.length === 0}>
-              <FiPlus className="size-4" /> Request stock
+              <Plus className="size-4" /> Request stock
             </Button>
           }
         />
@@ -78,7 +78,7 @@ export default async function ShopTransfersPage({
               <TBody>
                 {rows.map((request) => (
                   <TR key={request.id}>
-                    <TD className="font-medium text-slate-900">{request.itemName}</TD>
+                    <TD className="font-medium text-zinc-900 dark:text-zinc-100">{request.itemName}</TD>
                     <TD className="text-right tabular-nums">{request.quantity}</TD>
                     <TD>
                       {request.toShopName ? (

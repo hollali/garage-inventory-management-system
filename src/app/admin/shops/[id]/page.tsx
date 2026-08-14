@@ -11,7 +11,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { LowStockBadge, Badge } from "@/components/ui/badge";
 import { EmptyState, BoxIcon } from "@/components/ui/empty-state";
 import { Table, TBody, TD, THead, TH, TR } from "@/components/ui/table";
-import { FiDollarSign, FiPackage, FiAlertTriangle, FiTrendingUp } from "react-icons/fi";
+import { DollarSign, Package, AlertTriangle, TrendingUp } from "lucide-react";
 
 export default async function ShopDetailPage({
   params,
@@ -42,9 +42,9 @@ export default async function ShopDetailPage({
         </Link>
         <div className="mt-1 flex flex-wrap items-start justify-between gap-3">
           <div>
-            <h1 className="text-2xl font-bold tracking-tight text-slate-900">{shop.name}</h1>
+            <h1 className="text-2xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-100">{shop.name}</h1>
             <p className="text-sm text-muted">{shop.location}</p>
-            {shop.description && <p className="mt-1 max-w-xl text-sm text-slate-600">{shop.description}</p>}
+            {shop.description && <p className="mt-1 max-w-xl text-sm text-zinc-600 dark:text-zinc-400">{shop.description}</p>}
           </div>
           <ConfirmAction
             action={deleteShop}
@@ -60,18 +60,18 @@ export default async function ShopDetailPage({
       </div>
 
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
-        <StatCard label="Inventory value" value={formatMoney(inventoryValueCents)} icon={<FiDollarSign className="size-5" />} />
-        <StatCard label="Items" value={stats.itemCount} icon={<FiPackage className="size-5" />} />
+        <StatCard label="Inventory value" value={formatMoney(inventoryValueCents)} icon={<DollarSign className="size-5" />} />
+        <StatCard label="Items" value={stats.itemCount} icon={<Package className="size-5" />} />
         <StatCard
           label="Low stock items"
           value={stats.lowStockCount}
-          icon={<FiAlertTriangle className="size-5" />}
+          icon={<AlertTriangle className="size-5" />}
           accent={stats.lowStockCount > 0 ? "warning" : "default"}
         />
         <StatCard
           label="Revenue today"
           value={formatMoney(stats.todayRevenueCents)}
-          icon={<FiTrendingUp className="size-5" />}
+          icon={<TrendingUp className="size-5" />}
           accent="success"
         />
       </div>
@@ -107,7 +107,7 @@ export default async function ShopDetailPage({
                 <TBody>
                   {data.inventory.map((item) => (
                     <TR key={item.id}>
-                      <TD className="font-medium text-slate-900">{item.name}</TD>
+                      <TD className="font-medium text-zinc-900 dark:text-zinc-100">{item.name}</TD>
                       <TD>
                         <Badge variant="neutral">{item.category}</Badge>
                       </TD>
@@ -133,7 +133,7 @@ export default async function ShopDetailPage({
             <CardContent>
               <p className="mb-3 text-sm">
                 Current:{" "}
-                <span className="font-medium text-slate-900">{attendantName ?? "Unassigned"}</span>
+                <span className="font-medium text-zinc-900 dark:text-zinc-100">{attendantName ?? "Unassigned"}</span>
               </p>
               <ReassignForm
                 shopId={shop.id}
@@ -151,11 +151,11 @@ export default async function ShopDetailPage({
               {recentSales.length === 0 ? (
                 <EmptyState title="No sales yet" />
               ) : (
-                <ul className="divide-y divide-slate-100">
+                <ul className="divide-y divide-zinc-100 dark:divide-zinc-800/70">
                   {recentSales.map((sale) => (
                     <li key={sale.id} className="flex items-center justify-between gap-2 py-2.5">
                       <div className="min-w-0">
-                        <p className="truncate text-sm font-medium text-slate-900">
+                        <p className="truncate text-sm font-medium text-zinc-900 dark:text-zinc-100">
                           {sale.customerName || "Walk-in customer"}
                         </p>
                         <p className="text-xs text-muted">{formatDateTime(sale.createdAt)}</p>

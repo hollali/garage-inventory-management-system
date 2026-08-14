@@ -63,9 +63,9 @@ export function ReceivePoModal({
           {lines.length === 0 ? (
             <p className="text-sm text-muted">This order has no line items.</p>
           ) : (
-            <div className="overflow-hidden rounded-lg border border-slate-200">
+            <div className="overflow-hidden rounded-lg border border-zinc-200 dark:border-zinc-800">
               <table className="w-full text-sm">
-                <thead className="bg-slate-50 text-left text-xs uppercase tracking-wide text-muted">
+                <thead className="bg-zinc-50 dark:bg-zinc-800/40 text-left text-xs uppercase tracking-wide text-muted">
                   <tr>
                     <th className="px-3 py-2">Item</th>
                     <th className="px-3 py-2 text-right">Ordered</th>
@@ -73,26 +73,26 @@ export function ReceivePoModal({
                     <th className="px-3 py-2 text-right">Total</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100">
+                <tbody className="divide-y divide-zinc-100 dark:divide-zinc-800/70">
                   {lines.map((line) => (
                     <tr key={line.id}>
-                      <td className="px-3 py-2 font-medium text-slate-900">{line.itemName}</td>
+                      <td className="px-3 py-2 font-medium text-zinc-900 dark:text-zinc-100">{line.itemName}</td>
                       <td className="px-3 py-2 text-right tabular-nums">{line.quantityOrdered}</td>
                       <td className="px-3 py-2 text-right tabular-nums">
                         {formatMoney(line.unitCostCents)}
                       </td>
-                      <td className="px-3 py-2 text-right font-medium tabular-nums text-slate-900">
+                      <td className="px-3 py-2 text-right font-medium tabular-nums text-zinc-900 dark:text-zinc-100">
                         {formatMoney(line.unitCostCents * line.quantityOrdered)}
                       </td>
                     </tr>
                   ))}
                 </tbody>
-                <tfoot className="bg-slate-50">
+                <tfoot className="bg-zinc-50 dark:bg-zinc-800/40">
                   <tr>
-                    <td colSpan={3} className="px-3 py-2 text-right font-semibold text-slate-900">
+                    <td colSpan={3} className="px-3 py-2 text-right font-semibold text-zinc-900 dark:text-zinc-100">
                       Total
                     </td>
-                    <td className="px-3 py-2 text-right text-base font-bold tabular-nums text-slate-900">
+                    <td className="px-3 py-2 text-right text-base font-bold tabular-nums text-zinc-900 dark:text-zinc-100">
                       {formatMoney(totalCents)}
                     </td>
                   </tr>

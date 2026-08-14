@@ -18,7 +18,7 @@ import { LowStockBadge, Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
 import { AttentionCard } from "@/components/ui/attention-card";
-import { FiPackage, FiDollarSign, FiAlertTriangle, FiTrendingUp, FiRepeat, FiTool } from "react-icons/fi";
+import { Package, DollarSign, AlertTriangle, TrendingUp, Repeat, Wrench } from "lucide-react";
 
 export default async function ShopDashboardPage() {
   const shop = await requireAttendantShop();
@@ -48,7 +48,7 @@ export default async function ShopDashboardPage() {
     <div className="flex flex-col gap-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-slate-900">
+          <h1 className="text-2xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-100">
             {shop.name}
           </h1>
           <p className="text-sm text-muted">{shop.location}</p>
@@ -66,23 +66,23 @@ export default async function ShopDashboardPage() {
         <StatCard
           label="Inventory items"
           value={stats.itemCount}
-          icon={<FiPackage className="size-5" />}
+          icon={<Package className="size-5" />}
         />
         <StatCard
           label="Inventory value"
           value={formatMoney(stats.inventoryValueCents)}
-          icon={<FiDollarSign className="size-5" />}
+          icon={<DollarSign className="size-5" />}
         />
         <StatCard
           label="Low stock items"
           value={stats.lowStockCount}
-          icon={<FiAlertTriangle className="size-5" />}
+          icon={<AlertTriangle className="size-5" />}
           accent={stats.lowStockCount > 0 ? "warning" : "default"}
         />
         <StatCard
           label="Revenue today"
           value={formatMoney(stats.todayRevenueCents)}
-          icon={<FiTrendingUp className="size-5" />}
+          icon={<TrendingUp className="size-5" />}
           accent="success"
         />
       </div>
@@ -93,7 +93,7 @@ export default async function ShopDashboardPage() {
           href="/shop/transfers"
           hrefLabel="Manage transfers"
           count={shopTransfers.length}
-          icon={<FiRepeat className="size-4" />}
+          icon={<Repeat className="size-4" />}
           rows={shopTransfers.slice(0, 3).map((transfer) => {
             const incoming = transfer.toShopId === shop.id;
             return {
@@ -110,7 +110,7 @@ export default async function ShopDashboardPage() {
           href="/shop/work-orders"
           hrefLabel="View work orders"
           count={openWorkOrders.total}
-          icon={<FiTool className="size-4" />}
+          icon={<Wrench className="size-4" />}
           rows={openWorkOrders.rows.slice(0, 3).map((order) => ({
             id: order.id,
             label: order.vehicleReg || order.customerName || "Work order",
@@ -136,11 +136,11 @@ export default async function ShopDashboardPage() {
             {lowStock.length === 0 ? (
               <EmptyState title="All stocked up" description="No items are below their threshold." />
             ) : (
-              <ul className="divide-y divide-slate-100">
+              <ul className="divide-y divide-zinc-100 dark:divide-zinc-800/70">
                 {lowStock.map((item) => (
                   <li key={item.id} className="flex items-center justify-between gap-3 py-3">
                     <div className="min-w-0">
-                      <p className="truncate text-sm font-medium text-slate-900">{item.name}</p>
+                      <p className="truncate text-sm font-medium text-zinc-900 dark:text-zinc-100">{item.name}</p>
                       <p className="text-xs text-muted">
                         {item.quantity} on hand · threshold {item.lowStockThreshold}
                       </p>
@@ -167,18 +167,18 @@ export default async function ShopDashboardPage() {
             {recentSales.length === 0 ? (
               <EmptyState title="No sales yet" description="Record your first sale to get started." />
             ) : (
-              <ul className="divide-y divide-slate-100">
+              <ul className="divide-y divide-zinc-100 dark:divide-zinc-800/70">
                 {recentSales.map((sale) => (
                   <li key={sale.id} className="flex items-center justify-between gap-3 py-3">
                     <div className="min-w-0">
-                      <p className="truncate text-sm font-medium text-slate-900">
+                      <p className="truncate text-sm font-medium text-zinc-900 dark:text-zinc-100">
                         {sale.customerName || "Walk-in customer"}
                       </p>
                       <p className="text-xs text-muted">{formatDateTime(sale.createdAt)}</p>
                     </div>
                     <div className="flex items-center gap-2">
                       <Badge variant="neutral">{sale.id.slice(0, 8).toUpperCase()}</Badge>
-                      <span className="text-sm font-semibold text-slate-900">
+                      <span className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">
                         {formatMoney(sale.totalCents)}
                       </span>
                     </div>

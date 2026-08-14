@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { FiCamera } from "react-icons/fi";
+import { Camera } from "lucide-react";
 import { Modal } from "@/components/ui/modal";
 import { Button } from "@/components/ui/button";
 
@@ -114,7 +114,7 @@ export function BarcodeScanner({
   return (
     <>
       <Button type="button" variant="outline" onClick={() => setOpen(true)}>
-        <FiCamera className="size-4" /> {label}
+        <Camera className="size-4" /> {label}
       </Button>
       <Modal open={open} onClose={() => setOpen(false)} title="Scan barcode">
         {error ? (
@@ -127,7 +127,7 @@ export function BarcodeScanner({
               ref={videoRef}
               playsInline
               muted
-              className="aspect-video w-full rounded-lg bg-slate-900 object-cover"
+              className="aspect-video w-full rounded-lg bg-zinc-900 object-cover"
             />
             <p className="text-center text-sm text-muted">Point your camera at a barcode.</p>
           </div>

@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 import { Modal } from "../modal";
 
@@ -22,7 +22,7 @@ function Harness({
 }
 
 describe("Modal", () => {
-  it("renders content when open and nothing when closed", () => {
+  it("renders content when open and nothing after closing", async () => {
     const onClose = vi.fn();
     const { rerender } = render(
       <Harness open={false} onClose={onClose}>
@@ -38,11 +38,19 @@ describe("Modal", () => {
       </Harness>,
     );
 
-    expect(screen.getByText("Modal body")).toBeInTheDocument();
+    expect(await screen.findByText("Modal body")).toBeInTheDocument();
     expect(screen.getByRole("dialog")).toHaveAttribute(
       "aria-labelledby",
       expect.any(String),
     );
+
+    rerender(
+      <Harness open={false} onClose={onClose}>
+        <p>Modal body</p>
+      </Harness>,
+    );
+
+    await waitFor(() => expect(screen.queryByText("Modal body")).not.toBeInTheDocument());
   });
 
   it("moves focus to the first focusable element on open", () => {

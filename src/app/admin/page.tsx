@@ -11,14 +11,14 @@ import { Badge } from "@/components/ui/badge";
 import { ButtonLink } from "@/components/ui/button";
 import { AttentionCard } from "@/components/ui/attention-card";
 import {
-  FiBriefcase,
-  FiPackage,
-  FiDollarSign,
-  FiTrendingUp,
-  FiRepeat,
-  FiTool,
-  FiClipboard,
-} from "react-icons/fi";
+  Briefcase,
+  Package,
+  DollarSign,
+  TrendingUp,
+  Repeat,
+  Wrench,
+  Clipboard,
+} from "lucide-react";
 
 export default async function AdminDashboardPage() {
   await requireAdmin();
@@ -35,7 +35,7 @@ export default async function AdminDashboardPage() {
     <div className="flex flex-col gap-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-slate-900">Dashboard</h1>
+          <h1 className="text-2xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-100">Dashboard</h1>
           <p className="text-sm text-muted">
             Consolidated view across {summary.shopCount} shop
             {summary.shopCount === 1 ? "" : "s"}.
@@ -45,17 +45,17 @@ export default async function AdminDashboardPage() {
       </div>
 
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
-        <StatCard label="Shops" value={summary.shopCount} icon={<FiBriefcase className="size-5" />} />
-        <StatCard label="Total items" value={summary.itemCount} icon={<FiPackage className="size-5" />} />
+        <StatCard label="Shops" value={summary.shopCount} icon={<Briefcase className="size-5" />} />
+        <StatCard label="Total items" value={summary.itemCount} icon={<Package className="size-5" />} />
         <StatCard
           label="Inventory value"
           value={formatMoney(summary.inventoryValueCents)}
-          icon={<FiDollarSign className="size-5" />}
+          icon={<DollarSign className="size-5" />}
         />
         <StatCard
           label="Total revenue"
           value={formatMoney(summary.revenueCents)}
-          icon={<FiTrendingUp className="size-5" />}
+          icon={<TrendingUp className="size-5" />}
           accent="success"
         />
       </div>
@@ -66,7 +66,7 @@ export default async function AdminDashboardPage() {
           href="/admin/transfers"
           hrefLabel="Review transfers"
           count={pendingTransfers.total}
-          icon={<FiRepeat className="size-4" />}
+          icon={<Repeat className="size-4" />}
           rows={pendingTransfers.rows.slice(0, 3).map((transfer) => ({
             id: transfer.id,
             label: `${transfer.fromShopName ?? "Shop"} → ${transfer.toShopName ?? "Shop"}`,
@@ -78,7 +78,7 @@ export default async function AdminDashboardPage() {
           href="/admin/work-orders"
           hrefLabel="View work orders"
           count={openWorkOrders.total}
-          icon={<FiTool className="size-4" />}
+          icon={<Wrench className="size-4" />}
           rows={openWorkOrders.rows.slice(0, 3).map((order) => ({
             id: order.id,
             label: order.vehicleReg || order.customerName || order.shopName || "Work order",
@@ -90,7 +90,7 @@ export default async function AdminDashboardPage() {
           href="/admin/purchase-orders"
           hrefLabel="Awaiting receipt"
           count={draftPurchaseOrders.total}
-          icon={<FiClipboard className="size-4" />}
+          icon={<Clipboard className="size-4" />}
           rows={draftPurchaseOrders.rows.slice(0, 3).map((order) => ({
             id: order.id,
             label: order.supplierName ?? "No supplier",
@@ -119,15 +119,15 @@ export default async function AdminDashboardPage() {
               .
             </div>
           ) : (
-            <ul className="divide-y divide-slate-100">
+            <ul className="divide-y divide-zinc-100 dark:divide-zinc-800/70">
               {shops.map(({ shop, attendantName, itemCount, lowStockCount, inventoryValueCents, revenueCents }) => (
                 <li key={shop.id}>
                   <Link
                     href={`/admin/shops/${shop.id}`}
-                    className="flex flex-wrap items-center gap-3 px-5 py-4 transition-colors hover:bg-slate-50 sm:flex-nowrap"
+                    className="flex flex-wrap items-center gap-3 px-5 py-4 transition-colors hover:bg-zinc-50 dark:hover:bg-zinc-800/40 sm:flex-nowrap"
                   >
                     <div className="min-w-0 flex-1">
-                      <p className="font-semibold text-slate-900">{shop.name}</p>
+                      <p className="font-semibold text-zinc-900 dark:text-zinc-100">{shop.name}</p>
                       <p className="truncate text-xs text-muted">
                         {shop.location}
                         {attendantName ? ` · Attendant: ${attendantName}` : " · No attendant"}
@@ -140,13 +140,13 @@ export default async function AdminDashboardPage() {
                       <Badge variant="neutral">{itemCount} items</Badge>
                     </div>
                     <div className="hidden w-32 text-right text-sm sm:block">
-                      <p className="font-medium tabular-nums text-slate-900">
+                      <p className="font-medium tabular-nums text-zinc-900 dark:text-zinc-100">
                         {formatMoney(inventoryValueCents)}
                       </p>
                       <p className="text-xs text-muted">inventory value</p>
                     </div>
                     <div className="w-32 text-right text-sm">
-                      <p className="font-medium tabular-nums text-slate-900">
+                      <p className="font-medium tabular-nums text-zinc-900 dark:text-zinc-100">
                         {formatMoney(revenueCents)}
                       </p>
                       <p className="text-xs text-muted">revenue</p>

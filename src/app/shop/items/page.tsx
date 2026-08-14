@@ -14,7 +14,7 @@ import { Button, ButtonLink, IconButton } from "@/components/ui/button";
 import { ConfirmAction } from "@/components/confirm-action";
 import { EmptyState, BoxIcon } from "@/components/ui/empty-state";
 import { Table, TBody, TD, THead, TH, TR } from "@/components/ui/table";
-import { FiDownload, FiEdit3, FiPlus, FiTrash2 } from "react-icons/fi";
+import { Download, Pencil, Plus, Trash2 } from "lucide-react";
 
 export default async function ShopInventoryPage({
   searchParams,
@@ -46,7 +46,7 @@ export default async function ShopInventoryPage({
     <div className="flex flex-col gap-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-slate-900">Inventory</h1>
+          <h1 className="text-2xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-100">Inventory</h1>
           <p className="text-sm text-muted">
             {total} item{total === 1 ? "" : "s"} in {shop.name}
           </p>
@@ -54,7 +54,7 @@ export default async function ShopInventoryPage({
         <div className="flex flex-wrap items-center justify-end gap-2">
           {isAdmin && (
             <ButtonLink href="/api/export/items" variant="outline">
-              <FiDownload className="size-4" /> Export CSV
+              <Download className="size-4" /> Export CSV
             </ButtonLink>
           )}
           <BarcodeScanner basePath="/shop/items" />
@@ -62,7 +62,7 @@ export default async function ShopInventoryPage({
             categories={categories}
             trigger={
               <Button>
-                <FiPlus className="size-4" /> Add item
+                <Plus className="size-4" /> Add item
               </Button>
             }
           />
@@ -86,7 +86,7 @@ export default async function ShopInventoryPage({
                 categories={categories}
                 trigger={
                   <Button>
-                    <FiPlus className="size-4" /> Add item
+                    <Plus className="size-4" /> Add item
                   </Button>
                 }
               />
@@ -124,7 +124,7 @@ export default async function ShopInventoryPage({
                         <div className="min-w-0">
                           <Link
                             href={`/shop/items/${item.id}`}
-                            className="font-medium text-slate-900 hover:text-brand"
+                            className="font-medium text-zinc-900 dark:text-zinc-100 hover:text-brand"
                           >
                             {item.name}
                           </Link>
@@ -152,7 +152,7 @@ export default async function ShopInventoryPage({
                           item={item}
                           trigger={
                             <IconButton label="Edit">
-                              <FiEdit3 className="size-4" />
+                              <Pencil className="size-4" />
                             </IconButton>
                           }
                         />
@@ -164,7 +164,7 @@ export default async function ShopInventoryPage({
                           buttonProps={{ className: "text-red-600 hover:text-red-700" }}
                         >
                           <IconButton label="Delete" className="text-red-600 hover:text-red-700">
-                            <FiTrash2 className="size-4" />
+                            <Trash2 className="size-4" />
                           </IconButton>
                         </ConfirmAction>
                       </div>

@@ -210,9 +210,9 @@ export function PoModal({
           </div>
 
           {lines.length > 0 ? (
-            <div className="overflow-hidden rounded-lg border border-slate-200">
+            <div className="overflow-hidden rounded-lg border border-zinc-200 dark:border-zinc-800">
               <table className="w-full text-sm">
-                <thead className="bg-slate-50 text-left text-xs uppercase tracking-wide text-muted">
+                <thead className="bg-zinc-50 dark:bg-zinc-800/40 text-left text-xs uppercase tracking-wide text-muted">
                   <tr>
                     <th className="px-3 py-2">Item</th>
                     <th className="px-3 py-2 text-right">Unit cost</th>
@@ -221,19 +221,19 @@ export function PoModal({
                     <th className="px-3 py-2" />
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-100">
+                <tbody className="divide-y divide-zinc-100 dark:divide-zinc-800/70">
                   {lines.map((line, index) => {
                     const item = itemById.get(line.itemId);
                     return (
                       <tr key={`${line.itemId}-${index}`}>
-                        <td className="px-3 py-2 font-medium text-slate-900">
+                        <td className="px-3 py-2 font-medium text-zinc-900 dark:text-zinc-100">
                           {item?.name ?? "Unknown item"}
                         </td>
                         <td className="px-3 py-2 text-right tabular-nums">
                           {formatMoney(Math.round(line.unitCost * 100))}
                         </td>
                         <td className="px-3 py-2 text-right tabular-nums">{line.quantity}</td>
-                        <td className="px-3 py-2 text-right font-medium tabular-nums text-slate-900">
+                        <td className="px-3 py-2 text-right font-medium tabular-nums text-zinc-900 dark:text-zinc-100">
                           {formatMoney(Math.round(line.unitCost * 100) * line.quantity)}
                         </td>
                         <td className="px-3 py-2 text-right">
@@ -249,12 +249,12 @@ export function PoModal({
                     );
                   })}
                 </tbody>
-                <tfoot className="bg-slate-50">
+                <tfoot className="bg-zinc-50 dark:bg-zinc-800/40">
                   <tr>
-                    <td colSpan={3} className="px-3 py-2 text-right font-semibold text-slate-900">
+                    <td colSpan={3} className="px-3 py-2 text-right font-semibold text-zinc-900 dark:text-zinc-100">
                       Total
                     </td>
-                    <td className="px-3 py-2 text-right text-base font-bold tabular-nums text-slate-900">
+                    <td className="px-3 py-2 text-right text-base font-bold tabular-nums text-zinc-900 dark:text-zinc-100">
                       {formatMoney(totalCents)}
                     </td>
                     <td />
@@ -263,7 +263,7 @@ export function PoModal({
               </table>
             </div>
           ) : (
-            <div className="rounded-lg border border-dashed border-slate-300 px-4 py-8 text-center text-sm text-muted">
+            <div className="rounded-lg border border-dashed border-zinc-300 dark:border-zinc-700 px-4 py-8 text-center text-sm text-muted">
               No lines yet — select an item above and press “Add line”.
             </div>
           )}

@@ -45,7 +45,7 @@ export function AdjustStockModal({
           {actionState?.error && <FormError>{actionState.error}</FormError>}
 
           <p className="text-sm text-muted">
-            On hand: <span className="font-medium text-slate-900">{item.quantity}</span>
+            On hand: <span className="font-medium text-zinc-900 dark:text-zinc-100">{item.quantity}</span>
           </p>
 
           <div className="grid grid-cols-2 gap-3">

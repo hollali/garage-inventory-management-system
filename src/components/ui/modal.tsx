@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useId, useRef, type ReactNode } from "react";
-import { FiX } from "react-icons/fi";
+import { AnimatePresence, motion } from "framer-motion";
+import { X } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const sizes = {
@@ -96,49 +97,59 @@ export function Modal({
     };
   }, [open]);
 
-  if (!open) return null;
-
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
-      onMouseDown={(e) => {
-        if (e.target === e.currentTarget) onClose();
-      }}
-    >
-      <div
-        ref={dialogRef}
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby={titleId}
-        aria-describedby={description ? descriptionId : undefined}
-        tabIndex={-1}
-        className={cn(
-          "w-full rounded-2xl bg-white shadow-xl outline-none",
-          sizes[size],
-        )}
-      >
-        <div className="flex items-center justify-between gap-4 border-b border-slate-100 px-5 py-4">
-          <div className="min-w-0">
-            <h2 id={titleId} className="text-lg font-semibold text-slate-900">
-              {title}
-            </h2>
-            {description && (
-              <p id={descriptionId} className="mt-0.5 text-sm text-muted">
-                {description}
-              </p>
+    <AnimatePresence>
+      {open && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.15 }}
+          className="fixed inset-0 z-50 flex items-center justify-center bg-zinc-950/40 p-4 backdrop-blur-[2px] dark:bg-zinc-950/60"
+          onMouseDown={(e) => {
+            if (e.target === e.currentTarget) onClose();
+          }}
+        >
+          <motion.div
+            ref={dialogRef}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby={titleId}
+            aria-describedby={description ? descriptionId : undefined}
+            tabIndex={-1}
+            initial={{ opacity: 0, scale: 0.97, y: 8 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.98, y: 4 }}
+            transition={{ duration: 0.18, ease: [0.16, 1, 0.3, 1] }}
+            className={cn(
+              "w-full rounded-lg border border-zinc-200 bg-white shadow-xl outline-none dark:border-zinc-800 dark:bg-zinc-900",
+              sizes[size],
             )}
-          </div>
-          <button
-            type="button"
-            onClick={onClose}
-            aria-label="Close dialog"
-            className="shrink-0 rounded-lg p-1 text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-600"
           >
-            <FiX className="size-5" aria-hidden />
-          </button>
-        </div>
-        <div className="max-h-[calc(100dvh-8rem)] overflow-y-auto p-5">{children}</div>
-      </div>
-    </div>
+            <div className="flex items-start justify-between gap-4 border-b border-zinc-100 px-5 py-4 dark:border-zinc-800">
+              <div className="min-w-0">
+                <h2 id={titleId} className="text-base font-semibold text-zinc-900 dark:text-zinc-100">
+                  {title}
+                </h2>
+                {description && (
+                  <p id={descriptionId} className="mt-0.5 text-sm text-muted">
+                    {description}
+                  </p>
+                )}
+              </div>
+              <button
+                type="button"
+                onClick={onClose}
+                aria-label="Close dialog"
+                className="shrink-0 rounded-md p-1 text-zinc-400 transition-colors hover:bg-zinc-100 hover:text-zinc-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand dark:hover:bg-zinc-800 dark:hover:text-zinc-300"
+              >
+                <X className="size-4" aria-hidden />
+              </button>
+            </div>
+            <div className="max-h-[calc(100dvh-8rem)] overflow-y-auto p-5">{children}</div>
+          </motion.div>
+        </motion.div>
+      )}
+    </AnimatePresence>
   );
 }
