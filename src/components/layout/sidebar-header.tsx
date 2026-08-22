@@ -19,23 +19,15 @@ export function BrandMark({ size = "sm" }: { size?: "sm" | "md" }) {
 export function SidebarHeader({
   brand,
   collapsed,
+  action,
 }: {
   brand: string;
   collapsed: boolean;
+  action?: React.ReactNode;
 }) {
   return (
-    <div
-      className={cn(
-        "flex h-14 w-full shrink-0 items-center border-b border-zinc-200 dark:border-zinc-800",
-        collapsed ? "justify-center px-0" : "px-3",
-      )}
-    >
-      <div
-        className={cn(
-          "flex min-w-0 items-center gap-2.5",
-          collapsed && "justify-center",
-        )}
-      >
+    <div className="flex h-14 w-full shrink-0 items-center gap-1 border-b border-zinc-200 py-2 pr-2 pl-3 dark:border-zinc-800">
+      <div className="flex min-w-0 flex-1 items-center gap-2.5">
         <BrandMark />
         {!collapsed && (
           <div className="min-w-0 leading-tight">
@@ -46,6 +38,7 @@ export function SidebarHeader({
           </div>
         )}
       </div>
+      {action}
     </div>
   );
 }

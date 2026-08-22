@@ -96,16 +96,21 @@ export function MobileSidebar({
             transition={{ duration: 0.25, ease: "easeInOut" }}
             className="absolute inset-y-0 left-0 flex w-72 max-w-[85vw] flex-col border-r border-zinc-200 bg-surface shadow-2xl dark:border-zinc-800 dark:bg-zinc-950"
           >
-            <div className="flex items-center justify-between pr-2">
-              <SidebarHeader brand={brand} collapsed={false} />
-              <button
-                type="button"
-                onClick={() => setMobileOpen(false)}
-                aria-label="Close navigation menu"
-                className="rounded-md p-1.5 text-zinc-500 transition-colors hover:bg-zinc-100 hover:text-zinc-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-zinc-100"
-              >
-                <X className="size-5" aria-hidden />
-              </button>
+            <div className="flex items-center justify-between">
+              <SidebarHeader
+                brand={brand}
+                collapsed={false}
+                action={
+                  <button
+                    type="button"
+                    onClick={() => setMobileOpen(false)}
+                    aria-label="Close navigation menu"
+                    className="rounded-md p-1.5 text-zinc-500 transition-colors hover:bg-zinc-100 hover:text-zinc-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-zinc-100"
+                  >
+                    <X className="size-5" aria-hidden />
+                  </button>
+                }
+              />
             </div>
 
             {workspaceLabel && (

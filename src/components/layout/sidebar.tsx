@@ -1,7 +1,6 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { cn } from "@/lib/utils";
 import { useSidebar } from "@/components/layout/sidebar-provider";
 import type { NavSection } from "@/components/layout/nav";
 import { SidebarHeader, BrandMark } from "@/components/layout/sidebar-header";
@@ -32,7 +31,11 @@ export function Sidebar({
       transition={{ duration: 0.25, ease: "easeInOut" }}
       className="sticky top-0 z-30 hidden h-dvh shrink-0 flex-col overflow-hidden border-r border-zinc-200 bg-surface dark:border-zinc-800 dark:bg-zinc-950 lg:flex"
     >
-      <SidebarHeader brand={brand} collapsed={collapsed} />
+      <SidebarHeader
+        brand={brand}
+        collapsed={collapsed}
+        action={<SidebarToggle />}
+      />
       <SidebarNavigation sections={sections} collapsed={collapsed} />
 
       <div className="shrink-0 space-y-1 border-t border-zinc-200 px-2 py-2 dark:border-zinc-800">
@@ -51,9 +54,6 @@ export function Sidebar({
           sections={sections}
           collapsed={collapsed}
         />
-        <div className={cn("flex", collapsed ? "justify-center" : "justify-end")}>
-          <SidebarToggle />
-        </div>
       </div>
     </motion.aside>
   );

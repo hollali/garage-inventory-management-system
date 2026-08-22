@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useId, type KeyboardEvent } from "react";
+import { useId, useRef, useState, type KeyboardEvent } from "react";
 import { motion } from "framer-motion";
 import { ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -13,8 +13,22 @@ import {
   type NavItem,
 } from "@/components/layout/nav";
 import { useSidebar } from "@/components/layout/sidebar-provider";
-import { SidebarTooltip } from "@/components/layout/sidebar-tooltip";
+import {
+  SidebarTooltip,
+  type TooltipAnchor,
+} from "@/components/layout/sidebar-tooltip";
 import { SidebarSubmenu } from "@/components/layout/sidebar-submenu";
+
+function useCollapsedTooltip() {
+  const [anchor, setAnchor] = useState<TooltipAnchor | null>(null);
+  const show = (el: HTMLElement | null) => {
+    if (!el) return;
+    const r = el.getBoundingClientRect();
+    setAnchor({ top: r.top + r.height / 2, left: r.right + 8 });
+  };
+  const hide = () => setAnchor(null);
+  return { anchor, show, hide };
+}
 
 export function SidebarItem({
   item,
@@ -25,8 +39,10 @@ export function SidebarItem({
 }) {
   const pathname = usePathname();
   const submenuId = useId();
+  const itemRef = useRef<HTMLLIElement>(null);
   const { openSubmenus, toggleSubmenu, ensureExpanded, openSubmenu } =
     useSidebar();
+  const tooltip = useCollapsedTooltip();
 
   const Icon = navIcons[item.icon];
   const hasChildren = !!item.children?.length;
@@ -46,6 +62,13 @@ export function SidebarItem({
     iconHoverClasses[item.icon] ?? "group-hover:scale-105",
   );
 
+  const hoverProps = {
+    onMouseEnter: () => tooltip.show(itemRef.current),
+    onMouseLeave: tooltip.hide,
+    onFocus: () => tooltip.show(itemRef.current),
+    onBlur: tooltip.hide,
+  };
+
   function closeOnEscape(e: KeyboardEvent<HTMLElement>) {
     if (e.key === "Escape" && open) {
       e.preventDefault();
@@ -56,9 +79,7 @@ export function SidebarItem({
 
   const icon = <Icon className={iconClass} aria-hidden />;
 
-  const label = !collapsed && (
-    <span className="truncate">{item.label}</span>
-  );
+  const label = !collapsed && <span className="truncate">{item.label}</span>;
 
   const badge = !collapsed && item.badge != null && (
     <span className="ml-auto shrink-0 rounded bg-zinc-100 px-1.5 py-0.5 text-[10px] font-semibold text-zinc-600 tabular-nums dark:bg-zinc-800 dark:text-zinc-300">
@@ -66,10 +87,14 @@ export function SidebarItem({
     </span>
   );
 
+  const tooltipPortal = collapsed && tooltip.anchor && (
+    <SidebarTooltip label={item.label} anchor={tooltip.anchor} />
+  );
+
   // Collapsed + parent with children: expand the sidebar and reveal the submenu.
   if (hasChildren && collapsed) {
     return (
-      <li className="relative">
+      <li ref={itemRef} className="relative" {...hoverProps}>
         <button
           type="button"
           data-nav-item
@@ -81,8 +106,8 @@ export function SidebarItem({
           className={rowClass}
         >
           {icon}
-          <SidebarTooltip label={item.label} />
         </button>
+        {tooltipPortal}
       </li>
     );
   }
@@ -132,7 +157,7 @@ export function SidebarItem({
   }
 
   return (
-    <li className="relative">
+    <li ref={itemRef} className="relative" {...hoverProps}>
       {active && (
         <motion.span
           layoutId="sidebar-active-nav"
@@ -150,8 +175,8 @@ export function SidebarItem({
         {icon}
         {label}
         {badge}
-        {collapsed && <SidebarTooltip label={item.label} />}
       </Link>
+      {tooltipPortal}
     </li>
   );
 }
