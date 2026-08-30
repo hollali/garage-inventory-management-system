@@ -88,16 +88,31 @@ export function SidebarItem({
     </span>
   );
 
-  // Keeps the count visible when the sidebar is collapsed.
-  const collapsedBadgeDot = collapsed && item.badge != null && (
-    <span
-      aria-hidden
-      className="absolute right-2 top-2 size-1.5 rounded-full bg-zinc-400 dark:bg-zinc-500"
-    />
-  );
+  // Keeps the count visible when the sidebar is collapsed. Short values render
+  // as a compact pill; longer/label badges fall back to a status dot.
+  const collapsedBadgeIsCompact =
+    collapsed && item.badge != null && String(item.badge).length <= 3;
+  const collapsedBadge =
+    collapsed && item.badge != null ? (
+      collapsedBadgeIsCompact ? (
+        <span className="absolute right-1 top-1 rounded bg-zinc-200 px-1 text-[9px] leading-[14px] font-semibold text-zinc-600 tabular-nums dark:bg-zinc-700 dark:text-zinc-300">
+          {item.badge}
+        </span>
+      ) : (
+        <span
+          aria-hidden
+          className="absolute right-2 top-2 size-1.5 rounded-full bg-zinc-400 dark:bg-zinc-500"
+        />
+      )
+    ) : null;
+
+  const tooltipLabel =
+    collapsed && item.badge != null
+      ? `${item.label} (${item.badge})`
+      : item.label;
 
   const tooltipPortal = collapsed && tooltip.anchor && (
-    <SidebarTooltip label={item.label} anchor={tooltip.anchor} />
+    <SidebarTooltip label={tooltipLabel} anchor={tooltip.anchor} />
   );
 
   // Collapsed + parent with children: expand the sidebar and reveal the submenu.
@@ -119,11 +134,18 @@ export function SidebarItem({
             ensureExpanded();
             openSubmenu(item.href);
           }}
-          aria-label={item.label}
+          aria-label={`${item.label} (expand sidebar to show submenu)`}
+          aria-haspopup="menu"
+          aria-expanded={open}
+          aria-current={active ? "page" : undefined}
           className={rowClass}
         >
           {icon}
-          {collapsedBadgeDot}
+          {collapsedBadge}
+          <ChevronRight
+            aria-hidden
+            className="absolute right-1.5 bottom-1.5 size-3 text-zinc-400 dark:text-zinc-500"
+          />
         </button>
         {tooltipPortal}
       </li>
@@ -203,7 +225,7 @@ export function SidebarItem({
         {icon}
         {label}
         {badge}
-        {collapsedBadgeDot}
+        {collapsedBadge}
       </Link>
       {tooltipPortal}
     </li>

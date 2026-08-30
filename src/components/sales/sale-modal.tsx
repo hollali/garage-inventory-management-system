@@ -251,7 +251,7 @@ export function SaleModal({
                 </Select>
               </div>
               <div>
-                <Label htmlFor="discount">Discount ($)</Label>
+                <Label htmlFor="discount">Discount</Label>
                 <Input
                   id="discount"
                   name="discount"

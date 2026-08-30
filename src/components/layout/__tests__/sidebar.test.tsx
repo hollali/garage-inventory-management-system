@@ -146,7 +146,7 @@ describe("Collapsed active state", () => {
       ),
     );
 
-    const button = screen.getByRole("button", { name: "Inventory" });
+    const button = screen.getByRole("button", { name: /^Inventory/ });
     const item = button.closest("li");
     expect(item?.querySelector("span.bg-zinc-100")).toBeTruthy();
   });

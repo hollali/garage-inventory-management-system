@@ -42,7 +42,8 @@ export function SidebarSubmenu({
             const search = child.search ?? "";
             const href = child.href + search;
             const active =
-              isNavActive(child, pathname) && matchesSearch(searchParams, child.search);
+              isNavActive(child, pathname) &&
+              matchesSearch(searchParams, child.search);
             return (
               <li key={href}>
                 <Link
@@ -50,7 +51,7 @@ export function SidebarSubmenu({
                   data-nav-item
                   aria-current={active ? "page" : undefined}
                   className={cn(
-                    "group relative ml-[26px] flex items-center gap-2 border-l border-zinc-200 py-1.5 pl-3 text-sm font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand dark:border-zinc-800",
+                    "group relative ml-6.5 flex items-center gap-2 border-l border-zinc-200 py-1.5 pl-3 text-sm font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand dark:border-zinc-800",
                     active
                       ? "text-zinc-900 dark:text-zinc-100"
                       : "text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100",
