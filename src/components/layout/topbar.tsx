@@ -9,7 +9,7 @@ import { findActiveItem, type NavSection } from "@/components/layout/nav";
 export function Topbar({ sections }: { sections: NavSection[] }) {
   const pathname = usePathname();
   const { theme, toggleTheme } = useTheme();
-  const { setMobileOpen, setCommandOpen } = useSidebar();
+  const { setMobileOpen, mobileOpen, setCommandOpen } = useSidebar();
   const current = findActiveItem(sections, pathname);
 
   const isMac =
@@ -23,6 +23,8 @@ export function Topbar({ sections }: { sections: NavSection[] }) {
           onClick={() => setMobileOpen(true)}
           data-sidebar-menu-trigger
           aria-label="Open navigation menu"
+          aria-expanded={mobileOpen}
+          aria-controls={mobileOpen ? "mobile-sidebar-nav" : undefined}
           className="rounded-md p-2 text-zinc-500 transition-colors hover:bg-zinc-100 hover:text-zinc-900 lg:hidden dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-zinc-100"
         >
           <Menu className="size-5" aria-hidden />

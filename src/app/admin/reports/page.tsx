@@ -199,6 +199,7 @@ export default async function AdminReportsPage({
               action={sendLowStockAlert}
               confirmTitle="Send low stock alert?"
               confirmBody="This emails the current low-stock list to all admins."
+              successMessage="Low stock alert sent"
               buttonProps={{ variant: "danger", size: "sm" }}
             >
               <AlertTriangle className="size-4" /> Send low stock alert

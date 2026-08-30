@@ -1,6 +1,7 @@
 "use client";
 
 import { useRouter, useSearchParams } from "next/navigation";
+import { useTransition } from "react";
 import { actionLabel } from "@/lib/labels";
 import { Select } from "@/components/ui/forms";
 import { Button } from "@/components/ui/button";
@@ -16,6 +17,7 @@ export function ActivityFilter({
 }) {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const [isPending, startTransition] = useTransition();
 
   const shopId = searchParams.get("shop") ?? "";
   const actorId = searchParams.get("actor") ?? "";
@@ -34,15 +36,23 @@ export function ActivityFilter({
     else params.delete("action");
     params.set("page", "1");
     const qs = params.toString();
-    router.push(qs ? `/admin/activity?${qs}` : "/admin/activity");
+    startTransition(() => {
+      router.push(qs ? `/admin/activity?${qs}` : "/admin/activity");
+    });
   }
 
   const hasFilters = shopId || actorId || action;
 
   return (
-    <div className="flex flex-col gap-2 sm:flex-row">
+    <div
+      className="flex flex-col gap-2 transition-opacity sm:flex-row"
+      aria-busy={isPending}
+      style={{ opacity: isPending ? 0.6 : undefined }}
+    >
       <Select
+        aria-label="Filter by shop"
         value={shopId}
+        disabled={isPending}
         onChange={(e) => apply({ shop: e.target.value })}
         className="sm:w-48"
       >
@@ -54,7 +64,9 @@ export function ActivityFilter({
         ))}
       </Select>
       <Select
+        aria-label="Filter by person"
         value={actorId}
+        disabled={isPending}
         onChange={(e) => apply({ actor: e.target.value })}
         className="sm:w-52"
       >
@@ -66,7 +78,9 @@ export function ActivityFilter({
         ))}
       </Select>
       <Select
+        aria-label="Filter by action"
         value={action}
+        disabled={isPending}
         onChange={(e) => apply({ action: e.target.value })}
         className="sm:w-56"
       >
@@ -78,7 +92,7 @@ export function ActivityFilter({
         ))}
       </Select>
       {hasFilters && (
-        <Button variant="ghost" onClick={() => router.push("/admin/activity")}>
+        <Button variant="ghost" disabled={isPending} onClick={() => apply({ shop: "", actor: "", action: "" })}>
           Clear
         </Button>
       )}

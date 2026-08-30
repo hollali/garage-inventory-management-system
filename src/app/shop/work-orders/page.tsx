@@ -43,6 +43,7 @@ export default async function ShopWorkOrdersPage({
           <p className="text-sm text-muted">{shop.name}</p>
         </div>
         <WorkOrderModal
+          urlAction="new"
           trigger={
             <Button>
               <Plus className="size-4" /> New work order

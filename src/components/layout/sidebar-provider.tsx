@@ -43,14 +43,16 @@ function submenuKeysForPath(sections: NavSection[], pathname: string): Set<strin
 
 export function SidebarProvider({
   sections,
+  initiallyCollapsed = false,
   children,
 }: {
   sections: NavSection[];
+  /** Read from the cookie on the server so the first paint has no collapse flash. */
+  initiallyCollapsed?: boolean;
   children: ReactNode;
 }) {
   const pathname = usePathname();
-  const [collapsed, setCollapsed] = useState(false);
-  const [ready, setReady] = useState(false);
+  const [collapsed, setCollapsed] = useState(initiallyCollapsed);
   const [mobileOpen, setMobileOpenState] = useState(false);
   const [commandOpen, setCommandOpen] = useState(false);
   const [openSubmenus, setOpenSubmenus] = useState<Set<string>>(
@@ -76,17 +78,8 @@ export function SidebarProvider({
   }
 
   useEffect(() => {
-    const id = window.setTimeout(() => {
-      setCollapsed(window.localStorage.getItem(STORAGE_KEY) === "1");
-      setReady(true);
-    }, 0);
-    return () => window.clearTimeout(id);
-  }, []);
-
-  useEffect(() => {
-    if (!ready) return;
-    window.localStorage.setItem(STORAGE_KEY, collapsed ? "1" : "0");
-  }, [collapsed, ready]);
+    document.cookie = `${STORAGE_KEY}=${collapsed ? "1" : "0"}; path=/; max-age=31536000; samesite=lax`;
+  }, [collapsed]);
 
   useEffect(() => {
     function onKey(e: KeyboardEvent) {

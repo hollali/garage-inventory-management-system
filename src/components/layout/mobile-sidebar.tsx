@@ -87,6 +87,7 @@ export function MobileSidebar({
           />
           <motion.aside
             ref={panelRef}
+            id="mobile-sidebar-nav"
             role="dialog"
             aria-modal="true"
             aria-label="Sidebar navigation"

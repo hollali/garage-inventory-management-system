@@ -1,12 +1,14 @@
 "use client";
 
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 import { useActionState } from "react";
 import { useRouter } from "next/navigation";
 import { createShop } from "@/lib/actions/admin";
 import { Modal } from "@/components/ui/modal";
 import { Button } from "@/components/ui/button";
 import { Input, Label, Textarea, Select, FormError } from "@/components/ui/forms";
+import { useToast } from "@/components/ui/toast";
+import { useUrlModal } from "@/components/ui/use-url-modal";
 
 export type ShopAttendantOption = {
   id: string;
@@ -18,12 +20,24 @@ export type ShopAttendantOption = {
 export function ShopModal({
   attendants,
   trigger,
+  urlAction,
 }: {
   attendants: ShopAttendantOption[];
   trigger: ReactNode;
+  urlAction?: string;
 }) {
   const router = useRouter();
-  const [open, setOpen] = useState(false);
+  const { toast } = useToast();
+  const { open: urlOpen, close: closeUrlModal } = useUrlModal(urlAction);
+  const [localOpen, setLocalOpen] = useState(false);
+  const open = localOpen || urlOpen;
+  const setOpen = useCallback(
+    (next: boolean) => {
+      setLocalOpen(next);
+      if (!next) closeUrlModal();
+    },
+    [closeUrlModal],
+  );
 
   const [state, formAction, pending] = useActionState(
     async (_prev: unknown, formData: FormData) => createShop(formData),
@@ -36,10 +50,11 @@ export function ShopModal({
     if (open && actionState?.ok && !prevOk.current) {
       prevOk.current = true;
       setOpen(false);
+      toast({ title: "Shop created" });
       router.refresh();
     }
     if (!actionState?.ok) prevOk.current = false;
-  }, [open, actionState, router]);
+  }, [open, actionState, router, setOpen, toast]);
 
   const assignable = attendants.filter((a) => !a.assignedShopName);
 

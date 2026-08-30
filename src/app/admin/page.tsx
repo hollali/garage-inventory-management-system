@@ -45,8 +45,8 @@ export default async function AdminDashboardPage() {
       </div>
 
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
-        <StatCard label="Shops" value={summary.shopCount} icon={<Briefcase className="size-5" />} />
-        <StatCard label="Total items" value={summary.itemCount} icon={<Package className="size-5" />} />
+        <StatCard label="Shops" value={summary.shopCount} icon={<Briefcase className="size-5" />} href="/admin/shops" />
+        <StatCard label="Total items" value={summary.itemCount} icon={<Package className="size-5" />} href="/admin/inventory" />
         <StatCard
           label="Inventory value"
           value={formatMoney(summary.inventoryValueCents)}
@@ -57,6 +57,7 @@ export default async function AdminDashboardPage() {
           value={formatMoney(summary.revenueCents)}
           icon={<TrendingUp className="size-5" />}
           accent="success"
+          href="/admin/reports"
         />
       </div>
 

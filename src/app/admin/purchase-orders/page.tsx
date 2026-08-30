@@ -72,6 +72,7 @@ export default async function AdminPurchaseOrdersPage({
           shops={shops}
           suppliers={suppliers.map((s) => ({ id: s.id, name: s.name }))}
           items={items}
+          urlAction="new"
           trigger={
             <Button>
               <Plus className="size-4" /> New purchase order
@@ -158,6 +159,7 @@ export default async function AdminPurchaseOrdersPage({
                               hiddenFields={{ poId: po.id }}
                               confirmTitle="Cancel this purchase order?"
                               confirmBody="The order will be marked as cancelled and can no longer be received."
+                              successMessage="Purchase order cancelled"
                               buttonProps={{ className: "text-red-600 hover:text-red-700" }}
                             >
                               <IconButton

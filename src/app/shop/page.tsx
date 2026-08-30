@@ -67,6 +67,7 @@ export default async function ShopDashboardPage() {
           label="Inventory items"
           value={stats.itemCount}
           icon={<Package className="size-5" />}
+          href="/shop/items"
         />
         <StatCard
           label="Inventory value"
@@ -78,12 +79,14 @@ export default async function ShopDashboardPage() {
           value={stats.lowStockCount}
           icon={<AlertTriangle className="size-5" />}
           accent={stats.lowStockCount > 0 ? "warning" : "default"}
+          href="/shop/items?type=low"
         />
         <StatCard
           label="Revenue today"
           value={formatMoney(stats.todayRevenueCents)}
           icon={<TrendingUp className="size-5" />}
           accent="success"
+          href="/shop/sales"
         />
       </div>
 

@@ -139,6 +139,7 @@ export default async function AdminTransfersPage({
                             hiddenFields={{ requestId: request.id }}
                             confirmTitle="Approve transfer?"
                             confirmBody="Approving immediately moves this stock. This cannot be undone."
+                            successMessage="Transfer approved"
                           >
                             <Check className="size-4" /> Approve
                           </ConfirmAction>
@@ -146,6 +147,7 @@ export default async function AdminTransfersPage({
                             action={rejectTransfer}
                             hiddenFields={{ requestId: request.id }}
                             confirmTitle="Reject transfer?"
+                            successMessage="Transfer rejected"
                             buttonProps={{ variant: "outline" }}
                           >
                             <X className="size-4" /> Reject

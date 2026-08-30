@@ -78,6 +78,7 @@ export default async function AdminAttendantsPage() {
                             hiddenFields={{ userId: user.id }}
                             confirmTitle="Deactivate this attendant?"
                             confirmBody={`${user.name} will be removed from their shop and won't be able to sign in.`}
+                            successMessage="Attendant deactivated"
                             buttonProps={{ className: "text-amber-600 hover:text-amber-700" }}
                           >
                             <IconButton
@@ -93,6 +94,7 @@ export default async function AdminAttendantsPage() {
                             hiddenFields={{ userId: user.id }}
                             confirmTitle="Reactivate this attendant?"
                             confirmBody={`${user.name} will be able to sign in again.`}
+                            successMessage="Attendant reactivated"
                             buttonProps={{ className: "text-emerald-600 hover:text-emerald-700" }}
                           >
                             <IconButton
@@ -108,6 +110,7 @@ export default async function AdminAttendantsPage() {
                           hiddenFields={{ userId: user.id }}
                           confirmTitle="Delete this attendant?"
                           confirmBody={`${user.name}'s account will be permanently removed.`}
+                          successMessage="Attendant deleted"
                           buttonProps={{ className: "text-red-600 hover:text-red-700" }}
                         >
                           <IconButton label="Delete" className="text-red-600 hover:text-red-700">

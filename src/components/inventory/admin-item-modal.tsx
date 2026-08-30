@@ -1,12 +1,14 @@
 "use client";
 
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 import { useActionState } from "react";
 import { useRouter } from "next/navigation";
 import { createAdminItem, updateAdminItem } from "@/lib/actions/admin";
 import { Modal } from "@/components/ui/modal";
 import { Button } from "@/components/ui/button";
 import { Input, Label, Select, Textarea, FormError } from "@/components/ui/forms";
+import { useToast } from "@/components/ui/toast";
+import { useUrlModal } from "@/components/ui/use-url-modal";
 
 export type AdminItemShape = {
   id: string;
@@ -30,14 +32,26 @@ export function AdminItemModal({
   categories,
   item,
   trigger,
+  urlAction,
 }: {
   shops: { id: string; name: string }[];
   categories: string[];
   item?: AdminItemShape;
   trigger: ReactNode;
+  urlAction?: string;
 }) {
   const router = useRouter();
-  const [open, setOpen] = useState(false);
+  const { toast } = useToast();
+  const { open: urlOpen, close: closeUrlModal } = useUrlModal(urlAction);
+  const [localOpen, setLocalOpen] = useState(false);
+  const open = localOpen || urlOpen;
+  const setOpen = useCallback(
+    (next: boolean) => {
+      setLocalOpen(next);
+      if (!next) closeUrlModal();
+    },
+    [closeUrlModal],
+  );
   const action = item ? updateAdminItem : createAdminItem;
   const [state, formAction, pending] = useActionState(
     async (_prev: unknown, formData: FormData) => action(formData),
@@ -50,10 +64,13 @@ export function AdminItemModal({
     if (open && actionState?.ok && !prevOk.current) {
       prevOk.current = true;
       setOpen(false);
+      toast({
+        title: item ? "Item updated" : "Item added",
+      });
       router.refresh();
     }
     if (!actionState?.ok) prevOk.current = false;
-  }, [open, actionState, router]);
+  }, [open, actionState, router, setOpen, item, toast]);
 
   return (
     <>

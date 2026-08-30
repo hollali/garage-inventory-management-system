@@ -1,6 +1,7 @@
 "use client";
 
 import { useRouter, useSearchParams } from "next/navigation";
+import { useRef } from "react";
 import { Input, Select } from "@/components/ui/forms";
 import { Button } from "@/components/ui/button";
 
@@ -17,8 +18,10 @@ export function AdminInventoryFilter({
   const category = searchParams.get("category") ?? "All";
   const shopId = searchParams.get("shopId") ?? "All";
   const type = searchParams.get("type") ?? "All";
+  const committedQuery = useRef(q);
 
   function apply(next: { q?: string; category?: string; shopId?: string; type?: string }) {
+    committedQuery.current = next.q ?? q;
     const params = new URLSearchParams(searchParams.toString());
     const setOrDelete = (key: string, value: string, ignore: string) => {
       if (value && value !== ignore) params.set(key, value);
@@ -38,6 +41,7 @@ export function AdminInventoryFilter({
   return (
     <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap">
       <Input
+        key={q}
         defaultValue={q}
         placeholder="Search items, SKUs, categories…"
         className="sm:max-w-64"
@@ -47,7 +51,10 @@ export function AdminInventoryFilter({
             apply({ q: (e.target as HTMLInputElement).value });
           }
         }}
-        onBlur={(e) => apply({ q: e.target.value })}
+        onBlur={(e) => {
+          const value = e.target.value;
+          if (value !== committedQuery.current) apply({ q: value });
+        }}
       />
       <Select value={category} onChange={(e) => apply({ category: e.target.value })} className="sm:w-44">
         <option value="All">All categories</option>

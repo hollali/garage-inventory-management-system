@@ -24,6 +24,7 @@ export default async function AdminSuppliersPage() {
           </p>
         </div>
         <SupplierModal
+          urlAction="add"
           trigger={
             <Button>
               <Plus className="size-4" /> New supplier
@@ -86,6 +87,7 @@ export default async function AdminSuppliersPage() {
                         hiddenFields={{ supplierId: supplier.id }}
                         confirmTitle="Delete this supplier?"
                         confirmBody={`"${supplier.name}" will be removed. Existing purchase orders keep their records.`}
+                        successMessage="Supplier deleted"
                         buttonProps={{ className: "text-red-600 hover:text-red-700" }}
                       >
                         <IconButton label="Delete" className="text-red-600 hover:text-red-700">

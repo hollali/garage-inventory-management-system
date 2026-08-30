@@ -33,6 +33,7 @@ export default async function AdminShopsPage() {
         </div>
         <ShopModal
           attendants={options}
+          urlAction="add"
           trigger={
             <Button>
               <Plus className="size-4" /> New shop

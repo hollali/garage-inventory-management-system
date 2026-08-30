@@ -68,6 +68,7 @@ export default async function ShopSalesPage({
         </div>
         <SaleModal
           items={saleOptions}
+          urlAction="record"
           trigger={
             <Button>
               <Plus className="size-4" /> Record sale

@@ -91,7 +91,7 @@ export default async function AdminInventoryPage({
               </Button>
             }
           />
-          <AdminItemModal shops={shops} categories={categories} trigger={<Button><Plus className="size-4" /> Add item</Button>} />
+          <AdminItemModal shops={shops} categories={categories} urlAction="add" trigger={<Button><Plus className="size-4" /> Add item</Button>} />
         </div>
       </div>
 
@@ -209,6 +209,7 @@ export default async function AdminInventoryPage({
                           hiddenFields={{ itemId: item.id }}
                           confirmTitle="Delete this item?"
                           confirmBody={`"${item.name}" and its stock history will be removed. Past sales keep a snapshot.`}
+                          successMessage="Item deleted"
                           buttonProps={{ className: "text-red-600 hover:text-red-700" }}
                         >
                           <IconButton label="Delete" className="text-red-600 hover:text-red-700">

@@ -2,13 +2,12 @@
 
 import { useRouter } from "next/navigation";
 import { signOut } from "next-auth/react";
-import { LogOut, Moon, Settings, Sun, User } from "lucide-react";
+import { LogOut, Moon, Settings, Sun } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useTheme } from "@/components/theme-provider";
 import {
   Dropdown,
   DropdownItem,
-  DropdownLabel,
   DropdownSeparator,
 } from "@/components/ui/dropdown";
 import type { NavSection } from "@/components/layout/nav";
@@ -74,13 +73,6 @@ export function SidebarUser({
     >
       {settingsHref !== "#" && (
         <>
-          <DropdownLabel>Profile</DropdownLabel>
-          <DropdownItem
-            icon={<User />}
-            onClick={() => router.push(settingsHref)}
-          >
-            Profile
-          </DropdownItem>
           <DropdownItem
             icon={<Settings />}
             onClick={() => router.push(settingsHref)}

@@ -13,6 +13,7 @@ import {
 import { useRouter } from "next/navigation";
 import { Modal } from "@/components/ui/modal";
 import { Button, IconButton, type ButtonProps } from "@/components/ui/button";
+import { useToast } from "@/components/ui/toast";
 
 export function ConfirmAction({
   action,
@@ -20,6 +21,7 @@ export function ConfirmAction({
   confirmTitle = "Are you sure?",
   confirmBody,
   confirmLabel = "Confirm",
+  successMessage,
   redirectTo,
   children,
   buttonProps,
@@ -29,11 +31,13 @@ export function ConfirmAction({
   confirmTitle?: string;
   confirmBody?: string;
   confirmLabel?: string;
+  successMessage?: string;
   redirectTo?: string;
   children: ReactNode;
   buttonProps?: ButtonProps;
 }) {
   const router = useRouter();
+  const { toast } = useToast();
   const formRef = useRef<HTMLFormElement>(null);
   const [open, setOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -55,6 +59,9 @@ export function ConfirmAction({
           return;
         }
         setOpen(false);
+        if (successMessage) {
+          toast({ title: successMessage });
+        }
         if (redirectTo) {
           router.push(redirectTo);
         }

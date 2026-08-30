@@ -7,6 +7,7 @@ import { transferStock } from "@/lib/actions/admin";
 import { Modal } from "@/components/ui/modal";
 import { Button } from "@/components/ui/button";
 import { Input, Label, Select, FormError } from "@/components/ui/forms";
+import { useToast } from "@/components/ui/toast";
 
 export type TransferableItem = {
   id: string;
@@ -31,6 +32,7 @@ export function TransferModal({
   trigger: ReactNode;
 }) {
   const router = useRouter();
+  const { toast } = useToast();
   const [open, setOpen] = useState(false);
   const [source, setSource] = useState<string>(sourceShopId ?? CENTRAL);
   const [selectedItem, setSelectedItem] = useState<string>(itemId ?? "");
@@ -48,10 +50,14 @@ export function TransferModal({
     if (open && actionState?.ok && !prevOk.current) {
       prevOk.current = true;
       setOpen(false);
+      toast({
+        title: "Stock moved",
+        description: "Transfer recorded between locations.",
+      });
       router.refresh();
     }
     if (!actionState?.ok) prevOk.current = false;
-  }, [open, actionState, router]);
+  }, [open, actionState, router, toast]);
 
   const sourceItems = items.filter((i) => (i.shopId ?? CENTRAL) === source);
   const currentItem = sourceItems.find((i) => i.id === selectedItem);

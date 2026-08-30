@@ -88,6 +88,12 @@ export function CommandMenu({
     [groups],
   );
 
+  const entryIndices = useMemo(() => {
+    const map = new Map<GroupedEntry, number>();
+    flatEntries.forEach((entry, i) => map.set(entry, i));
+    return map;
+  }, [flatEntries]);
+
   const selectedIndex = Math.min(active, Math.max(0, flatEntries.length - 1));
 
   useEffect(() => {
@@ -168,7 +174,7 @@ export function CommandMenu({
                       {group.label}
                     </p>
                     {group.entries.map((entry) => {
-                      const index = flatEntries.indexOf(entry);
+                      const index = entryIndices.get(entry) ?? 0;
                       const selected = index === selectedIndex;
                       return (
                         <button

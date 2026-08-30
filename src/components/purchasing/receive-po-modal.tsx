@@ -8,6 +8,7 @@ import { formatMoney } from "@/lib/utils";
 import { Modal } from "@/components/ui/modal";
 import { Button } from "@/components/ui/button";
 import { FormError } from "@/components/ui/forms";
+import { useToast } from "@/components/ui/toast";
 
 export type ReceiveLine = {
   id: string;
@@ -29,6 +30,7 @@ export function ReceivePoModal({
   trigger: ReactNode;
 }) {
   const router = useRouter();
+  const { toast } = useToast();
   const [open, setOpen] = useState(false);
 
   const [state, formAction, pending] = useActionState(
@@ -42,10 +44,14 @@ export function ReceivePoModal({
     if (open && actionState?.ok && !prevOk.current) {
       prevOk.current = true;
       setOpen(false);
+      toast({
+        title: "Purchase order received",
+        description: "Stock added to inventory.",
+      });
       router.refresh();
     }
     if (!actionState?.ok) prevOk.current = false;
-  }, [open, actionState, router]);
+  }, [open, actionState, router, toast]);
 
   const totalCents = lines.reduce(
     (sum, line) => sum + line.unitCostCents * line.quantityOrdered,

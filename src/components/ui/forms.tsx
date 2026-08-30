@@ -30,6 +30,25 @@ export function FieldError({ children }: { children?: React.ReactNode }) {
   return <p className="mt-1 text-xs text-rose-600 dark:text-rose-400">{children}</p>;
 }
 
+export function FormSection({
+  title,
+  children,
+  className,
+}: {
+  title: string;
+  children: React.ReactNode;
+  className?: string;
+}) {
+  return (
+    <section className={cn("flex flex-col gap-4", className)}>
+      <h3 className="border-b border-zinc-100 pb-1 text-[11px] font-semibold uppercase tracking-wide text-zinc-400 dark:border-zinc-800 dark:text-zinc-500">
+        {title}
+      </h3>
+      {children}
+    </section>
+  );
+}
+
 export function FormError({ children }: { children?: React.ReactNode }) {
   if (!children) return null;
   return (

@@ -19,7 +19,7 @@ import { Download, Pencil, Plus, Trash2 } from "lucide-react";
 export default async function ShopInventoryPage({
   searchParams,
 }: {
-  searchParams: Promise<{ q?: string; category?: string; sort?: string; dir?: string; page?: string }>;
+  searchParams: Promise<{ q?: string; category?: string; type?: string; sort?: string; dir?: string; page?: string }>;
 }) {
   const shop = await requireAttendantShop();
   const params = await searchParams;
@@ -32,6 +32,7 @@ export default async function ShopInventoryPage({
       pageSize,
       q: params.q,
       category: params.category,
+      type: params.type,
       sort: params.sort,
       dir: params.dir,
     }),
@@ -60,6 +61,7 @@ export default async function ShopInventoryPage({
           <BarcodeScanner basePath="/shop/items" />
           <ItemModal
             categories={categories}
+            urlAction="add"
             trigger={
               <Button>
                 <Plus className="size-4" /> Add item
@@ -76,12 +78,16 @@ export default async function ShopInventoryPage({
           icon={<BoxIcon className="size-6" />}
           title="No items found"
           description={
-            params.q || (params.category && params.category !== "All")
+            params.q ||
+            (params.category && params.category !== "All") ||
+            (params.type && params.type !== "All")
               ? "Try adjusting your search or filters."
               : "Add your first tool or equipment item to get started."
           }
           action={
-            !params.q && !(params.category && params.category !== "All") ? (
+            !params.q &&
+            !(params.category && params.category !== "All") &&
+            !(params.type && params.type !== "All") ? (
               <ItemModal
                 categories={categories}
                 trigger={
@@ -161,6 +167,7 @@ export default async function ShopInventoryPage({
                           hiddenFields={{ id: item.id }}
                           confirmTitle="Delete this item?"
                           confirmBody={`"${item.name}" and its stock history will be removed. Past sales keep a snapshot.`}
+                          successMessage="Item deleted"
                           buttonProps={{ className: "text-red-600 hover:text-red-700" }}
                         >
                           <IconButton label="Delete" className="text-red-600 hover:text-red-700">

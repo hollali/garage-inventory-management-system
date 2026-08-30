@@ -1,9 +1,19 @@
 "use client";
 
+import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { isNavActive, type NavItem } from "@/components/layout/nav";
+
+/** All params in `search` must be present with equal values; extra current params are allowed. */
+function matchesSearch(searchParams: URLSearchParams, search?: string) {
+  if (!search) return true;
+  for (const [key, value] of new URLSearchParams(search)) {
+    if (searchParams.get(key) !== value) return false;
+  }
+  return true;
+}
 
 export function SidebarSubmenu({
   id,
@@ -30,12 +40,13 @@ export function SidebarSubmenu({
         >
           {item.children!.map((child) => {
             const search = child.search ?? "";
-            const active = isNavActive(child, pathname) &&
-              searchParams.toString() === search.replace(/^\?/, "");
+            const href = child.href + search;
+            const active =
+              isNavActive(child, pathname) && matchesSearch(searchParams, child.search);
             return (
-              <li key={child.href + search}>
-                <a
-                  href={child.href + search}
+              <li key={href}>
+                <Link
+                  href={href}
                   data-nav-item
                   aria-current={active ? "page" : undefined}
                   className={cn(
@@ -55,7 +66,7 @@ export function SidebarSubmenu({
                     )}
                   />
                   {child.label}
-                </a>
+                </Link>
               </li>
             );
           })}

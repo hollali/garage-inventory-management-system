@@ -1,16 +1,34 @@
 "use client";
 
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 import { useActionState } from "react";
 import { useRouter } from "next/navigation";
 import { createWorkOrder } from "@/lib/actions/work-orders";
 import { Modal } from "@/components/ui/modal";
 import { Button } from "@/components/ui/button";
 import { Input, Label, Textarea, FormError } from "@/components/ui/forms";
+import { useToast } from "@/components/ui/toast";
+import { useUrlModal } from "@/components/ui/use-url-modal";
 
-export function WorkOrderModal({ trigger }: { trigger: ReactNode }) {
+export function WorkOrderModal({
+  trigger,
+  urlAction,
+}: {
+  trigger: ReactNode;
+  urlAction?: string;
+}) {
   const router = useRouter();
-  const [open, setOpen] = useState(false);
+  const { toast } = useToast();
+  const { open: urlOpen, close: closeUrlModal } = useUrlModal(urlAction);
+  const [localOpen, setLocalOpen] = useState(false);
+  const open = localOpen || urlOpen;
+  const setOpen = useCallback(
+    (next: boolean) => {
+      setLocalOpen(next);
+      if (!next) closeUrlModal();
+    },
+    [closeUrlModal],
+  );
 
   const [state, formAction, pending] = useActionState(
     async (_prev: unknown, formData: FormData) => createWorkOrder(formData),
@@ -23,10 +41,11 @@ export function WorkOrderModal({ trigger }: { trigger: ReactNode }) {
     if (open && actionState?.ok && !prevOk.current) {
       prevOk.current = true;
       setOpen(false);
+      toast({ title: "Work order created" });
       router.refresh();
     }
     if (!actionState?.ok) prevOk.current = false;
-  }, [open, actionState, router]);
+  }, [open, actionState, router, setOpen, toast]);
 
   return (
     <>

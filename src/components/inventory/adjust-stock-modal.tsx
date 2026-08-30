@@ -7,6 +7,7 @@ import { adjustStockAdmin } from "@/lib/actions/admin";
 import { Modal } from "@/components/ui/modal";
 import { Button } from "@/components/ui/button";
 import { Input, Label, Select, FormError } from "@/components/ui/forms";
+import { useToast } from "@/components/ui/toast";
 
 export function AdjustStockModal({
   item,
@@ -18,6 +19,7 @@ export function AdjustStockModal({
   action?: (formData: FormData) => Promise<unknown>;
 }) {
   const router = useRouter();
+  const { toast } = useToast();
   const [open, setOpen] = useState(false);
 
   const [state, formAction, pending] = useActionState(
@@ -31,10 +33,14 @@ export function AdjustStockModal({
     if (open && actionState?.ok && !prevOk.current) {
       prevOk.current = true;
       setOpen(false);
+      toast({
+        title: "Stock adjusted",
+        description: `${item.name} quantity updated.`,
+      });
       router.refresh();
     }
     if (!actionState?.ok) prevOk.current = false;
-  }, [open, actionState, router]);
+  }, [open, actionState, router, item.name, toast]);
 
   return (
     <>

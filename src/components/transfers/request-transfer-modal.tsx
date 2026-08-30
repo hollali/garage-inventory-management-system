@@ -1,12 +1,14 @@
 "use client";
 
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 import { useActionState } from "react";
 import { useRouter } from "next/navigation";
 import { requestTransfer } from "@/lib/actions/transfers";
 import { Modal } from "@/components/ui/modal";
 import { Button } from "@/components/ui/button";
 import { Input, Label, Select, Textarea, FormError } from "@/components/ui/forms";
+import { useToast } from "@/components/ui/toast";
+import { useUrlModal } from "@/components/ui/use-url-modal";
 
 const CENTRAL = "central";
 
@@ -14,13 +16,25 @@ export function RequestTransferModal({
   items,
   otherShops,
   trigger,
+  urlAction,
 }: {
   items: { id: string; name: string; quantity: number }[];
   otherShops: { id: string; name: string }[];
   trigger: ReactNode;
+  urlAction?: string;
 }) {
   const router = useRouter();
-  const [open, setOpen] = useState(false);
+  const { toast } = useToast();
+  const { open: urlOpen, close: closeUrlModal } = useUrlModal(urlAction);
+  const [localOpen, setLocalOpen] = useState(false);
+  const open = localOpen || urlOpen;
+  const setOpen = useCallback(
+    (next: boolean) => {
+      setLocalOpen(next);
+      if (!next) closeUrlModal();
+    },
+    [closeUrlModal],
+  );
   const [selectedItem, setSelectedItem] = useState("");
   const [dest, setDest] = useState(CENTRAL);
   const [qty, setQty] = useState("");
@@ -36,10 +50,14 @@ export function RequestTransferModal({
     if (open && actionState?.ok && !prevOk.current) {
       prevOk.current = true;
       setOpen(false);
+      toast({
+        title: "Transfer requested",
+        description: "Admin approval moves the stock.",
+      });
       router.refresh();
     }
     if (!actionState?.ok) prevOk.current = false;
-  }, [open, actionState, router]);
+  }, [open, actionState, router, setOpen, toast]);
 
   const currentItem = items.find((i) => i.id === selectedItem);
 

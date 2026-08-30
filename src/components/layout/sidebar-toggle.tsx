@@ -22,14 +22,14 @@ export function SidebarToggle({ className }: { className?: string }) {
         <PanelLeftClose
           aria-hidden
           className={cn(
-            "absolute transition-all duration-150",
+            "absolute transition-all duration-150 motion-reduce:transition-none",
             collapsed ? "rotate-90 scale-50 opacity-0" : "rotate-0 scale-100 opacity-100",
           )}
         />
         <PanelLeftOpen
           aria-hidden
           className={cn(
-            "absolute transition-all duration-150",
+            "absolute transition-all duration-150 motion-reduce:transition-none",
             collapsed ? "rotate-0 scale-100 opacity-100" : "-rotate-90 scale-50 opacity-0",
           )}
         />

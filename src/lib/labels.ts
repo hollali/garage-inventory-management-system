@@ -1,7 +1,7 @@
 const labels: Record<string, string> = {
   "auth.login": "Signed in",
-  "auth.totp.enabled": "Enabled two-factor authentication",
-  "auth.totp.disabled": "Disabled two-factor authentication",
+  "auth.totp.enabled": "2FA enabled",
+  "auth.totp.disabled": "2FA disabled",
   "password.reset.requested": "Requested password reset",
   "password.reset.completed": "Reset password",
   "item.create": "Item created",

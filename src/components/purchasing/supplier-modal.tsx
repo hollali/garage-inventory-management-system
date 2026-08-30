@@ -1,16 +1,34 @@
 "use client";
 
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 import { useActionState } from "react";
 import { useRouter } from "next/navigation";
 import { createSupplier } from "@/lib/actions/purchasing";
 import { Modal } from "@/components/ui/modal";
 import { Button } from "@/components/ui/button";
 import { Input, Label, Textarea, FormError, FormSuccess } from "@/components/ui/forms";
+import { useToast } from "@/components/ui/toast";
+import { useUrlModal } from "@/components/ui/use-url-modal";
 
-export function SupplierModal({ trigger }: { trigger: ReactNode }) {
+export function SupplierModal({
+  trigger,
+  urlAction,
+}: {
+  trigger: ReactNode;
+  urlAction?: string;
+}) {
   const router = useRouter();
-  const [open, setOpen] = useState(false);
+  const { toast } = useToast();
+  const { open: urlOpen, close: closeUrlModal } = useUrlModal(urlAction);
+  const [localOpen, setLocalOpen] = useState(false);
+  const open = localOpen || urlOpen;
+  const setOpen = useCallback(
+    (next: boolean) => {
+      setLocalOpen(next);
+      if (!next) closeUrlModal();
+    },
+    [closeUrlModal],
+  );
 
   const [state, formAction, pending] = useActionState(
     async (_prev: unknown, formData: FormData) => createSupplier(formData),
@@ -23,10 +41,11 @@ export function SupplierModal({ trigger }: { trigger: ReactNode }) {
     if (open && actionState?.ok && !prevOk.current) {
       prevOk.current = true;
       setOpen(false);
+      toast({ title: "Supplier added" });
       router.refresh();
     }
     if (!actionState?.ok) prevOk.current = false;
-  }, [open, actionState, router]);
+  }, [open, actionState, router, setOpen, toast]);
 
   return (
     <>

@@ -7,6 +7,7 @@ import { importItemsCsv } from "@/lib/actions/import";
 import { Modal } from "@/components/ui/modal";
 import { Button } from "@/components/ui/button";
 import { Label, Select, Textarea, FormError, FormSuccess } from "@/components/ui/forms";
+import { useToast } from "@/components/ui/toast";
 
 export function ImportCsvModal({
   shops,
@@ -16,6 +17,7 @@ export function ImportCsvModal({
   trigger: ReactNode;
 }) {
   const router = useRouter();
+  const { toast } = useToast();
   const [open, setOpen] = useState(false);
 
   const [state, formAction, pending] = useActionState(
@@ -28,11 +30,16 @@ export function ImportCsvModal({
   useEffect(() => {
     if (open && actionState?.ok && !prevOk.current) {
       prevOk.current = true;
+      const created = actionState.created ?? 0;
       setOpen(false);
+      toast({
+        title: "Import complete",
+        description: `Imported ${created} item${created === 1 ? "" : "s"}.`,
+      });
       router.refresh();
     }
     if (!actionState?.ok) prevOk.current = false;
-  }, [open, actionState, router]);
+  }, [open, actionState, router, toast]);
 
   return (
     <>

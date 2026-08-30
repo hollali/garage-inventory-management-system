@@ -12,6 +12,7 @@ import { formatMoney } from "@/lib/utils";
 import { Modal } from "@/components/ui/modal";
 import { Button } from "@/components/ui/button";
 import { Input, Label, Select, Textarea, FormError } from "@/components/ui/forms";
+import { useToast } from "@/components/ui/toast";
 import { WorkOrderStatusBadge, type WorkOrderStatus } from "./work-order-status";
 import { CheckCircle2, Play, XCircle } from "lucide-react";
 
@@ -57,6 +58,7 @@ export function WorkOrderDetailModal({
   trigger: ReactNode;
 }) {
   const router = useRouter();
+  const { toast } = useToast();
   const [open, setOpen] = useState(false);
 
   const [addState, addAction, addPending] = useActionState(
@@ -77,14 +79,33 @@ export function WorkOrderDetailModal({
   );
   const statusResult = statusState as { ok?: boolean; error?: string } | undefined;
 
-  const prevOk = useRef(false);
+  const notified = useRef<Record<"add" | "update" | "status", boolean>>({
+    add: false,
+    update: false,
+    status: false,
+  });
   useEffect(() => {
-    if (open && (addResult?.ok || updateResult?.ok || statusResult?.ok) && !prevOk.current) {
-      prevOk.current = true;
-      router.refresh();
+    if (!open) {
+      notified.current = { add: false, update: false, status: false };
+      return;
     }
-    if (!addResult?.ok && !updateResult?.ok && !statusResult?.ok) prevOk.current = false;
-  }, [open, addResult, updateResult, statusResult, router]);
+    const outcomes = [
+      { key: "add" as const, ok: !!addResult?.ok, title: "Part added" },
+      { key: "update" as const, ok: !!updateResult?.ok, title: "Work order updated" },
+      { key: "status" as const, ok: !!statusResult?.ok, title: "Work order status updated" },
+    ];
+    for (const outcome of outcomes) {
+      if (!outcome.ok) {
+        notified.current[outcome.key] = false;
+        continue;
+      }
+      if (!notified.current[outcome.key]) {
+        notified.current[outcome.key] = true;
+        toast({ title: outcome.title });
+        router.refresh();
+      }
+    }
+  }, [open, addResult, updateResult, statusResult, router, toast]);
 
   const locked = workOrder.status === "completed" || workOrder.status === "cancelled";
   const totalCents = workOrder.labourCents + workOrder.partsTotalCents;

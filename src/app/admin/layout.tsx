@@ -1,3 +1,4 @@
+import { cookies } from "next/headers";
 import { requireAdmin } from "@/lib/dal";
 import { AppShell, type NavSection } from "@/components/app-shell";
 
@@ -55,7 +56,8 @@ const navSections: NavSection[] = [
 ];
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
-  const user = await requireAdmin();
+  const [user, cookieStore] = await Promise.all([requireAdmin(), cookies()]);
+  const initiallyCollapsed = cookieStore.get("sidebar-collapsed")?.value === "1";
 
   return (
     <AppShell
@@ -64,6 +66,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
       userName={user.name ?? ""}
       roleLabel="Admin"
       sections={navSections}
+      initiallyCollapsed={initiallyCollapsed}
     >
       {children}
     </AppShell>

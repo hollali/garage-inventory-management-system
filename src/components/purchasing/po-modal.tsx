@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { useActionState } from "react";
 import { useRouter } from "next/navigation";
 import { createPurchaseOrder } from "@/lib/actions/purchasing";
@@ -8,6 +8,8 @@ import { formatMoney } from "@/lib/utils";
 import { Modal } from "@/components/ui/modal";
 import { Button } from "@/components/ui/button";
 import { Input, Label, Select, Textarea, FormError } from "@/components/ui/forms";
+import { useToast } from "@/components/ui/toast";
+import { useUrlModal } from "@/components/ui/use-url-modal";
 
 export type PoShopOption = { id: string; name: string };
 export type PoSupplierOption = { id: string; name: string };
@@ -29,14 +31,26 @@ export function PoModal({
   suppliers,
   items,
   trigger,
+  urlAction,
 }: {
   shops: PoShopOption[];
   suppliers: PoSupplierOption[];
   items: PoItemOption[];
   trigger: ReactNode;
+  urlAction?: string;
 }) {
   const router = useRouter();
-  const [open, setOpen] = useState(false);
+  const { toast } = useToast();
+  const { open: urlOpen, close: closeUrlModal } = useUrlModal(urlAction);
+  const [localOpen, setLocalOpen] = useState(false);
+  const open = localOpen || urlOpen;
+  const setOpen = useCallback(
+    (next: boolean) => {
+      setLocalOpen(next);
+      if (!next) closeUrlModal();
+    },
+    [closeUrlModal],
+  );
   const [lines, setLines] = useState<Line[]>([]);
   const [selectedShop, setSelectedShop] = useState("");
   const [selectedItem, setSelectedItem] = useState("");
@@ -52,10 +66,11 @@ export function PoModal({
     if (open && actionState?.ok && !prevOk.current) {
       prevOk.current = true;
       setOpen(false);
+      toast({ title: "Purchase order created" });
       router.refresh();
     }
     if (!actionState?.ok) prevOk.current = false;
-  }, [open, actionState, router]);
+  }, [open, actionState, router, setOpen, toast]);
 
   const itemById = useMemo(() => {
     const map = new Map<string, PoItemOption>();

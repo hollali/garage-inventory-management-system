@@ -7,6 +7,7 @@ import { createAttendant } from "@/lib/actions/admin";
 import { Modal } from "@/components/ui/modal";
 import { Button } from "@/components/ui/button";
 import { Input, Label, Select, FormError } from "@/components/ui/forms";
+import { useToast } from "@/components/ui/toast";
 
 export function AttendantModal({
   shops,
@@ -16,6 +17,7 @@ export function AttendantModal({
   trigger: ReactNode;
 }) {
   const router = useRouter();
+  const { toast } = useToast();
   const [open, setOpen] = useState(false);
 
   const [state, formAction, pending] = useActionState(
@@ -29,10 +31,11 @@ export function AttendantModal({
     if (open && actionState?.ok && !prevOk.current) {
       prevOk.current = true;
       setOpen(false);
+      toast({ title: "Attendant created" });
       router.refresh();
     }
     if (!actionState?.ok) prevOk.current = false;
-  }, [open, actionState, router]);
+  }, [open, actionState, router, toast]);
 
   return (
     <>

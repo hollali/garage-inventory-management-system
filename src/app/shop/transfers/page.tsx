@@ -46,6 +46,7 @@ export default async function ShopTransfersPage({
         <RequestTransferModal
           items={items}
           otherShops={otherShops}
+          urlAction="request"
           trigger={
             <Button disabled={items.length === 0}>
               <Plus className="size-4" /> Request stock

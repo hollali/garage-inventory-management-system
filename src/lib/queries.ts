@@ -373,6 +373,7 @@ export async function getShopInventoryPage(
     pageSize?: number;
     q?: string;
     category?: string;
+    type?: string;
     sort?: string;
     dir?: string;
   } = {},
@@ -391,6 +392,12 @@ export async function getShopInventoryPage(
   }
   if (opts.category && opts.category !== "All") {
     conditions.push(eq(inventoryItems.category, opts.category));
+  }
+  if (opts.type === "low") {
+    conditions.push(sql`${inventoryItems.quantity} <= ${inventoryItems.lowStockThreshold}`);
+  }
+  if (opts.type === "out") {
+    conditions.push(eq(inventoryItems.quantity, 0));
   }
   const where = and(...conditions);
   const [totalRow, rows] = await Promise.all([

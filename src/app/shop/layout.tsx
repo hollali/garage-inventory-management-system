@@ -1,3 +1,4 @@
+import { cookies } from "next/headers";
 import { requireAttendant, getShopForAttendant } from "@/lib/dal";
 import { AppShell, type NavSection } from "@/components/app-shell";
 
@@ -25,8 +26,9 @@ const navSections: NavSection[] = [
 ];
 
 export default async function ShopLayout({ children }: { children: React.ReactNode }) {
-  const user = await requireAttendant();
+  const [user, cookieStore] = await Promise.all([requireAttendant(), cookies()]);
   const shop = await getShopForAttendant(user.id);
+  const initiallyCollapsed = cookieStore.get("sidebar-collapsed")?.value === "1";
 
   return (
     <AppShell
@@ -35,6 +37,7 @@ export default async function ShopLayout({ children }: { children: React.ReactNo
       userName={user.name ?? ""}
       roleLabel="Shop Attendant"
       sections={navSections}
+      initiallyCollapsed={initiallyCollapsed}
     >
       {children}
     </AppShell>

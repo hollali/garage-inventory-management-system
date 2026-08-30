@@ -54,12 +54,13 @@ export function SidebarItem({
     collapsed && "justify-center px-0",
     active
       ? "text-zinc-900 dark:text-zinc-100"
-      : "text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100",
+      : "text-zinc-500 hover:bg-zinc-50 hover:text-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-800/60 dark:hover:text-zinc-100",
   );
 
   const iconClass = cn(
-    "size-[18px] shrink-0 transition-transform duration-200",
+    "size-[18px] shrink-0 transition-transform duration-200 motion-reduce:transition-none",
     iconHoverClasses[item.icon] ?? "group-hover:scale-105",
+    "motion-reduce:!transform-none",
   );
 
   const hoverProps = {
@@ -87,6 +88,14 @@ export function SidebarItem({
     </span>
   );
 
+  // Keeps the count visible when the sidebar is collapsed.
+  const collapsedBadgeDot = collapsed && item.badge != null && (
+    <span
+      aria-hidden
+      className="absolute right-2 top-2 size-1.5 rounded-full bg-zinc-400 dark:bg-zinc-500"
+    />
+  );
+
   const tooltipPortal = collapsed && tooltip.anchor && (
     <SidebarTooltip label={item.label} anchor={tooltip.anchor} />
   );
@@ -95,6 +104,14 @@ export function SidebarItem({
   if (hasChildren && collapsed) {
     return (
       <li ref={itemRef} className="relative" {...hoverProps}>
+        {active && (
+          <motion.span
+            layoutId="sidebar-active-nav"
+            aria-hidden
+            className="absolute inset-0 rounded-md bg-zinc-100 dark:bg-zinc-800"
+            transition={{ type: "spring", bounce: 0.15, duration: 0.4 }}
+          />
+        )}
         <button
           type="button"
           data-nav-item
@@ -106,6 +123,7 @@ export function SidebarItem({
           className={rowClass}
         >
           {icon}
+          {collapsedBadgeDot}
         </button>
         {tooltipPortal}
       </li>
@@ -128,6 +146,9 @@ export function SidebarItem({
             href={item.href}
             data-nav-item
             aria-current={active ? "page" : undefined}
+            onClick={() => {
+              if (!open) openSubmenu(item.href);
+            }}
             className={cn(rowClass, "flex-1")}
           >
             {icon}
@@ -142,13 +163,13 @@ export function SidebarItem({
             aria-label={`${open ? "Collapse" : "Expand"} ${item.label} submenu`}
             className="mr-1.5 rounded p-1 text-zinc-400 transition-colors hover:bg-zinc-100 hover:text-zinc-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand dark:text-zinc-500 dark:hover:bg-zinc-800 dark:hover:text-zinc-100"
           >
-            <ChevronRight
-              aria-hidden
-              className={cn(
-                "size-4 transition-transform duration-200",
-                open && "rotate-90",
-              )}
-            />
+              <ChevronRight
+                aria-hidden
+                className={cn(
+                  "size-4 transition-transform duration-200 motion-reduce:transition-none",
+                  open && "rotate-90",
+                )}
+              />
           </button>
         </div>
         <SidebarSubmenu id={submenuId} item={item} open={open} />
@@ -170,11 +191,19 @@ export function SidebarItem({
         href={item.href}
         data-nav-item
         aria-current={active ? "page" : undefined}
+        aria-label={
+          collapsed
+            ? item.badge != null
+              ? `${item.label} (${item.badge})`
+              : item.label
+            : undefined
+        }
         className={rowClass}
       >
         {icon}
         {label}
         {badge}
+        {collapsedBadgeDot}
       </Link>
       {tooltipPortal}
     </li>
