@@ -6,6 +6,7 @@ import { signIn } from "next-auth/react";
 import { needsTotp } from "@/lib/actions/auth";
 import { Button } from "@/components/ui/button";
 import { Input, Label, FormError } from "@/components/ui/forms";
+import { PasswordInput } from "@/components/ui/password-input";
 import Link from "next/link";
 
 export function LoginForm() {
@@ -80,7 +81,12 @@ export function LoginForm() {
             Forgot password?
           </Link>
         </div>
-        <Input id="password" name="password" type="password" autoComplete="current-password" required />
+        <PasswordInput
+          id="password"
+          name="password"
+          autoComplete="current-password"
+          required
+        />
       </div>
       {otpRequired && (
         <div>

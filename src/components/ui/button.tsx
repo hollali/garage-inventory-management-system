@@ -59,19 +59,28 @@ Button.displayName = "Button";
 export const IconButton = React.forwardRef<
   HTMLButtonElement,
   ButtonProps & { label: string }
->(({ label, children, className, ...props }, ref) => (
-  <Button
-    ref={ref}
-    variant="ghost"
-    size="sm"
-    aria-label={label}
-    title={label}
-    className={cn("size-8 shrink-0 p-0", className)}
-    {...props}
-  >
-    {children}
-  </Button>
-));
+>(({ label, children, className, variant = "ghost", ...props }, ref) => {
+  const iconVariant =
+    variant === "danger"
+      ? "text-red-600 hover:bg-red-50 hover:text-red-700 dark:text-red-400 dark:hover:bg-red-500/10 dark:hover:text-red-300"
+      : variant === "ghost"
+        ? "text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-zinc-100"
+        : null;
+
+  return (
+    <Button
+      ref={ref}
+      variant="ghost"
+      size="sm"
+      aria-label={label}
+      title={label}
+      className={cn("size-8 shrink-0 p-0", iconVariant, className)}
+      {...props}
+    >
+      {children}
+    </Button>
+  );
+});
 IconButton.displayName = "IconButton";
 
 type ButtonLinkProps = Omit<React.ComponentProps<typeof Link>, "className"> & {

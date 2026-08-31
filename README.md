@@ -9,7 +9,7 @@ A multi-shop inventory and sales management app for garage chains. Admins manage
 - **Inventory** — Attendants create items, adjust stock (with reason + movement history), and see low-stock warnings.
 - **Sales** — Multi-line sale recording with automatic stock decrement and per-sale detail rows.
 - **Activity log** — Admin-facing audit trail of all actions across the system.
-- **Password reset** — Forgot-password flow via email (Resend) + signed reset tokens.
+- **Password reset** — Forgot-password flow via email (SMTP) + signed reset tokens.
 
 ## Tech stack
 
@@ -17,7 +17,7 @@ A multi-shop inventory and sales management app for garage chains. Admins manage
 - **NextAuth v5** (beta) — credentials + JWT sessions, augmented roles
 - **Drizzle ORM** + **PostgreSQL** (`@neondatabase/serverless` / `pg`)
 - **Zod** for server-side validation, **Tailwind CSS v4** for styling
-- **Resend** for transactional email
+- **SMTP (Nodemailer)** for transactional email
 
 ## Getting started
 
@@ -43,12 +43,16 @@ cp .env.example .env
 | `APP_URL`            | e.g. `http://localhost:3000`                            |
 | `APP_NAME`           | Brand name shown in the UI / emails                     |
 | `NEXT_PUBLIC_APP_CURRENCY` | ISO code used for money formatting (default `USD`) — must keep the `NEXT_PUBLIC_` prefix so client and server render the same currency |
-| `RESEND_API_KEY`     | Resend API key for password-reset emails (optional in dev) |
-| `RESEND_FROM`        | Sender address for reset emails                         |
+| `SMTP_HOST`          | SMTP server host for outgoing email (leave unset to log to console) |
+| `SMTP_PORT`          | SMTP port (default `587`, or `465` with `SMTP_SECURE=true`) |
+| `SMTP_USER`          | SMTP username (optional if no auth required)             |
+| `SMTP_PASS`          | SMTP password / app password                             |
+| `SMTP_SECURE`        | `true` for SSL/TLS, `false` (default) for STARTTLS       |
+| `SMTP_FROM`          | Sender address for emails                                  |
 | `SEED_ADMIN_PASSWORD`    | Override the seeded admin password (optional)       |
 | `SEED_ATTENDANT_PASSWORD`| Override the seeded attendant password (optional)   |
 
-> **Tip:** for local development, run `openssl rand -base64 32` to generate `AUTH_SECRET`. Password-reset emails are sent through Resend, so set a `RESEND_API_KEY` if you want to test that flow.
+> **Tip:** for local development, run `openssl rand -base64 32` to generate `AUTH_SECRET`. Emails (password reset, low-stock alerts) are sent via SMTP; if `SMTP_HOST` is unset they are logged to the server console instead.
 
 ### 3. Set up the database
 

@@ -64,7 +64,7 @@ export function SaleRowActions({
         <IconButton
           label="Refund sale"
           onClick={() => setConfirmOpen(true)}
-          className="text-red-600 hover:text-red-700"
+          variant="danger"
         >
           <RotateCcw className="size-4" />
         </IconButton>

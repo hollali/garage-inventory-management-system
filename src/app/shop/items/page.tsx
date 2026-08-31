@@ -168,9 +168,8 @@ export default async function ShopInventoryPage({
                           confirmTitle="Delete this item?"
                           confirmBody={`"${item.name}" and its stock history will be removed. Past sales keep a snapshot.`}
                           successMessage="Item deleted"
-                          buttonProps={{ className: "text-red-600 hover:text-red-700" }}
                         >
-                          <IconButton label="Delete" className="text-red-600 hover:text-red-700">
+                          <IconButton label="Delete" variant="danger">
                             <Trash2 className="size-4" />
                           </IconButton>
                         </ConfirmAction>

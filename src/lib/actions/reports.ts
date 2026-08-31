@@ -7,9 +7,7 @@ import { users } from "@/db/schema";
 import { requireAdmin } from "@/lib/dal";
 import { logActivity } from "@/lib/activity";
 import { getReorderSuggestions } from "@/lib/queries/reports";
-
-const appName = process.env.APP_NAME ?? "Garage Inventory";
-const appUrl = process.env.APP_URL ?? "http://localhost:3000";
+import { sendEmail, isEmailConfigured, logDevEmail, appUrl } from "@/lib/mail";
 
 function escapeHtml(value: string): string {
   return value
@@ -43,43 +41,41 @@ export async function sendLowStockAlert(): Promise<{ ok?: boolean; error?: strin
     .join("");
 
   let sent = 0;
-  const apiKey = process.env.RESEND_API_KEY;
 
-  if (apiKey && recipients.length > 0) {
-    const { Resend } = await import("resend");
-    const resend = new Resend(apiKey);
-    const from = process.env.RESEND_FROM ?? "Garage Inventory <onboarding@resend.dev>";
-    const html = `
-      <p>${items.length} item${items.length === 1 ? "" : "s"} are below their low-stock threshold and need reordering:</p>
-      <ul>${rowsHtml}</ul>
-      ${items.length > preview.length ? `<p>…and ${items.length - preview.length} more.</p>` : ""}
-      <p><a href="${appUrl}/admin/reports">View reorder suggestions</a></p>
-    `;
+  if (recipients.length === 0) {
+    return { error: "No admin email addresses to send to." };
+  }
 
+  const html = `
+    <p>${items.length} item${items.length === 1 ? "" : "s"} are below their low-stock threshold and need reordering:</p>
+    <ul>${rowsHtml}</ul>
+    ${items.length > preview.length ? `<p>…and ${items.length - preview.length} more.</p>` : ""}
+    <p><a href="${appUrl}/admin/reports">View reorder suggestions</a></p>
+  `;
+
+  const devSummary =
+    `Low stock alert for ${recipients.length} admin(s): ${items.length} item(s) below threshold\n` +
+    preview
+      .map(
+        (it) =>
+          `  - ${it.itemName} (${it.shopName ?? "Central"}): ${it.quantity} on hand, threshold ${it.lowStockThreshold}, suggested ${it.suggestedQuantity}`,
+      )
+      .join("\n");
+
+  if (isEmailConfigured()) {
     for (const recipient of recipients) {
-      const res = await resend.emails.send({
-        from,
-        to: recipient.email,
-        subject: `Low stock alert — ${items.length} item${items.length === 1 ? "" : "s"} need reordering`,
-        html,
-      });
-      if (res.error) {
-        console.error("Failed to send low stock alert", res.error);
-      } else {
-        sent += 1;
-      }
+      const res = await sendEmail(
+        {
+          to: recipient.email,
+          subject: `Low stock alert — ${items.length} item${items.length === 1 ? "" : "s"} need reordering`,
+          html,
+        },
+        devSummary,
+      );
+      if (res.sent) sent += 1;
     }
   } else {
-    console.info(
-      `\n[${appName}] Low stock alert for ${recipients.length} admin(s): ${items.length} item(s) below threshold\n` +
-        preview
-          .map(
-            (it) =>
-              `  - ${it.itemName} (${it.shopName ?? "Central"}): ${it.quantity} on hand, threshold ${it.lowStockThreshold}, suggested ${it.suggestedQuantity}`,
-          )
-          .join("\n") +
-        `\n(Set RESEND_API_KEY to send real emails.)\n`,
-    );
+    logDevEmail(devSummary);
     sent = recipients.length;
   }
 

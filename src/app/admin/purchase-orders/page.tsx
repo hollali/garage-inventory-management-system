@@ -160,12 +160,8 @@ export default async function AdminPurchaseOrdersPage({
                               confirmTitle="Cancel this purchase order?"
                               confirmBody="The order will be marked as cancelled and can no longer be received."
                               successMessage="Purchase order cancelled"
-                              buttonProps={{ className: "text-red-600 hover:text-red-700" }}
                             >
-                              <IconButton
-                                label="Cancel order"
-                                className="text-red-600 hover:text-red-700"
-                              >
+                              <IconButton label="Cancel order" variant="danger">
                                 <XCircle className="size-4" />
                               </IconButton>
                             </ConfirmAction>

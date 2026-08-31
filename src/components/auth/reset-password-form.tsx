@@ -4,7 +4,8 @@ import { useActionState } from "react";
 import Link from "next/link";
 import { resetPassword } from "@/lib/actions/auth";
 import { Button } from "@/components/ui/button";
-import { Input, Label, FieldError, FormError, FormSuccess } from "@/components/ui/forms";
+import { Label, FieldError, FormError, FormSuccess } from "@/components/ui/forms";
+import { PasswordInput } from "@/components/ui/password-input";
 
 export function ResetPasswordForm({ token }: { token: string }) {
   const [state, action, pending] = useActionState(resetPassword, undefined);
@@ -29,10 +30,9 @@ export function ResetPasswordForm({ token }: { token: string }) {
       {state?.message && <FormError>{state.message}</FormError>}
       <div>
         <Label htmlFor="password">New password</Label>
-        <Input
+        <PasswordInput
           id="password"
           name="password"
-          type="password"
           autoComplete="new-password"
           required
           minLength={8}

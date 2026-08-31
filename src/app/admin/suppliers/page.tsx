@@ -88,9 +88,8 @@ export default async function AdminSuppliersPage() {
                         confirmTitle="Delete this supplier?"
                         confirmBody={`"${supplier.name}" will be removed. Existing purchase orders keep their records.`}
                         successMessage="Supplier deleted"
-                        buttonProps={{ className: "text-red-600 hover:text-red-700" }}
                       >
-                        <IconButton label="Delete" className="text-red-600 hover:text-red-700">
+                        <IconButton label="Delete" variant="danger">
                           <Trash2 className="size-4" />
                         </IconButton>
                       </ConfirmAction>

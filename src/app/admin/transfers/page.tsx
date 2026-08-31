@@ -65,7 +65,7 @@ export default async function AdminTransfersPage({
               aria-current={active ? "page" : undefined}
               className={
                 active
-                  ? "rounded-lg bg-brand px-3 py-1.5 text-sm font-medium text-white shadow-sm"
+                  ? "rounded-lg bg-brand px-3 py-1.5 text-sm font-medium text-brand-foreground shadow-sm"
                   : "rounded-lg border border-zinc-300 dark:border-zinc-700 bg-surface px-3 py-1.5 text-sm font-medium text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-800/40"
               }
             >
@@ -148,7 +148,7 @@ export default async function AdminTransfersPage({
                             hiddenFields={{ requestId: request.id }}
                             confirmTitle="Reject transfer?"
                             successMessage="Transfer rejected"
-                            buttonProps={{ variant: "outline" }}
+                            buttonProps={{ variant: "danger" }}
                           >
                             <X className="size-4" /> Reject
                           </ConfirmAction>

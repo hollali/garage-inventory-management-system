@@ -1,7 +1,7 @@
 "use server";
 
 import { createHash, randomBytes } from "crypto";
-import { eq, and, isNull } from "drizzle-orm";
+import { eq, and, isNull, isNotNull, lt, or } from "drizzle-orm";
 import { hash, compare } from "bcryptjs";
 import { z } from "zod";
 import { db } from "@/db";
@@ -44,6 +44,18 @@ export async function requestPasswordReset(
     .limit(1);
 
   if (user) {
+    await db
+      .delete(passwordResetTokens)
+      .where(
+        and(
+          eq(passwordResetTokens.userId, user.id),
+          or(
+            isNotNull(passwordResetTokens.usedAt),
+            lt(passwordResetTokens.expiresAt, new Date()),
+          ),
+        ),
+      );
+
     const token = randomBytes(32).toString("hex");
     const tokenHash = createHash("sha256").update(token).digest("hex");
 
@@ -81,14 +93,6 @@ export async function resetPassword(
   prevState: ResetState,
   formData: FormData,
 ): Promise<ResetState> {
-  const blocked = rateLimit(`pwd:reset-token:${await clientIp()}`, {
-    limit: 5,
-    windowMs: 15 * 60 * 1000,
-  });
-  if (!blocked.allowed) {
-    return { message: "Too many attempts. Try again later." };
-  }
-
   const parsed = resetSchema.safeParse({
     token: formData.get("token"),
     password: formData.get("password"),
@@ -103,6 +107,14 @@ export async function resetPassword(
   const tokenHash = createHash("sha256")
     .update(parsed.data.token)
     .digest("hex");
+
+  const blocked = rateLimit(`pwd:reset-token:${tokenHash}:${await clientIp()}`, {
+    limit: 5,
+    windowMs: 15 * 60 * 1000,
+  });
+  if (!blocked.allowed) {
+    return { message: "Too many attempts. Try again later." };
+  }
 
   const [tokenRecord] = await db
     .select()

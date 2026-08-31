@@ -211,7 +211,7 @@ export default async function AdminInventoryPage({
                           confirmBody={`"${item.name}" and its stock history will be removed. Past sales keep a snapshot.`}
                           successMessage="Item deleted"
                         >
-                          <IconButton label="Delete">
+                          <IconButton label="Delete" variant="danger">
                             <Trash2 className="size-4" />
                           </IconButton>
                         </ConfirmAction>

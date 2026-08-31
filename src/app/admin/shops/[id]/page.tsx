@@ -53,7 +53,7 @@ export default async function ShopDetailPage({
             confirmBody={`"${shop.name}" and all of its inventory, sales, and stock history will be permanently deleted. This cannot be undone.`}
             successMessage="Shop deleted"
             redirectTo="/admin/shops"
-            buttonProps={{ variant: "outline", className: "text-red-600 hover:text-red-700" }}
+            buttonProps={{ variant: "danger" }}
           >
             Delete shop
           </ConfirmAction>
