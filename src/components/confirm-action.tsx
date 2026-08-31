@@ -12,7 +12,7 @@ import {
 } from "react";
 import { useRouter } from "next/navigation";
 import { Modal } from "@/components/ui/modal";
-import { Button, IconButton, type ButtonProps } from "@/components/ui/button";
+import { Button, type ButtonProps } from "@/components/ui/button";
 import { useToast } from "@/components/ui/toast";
 
 export function ConfirmAction({
@@ -75,18 +75,14 @@ export function ConfirmAction({
   const singleChild = isValidElement(children)
     ? (children as ReactElement<ButtonProps>)
     : null;
-  const isButtonLike =
-    singleChild !== null &&
-    (singleChild.type === Button || singleChild.type === IconButton);
 
-  const trigger =
-    isButtonLike && singleChild ? (
-      cloneElement(singleChild, { ...buttonProps, onClick: () => setOpen(true) })
-    ) : (
-      <Button {...buttonProps} onClick={() => setOpen(true)}>
-        {children}
-      </Button>
-    );
+  const trigger = singleChild ? (
+    cloneElement(singleChild, { ...buttonProps, onClick: () => setOpen(true) })
+  ) : (
+    <Button {...buttonProps} onClick={() => setOpen(true)}>
+      {children}
+    </Button>
+  );
 
   return (
     <>

@@ -1,5 +1,6 @@
 import { cookies } from "next/headers";
 import { requireAdmin } from "@/lib/dal";
+import { getSiteSettings } from "@/lib/queries/settings";
 import { AppShell, type NavSection } from "@/components/app-shell";
 
 const navSections: NavSection[] = [
@@ -56,12 +57,17 @@ const navSections: NavSection[] = [
 ];
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
-  const [user, cookieStore] = await Promise.all([requireAdmin(), cookies()]);
+  const [user, cookieStore, settings] = await Promise.all([
+    requireAdmin(),
+    cookies(),
+    getSiteSettings(),
+  ]);
   const initiallyCollapsed = cookieStore.get("sidebar-collapsed")?.value === "1";
 
   return (
     <AppShell
-      brand="Garage Inventory"
+      brand={settings.brandName}
+      logoUrl={settings.logoUrl}
       workspaceLabel="Administrator"
       userName={user.name ?? ""}
       roleLabel="Admin"

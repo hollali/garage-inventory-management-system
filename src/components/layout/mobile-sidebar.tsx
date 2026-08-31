@@ -18,12 +18,14 @@ export function MobileSidebar({
   userName,
   roleLabel,
   sections,
+  logoUrl,
 }: {
   brand: string;
   workspaceLabel?: string;
   userName: string;
   roleLabel: string;
   sections: NavSection[];
+  logoUrl?: string | null;
 }) {
   const { mobileOpen, setMobileOpen } = useSidebar();
   const panelRef = useRef<HTMLElement>(null);
@@ -101,6 +103,7 @@ export function MobileSidebar({
               <SidebarHeader
                 brand={brand}
                 collapsed={false}
+                logoUrl={logoUrl}
                 action={
                   <button
                     type="button"

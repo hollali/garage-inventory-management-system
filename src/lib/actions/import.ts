@@ -8,6 +8,7 @@ import { inventoryItems, shops, stockMovements } from "@/db/schema";
 import { requireAdmin } from "@/lib/dal";
 import { logActivity } from "@/lib/activity";
 import { resolveSku } from "@/lib/sku";
+import { parseCsv } from "@/lib/csv";
 
 const importSchema = z.object({
   csv: z.string().min(1, "Paste some CSV data."),
@@ -37,7 +38,7 @@ export async function importItemsCsv(formData: FormData): Promise<ImportState> {
     if (!shop) return { error: "Selected shop not found." };
   }
 
-  const lines = csvLines(parsed.data.csv);
+  const lines = parseCsv(parsed.data.csv);
   if (lines.length < 2) return { error: "CSV must include a header row and at least one data row." };
 
   const headers = lines[0].map((h) => h.toLowerCase());
@@ -53,6 +54,9 @@ export async function importItemsCsv(formData: FormData): Promise<ImportState> {
   const iUnitPrice = col("unitprice");
   const iCost = col("cost");
   const iThreshold = col("lowstockthreshold");
+  const iDescription = col("description");
+  const iUnitName = col("unitname");
+  const iItemsPerUnit = col("itemsperunit");
 
   const toNum = (value: string | undefined, fallback: number): number => {
     if (!value || value.trim() === "") return fallback;
@@ -74,6 +78,9 @@ export async function importItemsCsv(formData: FormData): Promise<ImportState> {
         const cost = toNum(fields[iCost], 0);
         const lowStockThreshold = Math.floor(toNum(fields[iThreshold], 5));
         const barcode = fields[iBarcode]?.trim() || null;
+        const description = fields[iDescription]?.trim() || null;
+        const unitName = fields[iUnitName]?.trim() || "piece";
+        const itemsPerUnit = Math.max(1, Math.floor(toNum(fields[iItemsPerUnit], 1)));
         const sku = await resolveSku(fields[iSku]?.trim() || undefined, category);
 
         const [item] = await tx
@@ -84,6 +91,9 @@ export async function importItemsCsv(formData: FormData): Promise<ImportState> {
             category,
             sku,
             barcode,
+            description,
+            unitName,
+            itemsPerUnit,
             unitPriceCents: Math.round(unitPrice * 100),
             costCents: Math.round(cost * 100),
             lowStockThreshold,
@@ -125,12 +135,4 @@ export async function importItemsCsv(formData: FormData): Promise<ImportState> {
   } catch (error) {
     return { error: error instanceof Error ? error.message : "Import failed." };
   }
-}
-
-function csvLines(csv: string): string[][] {
-  return csv
-    .split(/\r?\n/)
-    .map((line) => line.trim())
-    .filter((line) => line.length > 0)
-    .map((line) => line.split(",").map((field) => field.trim()));
 }

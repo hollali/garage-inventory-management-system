@@ -31,6 +31,7 @@ export { navIcons };
 
 type ShellProps = {
   brand: string;
+  logoUrl?: string | null;
   workspaceLabel?: string;
   userName: string;
   roleLabel: string;
@@ -103,6 +104,7 @@ function buildDefaultActions(items: NavItem[]): CommandAction[] {
 
 export function AppShell({
   brand,
+  logoUrl,
   workspaceLabel,
   userName,
   roleLabel,
@@ -118,6 +120,7 @@ export function AppShell({
     <SidebarProvider sections={sections} initiallyCollapsed={initiallyCollapsed}>
       <ShellInner
         brand={brand}
+        logoUrl={logoUrl}
         workspaceLabel={workspaceLabel}
         userName={userName}
         roleLabel={roleLabel}
@@ -133,6 +136,7 @@ export function AppShell({
 
 function ShellInner({
   brand,
+  logoUrl,
   workspaceLabel,
   userName,
   roleLabel,
@@ -148,6 +152,7 @@ function ShellInner({
       <div className="flex min-h-dvh bg-background">
         <Sidebar
           brand={brand}
+          logoUrl={logoUrl}
           workspaceLabel={workspaceLabel}
           userName={userName}
           roleLabel={roleLabel}
@@ -171,6 +176,7 @@ function ShellInner({
 
         <MobileSidebar
           brand={brand}
+          logoUrl={logoUrl}
           workspaceLabel={workspaceLabel}
           userName={userName}
           roleLabel={roleLabel}

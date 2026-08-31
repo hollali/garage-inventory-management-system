@@ -81,13 +81,13 @@ export default async function AdminInventoryPage({
         <div className="flex flex-wrap items-center justify-end gap-2">
           <BarcodeScanner basePath="/admin/inventory" />
           <ButtonLink href="/api/export/items" variant="outline">
-            <Download className="size-4" /> Export CSV
+            <Upload className="size-4" /> Export CSV
           </ButtonLink>
           <ImportCsvModal
             shops={shops}
             trigger={
               <Button variant="outline">
-                <Upload className="size-4" /> Import CSV
+                <Download className="size-4" /> Import CSV
               </Button>
             }
           />
@@ -210,9 +210,8 @@ export default async function AdminInventoryPage({
                           confirmTitle="Delete this item?"
                           confirmBody={`"${item.name}" and its stock history will be removed. Past sales keep a snapshot.`}
                           successMessage="Item deleted"
-                          buttonProps={{ className: "text-red-600 hover:text-red-700" }}
                         >
-                          <IconButton label="Delete" className="text-red-600 hover:text-red-700">
+                          <IconButton label="Delete">
                             <Trash2 className="size-4" />
                           </IconButton>
                         </ConfirmAction>

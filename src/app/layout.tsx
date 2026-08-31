@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import { ServiceWorkerRegister } from "@/components/pwa/service-worker-register";
 import { ThemeProvider } from "@/components/theme-provider";
 import { ToastProvider } from "@/components/ui/toast";
+import { getSiteSettings } from "@/lib/queries/settings";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -15,25 +16,36 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-export const metadata: Metadata = {
-  title: {
-    default: "Garage Inventory Management",
-    template: "%s · Garage Inventory",
-  },
-  description:
-    "Manage tools and equipment inventory, sales, and staff across multiple shop locations.",
-  applicationName: "Garage Inventory Management",
-  formatDetection: { telephone: false },
-  appleWebApp: {
-    capable: true,
-    title: "Garage Inventory",
-    statusBarStyle: "default",
-  },
-  icons: {
-    icon: "/icons/icon-192.png",
-    apple: "/icons/apple-touch-icon.png",
-  },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  let settings;
+  try {
+    settings = await getSiteSettings();
+  } catch {
+    settings = null;
+  }
+  const brand = settings?.brandName ?? "Garage Inventory Management";
+  const logoSrc = settings?.logoUrl ?? "/icons/icon-192.png";
+
+  return {
+    title: {
+      default: brand,
+      template: `%s · ${brand}`,
+    },
+    description:
+      "Manage tools and equipment inventory, sales, and staff across multiple shop locations.",
+    applicationName: brand,
+    formatDetection: { telephone: false },
+    appleWebApp: {
+      capable: true,
+      title: brand,
+      statusBarStyle: "default",
+    },
+    icons: {
+      icon: logoSrc,
+      apple: logoSrc,
+    },
+  };
+}
 
 export const viewport: Viewport = {
   themeColor: [

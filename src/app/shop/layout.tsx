@@ -1,5 +1,6 @@
 import { cookies } from "next/headers";
 import { requireAttendant, getShopForAttendant } from "@/lib/dal";
+import { getSiteSettings } from "@/lib/queries/settings";
 import { AppShell, type NavSection } from "@/components/app-shell";
 
 const navSections: NavSection[] = [
@@ -26,13 +27,18 @@ const navSections: NavSection[] = [
 ];
 
 export default async function ShopLayout({ children }: { children: React.ReactNode }) {
-  const [user, cookieStore] = await Promise.all([requireAttendant(), cookies()]);
+  const [user, cookieStore, settings] = await Promise.all([
+    requireAttendant(),
+    cookies(),
+    getSiteSettings(),
+  ]);
   const shop = await getShopForAttendant(user.id);
   const initiallyCollapsed = cookieStore.get("sidebar-collapsed")?.value === "1";
 
   return (
     <AppShell
-      brand="Garage Inventory"
+      brand={settings.brandName}
+      logoUrl={settings.logoUrl}
       workspaceLabel={shop?.name ?? "Unassigned shop"}
       userName={user.name ?? ""}
       roleLabel="Shop Attendant"

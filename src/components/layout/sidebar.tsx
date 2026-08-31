@@ -16,12 +16,14 @@ export function Sidebar({
   userName,
   roleLabel,
   sections,
+  logoUrl,
 }: {
   brand: string;
   workspaceLabel?: string;
   userName: string;
   roleLabel: string;
   sections: NavSection[];
+  logoUrl?: string | null;
 }) {
   const { collapsed } = useSidebar();
 
@@ -34,6 +36,7 @@ export function Sidebar({
       <SidebarHeader
         brand={brand}
         collapsed={collapsed}
+        logoUrl={logoUrl}
         action={<SidebarToggle />}
       />
       <SidebarNavigation sections={sections} collapsed={collapsed} />

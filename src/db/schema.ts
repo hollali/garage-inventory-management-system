@@ -346,6 +346,13 @@ export const passwordResetTokens = pgTable(
   (table) => [index("reset_token_hash_idx").on(table.tokenHash)],
 );
 
+export const siteSettings = pgTable("site_settings", {
+  id: uuid("id").primaryKey().defaultRandom(),
+  logoUrl: text("logo_url"),
+  brandName: text("brand_name").notNull().default("Garage Inventory"),
+  updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
 export type User = typeof users.$inferSelect;
 export type NewUser = typeof users.$inferInsert;
 export type Shop = typeof shops.$inferSelect;

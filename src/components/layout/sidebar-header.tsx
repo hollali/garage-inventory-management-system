@@ -3,7 +3,33 @@
 import { Wrench } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-export function BrandMark({ size = "sm" }: { size?: "sm" | "md" }) {
+export function BrandMark({
+  size = "sm",
+  logoUrl,
+  brandName,
+}: {
+  size?: "sm" | "md";
+  logoUrl?: string | null;
+  brandName?: string;
+}) {
+  if (logoUrl) {
+    return (
+      <div
+        className={cn(
+          "flex shrink-0 items-center justify-center overflow-hidden rounded-md",
+          size === "sm" ? "size-6" : "size-8",
+        )}
+      >
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src={logoUrl}
+          alt={brandName ? `${brandName} logo` : "Logo"}
+          className="size-full object-contain"
+        />
+      </div>
+    );
+  }
+
   return (
     <div
       className={cn(
@@ -20,15 +46,17 @@ export function SidebarHeader({
   brand,
   collapsed,
   action,
+  logoUrl,
 }: {
   brand: string;
   collapsed: boolean;
   action?: React.ReactNode;
+  logoUrl?: string | null;
 }) {
   return (
     <div className="flex h-14 w-full shrink-0 items-center gap-1 border-b border-zinc-200 py-2 pr-2 pl-3 dark:border-zinc-800">
       <div className="flex min-w-0 flex-1 items-center gap-2.5">
-        <BrandMark />
+        {!collapsed && <BrandMark logoUrl={logoUrl} brandName={brand} />}
         {!collapsed && (
           <div className="min-w-0 leading-tight">
             <p className="truncate text-sm font-semibold text-zinc-900 dark:text-zinc-100">
