@@ -11,7 +11,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { LowStockBadge, Badge } from "@/components/ui/badge";
 import { EmptyState, BoxIcon } from "@/components/ui/empty-state";
 import { Table, TBody, TD, THead, TH, TR } from "@/components/ui/table";
-import { DollarSign, Package, AlertTriangle, TrendingUp } from "lucide-react";
+import { Banknote, Package, AlertTriangle, TrendingUp } from "lucide-react";
 
 export default async function ShopDetailPage({
   params,
@@ -61,7 +61,7 @@ export default async function ShopDetailPage({
       </div>
 
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
-        <StatCard label="Inventory value" value={formatMoney(inventoryValueCents)} icon={<DollarSign className="size-5" />} />
+        <StatCard label="Inventory value" value={formatMoney(inventoryValueCents)} icon={<Banknote className="size-5" />} />
         <StatCard label="Items" value={stats.itemCount} icon={<Package className="size-5" />} />
         <StatCard
           label="Low stock items"

@@ -13,7 +13,7 @@ import { AttentionCard } from "@/components/ui/attention-card";
 import {
   Briefcase,
   Package,
-  DollarSign,
+  Banknote,
   TrendingUp,
   Repeat,
   Wrench,
@@ -50,7 +50,7 @@ export default async function AdminDashboardPage() {
         <StatCard
           label="Inventory value"
           value={formatMoney(summary.inventoryValueCents)}
-          icon={<DollarSign className="size-5" />}
+          icon={<Banknote className="size-5" />}
         />
         <StatCard
           label="Total revenue"

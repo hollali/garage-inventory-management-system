@@ -1,13 +1,11 @@
 "use client";
 
 import {
-  cloneElement,
   isValidElement,
   useRef,
   useState,
   useTransition,
   type FormEvent,
-  type ReactElement,
   type ReactNode,
 } from "react";
 import { useRouter } from "next/navigation";
@@ -72,12 +70,10 @@ export function ConfirmAction({
     });
   }
 
-  const singleChild = isValidElement(children)
-    ? (children as ReactElement<ButtonProps>)
-    : null;
-
-  const trigger = singleChild ? (
-    cloneElement(singleChild, { ...buttonProps, onClick: () => setOpen(true) })
+  const trigger = isValidElement(children) ? (
+    <span className="inline-flex" onClick={() => setOpen(true)}>
+      {children}
+    </span>
   ) : (
     <Button {...buttonProps} onClick={() => setOpen(true)}>
       {children}

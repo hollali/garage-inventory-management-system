@@ -18,7 +18,7 @@ import { LowStockBadge, Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
 import { AttentionCard } from "@/components/ui/attention-card";
-import { Package, DollarSign, AlertTriangle, TrendingUp, Repeat, Wrench } from "lucide-react";
+import { Package, Banknote, AlertTriangle, TrendingUp, Repeat, Wrench } from "lucide-react";
 
 export default async function ShopDashboardPage() {
   const shop = await requireAttendantShop();
@@ -72,7 +72,7 @@ export default async function ShopDashboardPage() {
         <StatCard
           label="Inventory value"
           value={formatMoney(stats.inventoryValueCents)}
-          icon={<DollarSign className="size-5" />}
+          icon={<Banknote className="size-5" />}
         />
         <StatCard
           label="Low stock items"

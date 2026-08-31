@@ -21,7 +21,7 @@ import { Table, TBody, TD, THead, TH, TR } from "@/components/ui/table";
 import { BarChart } from "@/components/charts/bar-chart";
 import { LineChart } from "@/components/charts/line-chart";
 import { RevenueFilter } from "@/components/reports/revenue-filter";
-import { AlertTriangle, DollarSign, Download, Percent, ShoppingCart, TrendingUp } from "lucide-react";
+import { AlertTriangle, Banknote, Download, Percent, ShoppingCart, TrendingUp } from "lucide-react";
 
 function shortDate(date: string): string {
   return date.slice(5).replace("-", "/");
@@ -90,7 +90,7 @@ export default async function AdminReportsPage({
         <StatCard
           label="Inventory value (cost)"
           value={formatMoney(margin.costValueCents)}
-          icon={<DollarSign className="size-5" />}
+          icon={<Banknote className="size-5" />}
         />
         <StatCard
           label="Potential margin"
