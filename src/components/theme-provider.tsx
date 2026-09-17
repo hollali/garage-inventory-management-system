@@ -8,6 +8,7 @@ import {
   useSyncExternalStore,
   type ReactNode,
 } from "react";
+import { useServerInsertedHTML } from "next/navigation";
 import { MotionConfig } from "framer-motion";
 
 type Theme = "light" | "dark";
@@ -18,6 +19,15 @@ const ThemeContext = createContext<{ theme: Theme; toggleTheme: () => void }>({
 });
 
 const THEME_KEY = "theme";
+
+const THEME_INIT_SCRIPT = `
+try {
+  var stored = localStorage.getItem('${THEME_KEY}');
+  var dark = stored === 'dark' || (!stored && window.matchMedia('(prefers-color-scheme: dark)').matches);
+  if (dark) document.documentElement.classList.add('dark');
+  document.documentElement.style.colorScheme = dark ? 'dark' : 'light';
+} catch (e) {}
+`;
 
 function getStoredTheme(): Theme {
   const stored = window.localStorage.getItem(THEME_KEY);
@@ -33,6 +43,10 @@ function subscribeTheme(callback: () => void) {
 }
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
+  useServerInsertedHTML(() => (
+    <script id="theme-init" dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
+  ));
+
   const theme = useSyncExternalStore(
     subscribeTheme,
     () => getStoredTheme(),

@@ -14,7 +14,7 @@ import {
 
 export type ShopSummary = {
   shop: typeof shops.$inferSelect;
-  attendantName: string | null;
+  attendantNames: string[];
   itemCount: number;
   lowStockCount: number;
   inventoryValueCents: number;
@@ -229,12 +229,26 @@ export async function getShopsWithSummary(): Promise<ShopSummary[]> {
       attendantName: users.name,
     })
     .from(shops)
-    .leftJoin(users, eq(shops.assignedAttendantId, users.id))
+    .leftJoin(users, eq(users.shopId, shops.id))
     .orderBy(shops.createdAt);
 
   if (shopRows.length === 0) return [];
 
-  const shopIds = shopRows.map((r) => r.shop.id);
+  const attendantMap = new Map<string, string[]>();
+  for (const row of shopRows) {
+    if (row.attendantName) {
+      const names = attendantMap.get(row.shop.id) ?? [];
+      names.push(row.attendantName);
+      attendantMap.set(row.shop.id, names);
+    }
+  }
+
+  const uniqueShops = shopRows.reduce<typeof shops.$inferSelect[]>(
+    (acc, row) => (acc.some((s) => s.id === row.shop.id) ? acc : [...acc, row.shop]),
+    [],
+  );
+
+  const shopIds = uniqueShops.map((s) => s.id);
 
   const [itemCounts, values, lows, revenues] = await Promise.all([
     db
@@ -272,9 +286,9 @@ export async function getShopsWithSummary(): Promise<ShopSummary[]> {
   const lowMap = new Map(lows.map((r) => [r.shopId, r.count]));
   const revenueMap = new Map(revenues.map((r) => [r.shopId, Number(r.total ?? 0)]));
 
-  return shopRows.map(({ shop, attendantName }) => ({
+  return uniqueShops.map((shop) => ({
     shop,
-    attendantName,
+    attendantNames: attendantMap.get(shop.id) ?? [],
     itemCount: itemMap.get(shop.id) ?? 0,
     lowStockCount: lowMap.get(shop.id) ?? 0,
     inventoryValueCents: valueMap.get(shop.id) ?? 0,
@@ -282,16 +296,31 @@ export async function getShopsWithSummary(): Promise<ShopSummary[]> {
   }));
 }
 
+export async function getShopAttendants(shopId: string) {
+  return db
+    .select({
+      id: users.id,
+      name: users.name,
+      username: users.username,
+      email: users.email,
+      active: users.active,
+    })
+    .from(users)
+    .where(and(eq(users.shopId, shopId), eq(users.role, "attendant")))
+    .orderBy(users.name);
+}
+
 export async function getShopDetail(shopId: string) {
   const summaries = await getShopsWithSummary();
   const match = summaries.find((s) => s.shop.id === shopId);
   if (!match) return null;
-  const [stats, recentSales, inventory] = await Promise.all([
+  const [stats, recentSales, inventory, attendants] = await Promise.all([
     getShopStats(shopId),
     getRecentSales(shopId, 15),
     getShopInventory(shopId),
+    getShopAttendants(shopId),
   ]);
-  return { ...match, stats, recentSales, inventory };
+  return { ...match, stats, recentSales, inventory, attendants };
 }
 
 export async function getAttendantList() {
@@ -301,7 +330,7 @@ export async function getAttendantList() {
       shop: shops,
     })
     .from(users)
-    .leftJoin(shops, eq(shops.assignedAttendantId, users.id))
+    .leftJoin(shops, eq(users.shopId, shops.id))
     .where(eq(users.role, "attendant"))
     .orderBy(users.createdAt);
   return rows;

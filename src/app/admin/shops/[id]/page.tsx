@@ -5,7 +5,10 @@ import { getAttendantList, getShopDetail } from "@/lib/queries";
 import { formatDateTime, formatMoney } from "@/lib/utils";
 import { deleteShop } from "@/lib/actions/admin";
 import { ConfirmAction } from "@/components/confirm-action";
-import { ReassignForm, type ReassignOption } from "@/components/shops/reassign-form";
+import {
+  AttendantsManager,
+  type AttendantCandidate,
+} from "@/components/shops/attendants-manager";
 import { StatCard } from "@/components/ui/stat";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { LowStockBadge, Badge } from "@/components/ui/badge";
@@ -23,15 +26,15 @@ export default async function ShopDetailPage({
   const data = await getShopDetail(id);
   if (!data) notFound();
 
-  const { shop, attendantName, stats, recentSales, inventoryValueCents } = data;
-  const attendants = await getAttendantList();
-  const options: ReassignOption[] = attendants
-    .filter(({ user }) => user.active)
-    .map(({ user, shop: s }) => ({
+  const { shop, attendants, stats, recentSales, inventoryValueCents } = data;
+  const allAttendants = await getAttendantList();
+  const currentIds = new Set(attendants.map((a) => a.id));
+  const candidates: AttendantCandidate[] = allAttendants
+    .filter(({ user }) => user.active && !currentIds.has(user.id))
+    .map(({ user }) => ({
       id: user.id,
       name: user.name,
-      email: user.email,
-      assignedShopName: s?.name ?? null,
+      username: user.username,
     }));
 
   return (
@@ -128,18 +131,14 @@ export default async function ShopDetailPage({
         <div className="flex flex-col gap-6">
           <Card>
             <CardHeader>
-              <CardTitle>Attendant</CardTitle>
-              <CardDescription>One attendant per shop.</CardDescription>
+              <CardTitle>Attendants</CardTitle>
+              <CardDescription>This shop can have one or more attendants.</CardDescription>
             </CardHeader>
             <CardContent>
-              <p className="mb-3 text-sm">
-                Current:{" "}
-                <span className="font-medium text-zinc-900 dark:text-zinc-100">{attendantName ?? "Unassigned"}</span>
-              </p>
-              <ReassignForm
+              <AttendantsManager
                 shopId={shop.id}
-                currentAttendantId={shop.assignedAttendantId}
-                options={options}
+                attendants={attendants}
+                candidates={candidates}
               />
             </CardContent>
           </Card>

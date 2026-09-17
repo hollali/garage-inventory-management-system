@@ -51,7 +51,9 @@ export const users = pgTable(
   {
     id: uuid("id").primaryKey().defaultRandom(),
     name: text("name").notNull(),
+    username: text("username").notNull(),
     email: text("email").notNull(),
+    shopId: uuid("shop_id").references(() => shops.id, { onDelete: "set null" }),
     passwordHash: text("password_hash").notNull(),
     role: roleEnum("role").notNull(),
     active: boolean("active").notNull().default(true),
@@ -60,8 +62,10 @@ export const users = pgTable(
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   },
   (table) => [
+    uniqueIndex("users_username_unique").on(table.username),
     uniqueIndex("users_email_unique").on(table.email),
     index("users_role_idx").on(table.role),
+    index("users_shop_idx").on(table.shopId),
   ],
 );
 
@@ -72,14 +76,9 @@ export const shops = pgTable(
     name: text("name").notNull(),
     location: text("location").notNull(),
     description: text("description"),
-    assignedAttendantId: uuid("assigned_attendant_id").references(() => users.id, {
-      onDelete: "set null",
-    }),
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   },
-  (table) => [
-    uniqueIndex("shops_attendant_unique").on(table.assignedAttendantId),
-  ],
+  (table) => [index("shops_name_idx").on(table.name)],
 );
 
 export const inventoryItems = pgTable(

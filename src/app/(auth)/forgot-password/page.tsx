@@ -10,7 +10,7 @@ export default function ForgotPasswordPage() {
     <div className="flex flex-col gap-5">
       <AuthHeading
         title="Reset your password"
-        description="Enter your account email and we'll send you a reset link."
+        description="Enter your username and we'll email you a password reset link."
       />
       <ForgotPasswordForm />
       <p className="text-center text-sm text-muted">

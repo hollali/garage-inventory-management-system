@@ -13,34 +13,34 @@ import { verifyTotp, generateTotpSecret, otpauthUrl } from "@/lib/totp";
 import { requireAdmin } from "@/lib/dal";
 
 const forgotSchema = z.object({
-  email: z.string().email().trim().toLowerCase(),
+  username: z.string().trim().toLowerCase(),
 });
 
 export async function requestPasswordReset(
   formData: FormData,
 ): Promise<{ message: string }> {
   const parsed = forgotSchema.safeParse({
-    email: formData.get("email"),
+    username: formData.get("username"),
   });
   if (!parsed.success) {
-    return { message: "Enter a valid email address." };
+    return { message: "Enter your username." };
   }
 
-  const blocked = rateLimit(`pwd:reset:${parsed.data.email}:${await clientIp()}`, {
+  const blocked = rateLimit(`pwd:reset:${parsed.data.username}:${await clientIp()}`, {
     limit: 3,
     windowMs: 60 * 60 * 1000,
   });
   if (!blocked.allowed) {
     return {
       message:
-        "If an account exists for that email, a password reset link has been sent.",
+        "If an account exists for that username, a password reset link has been sent.",
     };
   }
 
   const [user] = await db
     .select()
     .from(users)
-    .where(eq(users.email, parsed.data.email))
+    .where(eq(users.username, parsed.data.username))
     .limit(1);
 
   if (user) {
@@ -78,7 +78,7 @@ export async function requestPasswordReset(
 
   return {
     message:
-      "If an account exists for that email, a password reset link has been sent.",
+      "If an account exists for that username, a password reset link has been sent.",
   };
 }
 
@@ -173,9 +173,9 @@ export async function verifyPassword(
 }
 
 export async function needsTotp(
-  email: string,
+  username: string,
 ): Promise<{ requires: boolean; error?: string }> {
-  const normalized = email.trim().toLowerCase();
+  const normalized = username.trim().toLowerCase();
   const ip = await clientIp();
 
   const blocked = rateLimit(`totp:check:${ip}:${normalized}`, {
@@ -189,7 +189,7 @@ export async function needsTotp(
   const [user] = await db
     .select()
     .from(users)
-    .where(eq(users.email, normalized))
+    .where(eq(users.username, normalized))
     .limit(1);
 
   return { requires: Boolean(user?.totpEnabled) };

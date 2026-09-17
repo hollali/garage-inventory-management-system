@@ -4,19 +4,19 @@ import { and, eq } from "drizzle-orm";
 import { z } from "zod";
 import { revalidatePath } from "next/cache";
 import { db } from "@/db";
-import { inventoryItems, shops, stockMovements } from "@/db/schema";
+import { inventoryItems, stockMovements, users } from "@/db/schema";
 import { requireAttendant } from "@/lib/dal";
 import { logActivity } from "@/lib/activity";
 import { resolveSku } from "@/lib/sku";
 
 export async function getAttendantShopId(): Promise<string | null> {
   const user = await requireAttendant();
-  const [shop] = await db
-    .select({ id: shops.id })
-    .from(shops)
-    .where(eq(shops.assignedAttendantId, user.id))
+  const [row] = await db
+    .select({ shopId: users.shopId })
+    .from(users)
+    .where(eq(users.id, user.id))
     .limit(1);
-  return shop?.id ?? null;
+  return row?.shopId ?? null;
 }
 
 const itemSchema = z.object({

@@ -49,6 +49,11 @@ export function AttendantModal({
               <Input id="name" name="name" required placeholder="e.g. Jordan Smith" />
             </div>
             <div>
+              <Label htmlFor="username">Username</Label>
+              <Input id="username" name="username" required placeholder="e.g. jordan" autoComplete="off" />
+              <p className="mt-1 text-xs text-muted">Used to sign in. Letters, numbers, dots, dashes.</p>
+            </div>
+            <div>
               <Label htmlFor="email">Email</Label>
               <Input id="email" name="email" type="email" required placeholder="attendant@garage.io" />
             </div>
@@ -67,6 +72,7 @@ export function AttendantModal({
                   </option>
                 ))}
               </Select>
+              <p className="mt-1 text-xs text-muted">A shop can have one or more attendants.</p>
             </div>
           </div>
           <div className="flex justify-end gap-3 pt-1">

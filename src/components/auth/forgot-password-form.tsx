@@ -17,15 +17,18 @@ export function ForgotPasswordForm() {
       {!state?.message && (
         <>
           <div>
-            <Label htmlFor="email">Email</Label>
+            <Label htmlFor="username">Username</Label>
             <Input
-              id="email"
-              name="email"
-              type="email"
-              autoComplete="email"
-              placeholder="you@example.com"
+              id="username"
+              name="username"
+              type="text"
+              autoComplete="username"
+              placeholder="your-username"
               required
             />
+            <p className="mt-1 text-xs text-muted">
+              A reset link will be emailed to the address on your account.
+            </p>
           </div>
           <Button type="submit" size="lg" loading={pending}>
             Send reset link

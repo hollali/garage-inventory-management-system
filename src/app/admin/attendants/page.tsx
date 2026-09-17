@@ -48,6 +48,7 @@ export default async function AdminAttendantsPage() {
               <THead>
                 <TR>
                   <TH>Attendant</TH>
+                  <TH>Username</TH>
                   <TH>Shop</TH>
                   <TH>Status</TH>
                   <TH>Created</TH>
@@ -60,6 +61,9 @@ export default async function AdminAttendantsPage() {
                     <TD>
                       <p className="font-medium text-zinc-900 dark:text-zinc-100">{user.name}</p>
                       <p className="text-xs text-muted">{user.email}</p>
+                    </TD>
+                    <TD>
+                      <span className="font-mono text-sm">@{user.username}</span>
                     </TD>
                     <TD>{shop ? shop.name : <span className="text-muted">Unassigned</span>}</TD>
                     <TD>

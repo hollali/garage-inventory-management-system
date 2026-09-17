@@ -28,7 +28,7 @@ export default async function AdminShopsPage() {
         <div>
           <h1 className="text-2xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-100">Shops</h1>
           <p className="text-sm text-muted">
-            {shops.length} shop{shops.length === 1 ? "" : "s"} · one attendant per shop.
+            {shops.length} shop{shops.length === 1 ? "" : "s"} · each shop can have one or more attendants.
           </p>
         </div>
         <ShopModal
@@ -61,7 +61,7 @@ export default async function AdminShopsPage() {
       ) : (
         <div className="grid gap-4 sm:grid-cols-2">
           {shops.map(
-            ({ shop, attendantName, itemCount, lowStockCount, inventoryValueCents, revenueCents }) => (
+            ({ shop, attendantNames, itemCount, lowStockCount, inventoryValueCents, revenueCents }) => (
               <Link key={shop.id} href={`/admin/shops/${shop.id}`} className="group">
                 <Card className="transition-shadow hover:shadow-md">
                   <CardHeader>
@@ -79,9 +79,9 @@ export default async function AdminShopsPage() {
                     <div className="flex items-center justify-between text-sm">
                       <div className="space-y-1">
                         <p className="text-muted">
-                          Attendant:{" "}
+                          Attendants:{" "}
                           <span className="font-medium text-zinc-900 dark:text-zinc-100">
-                            {attendantName ?? "Unassigned"}
+                            {attendantNames.length > 0 ? attendantNames.join(", ") : "None"}
                           </span>
                         </p>
                         <p className="text-muted">

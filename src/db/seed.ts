@@ -20,25 +20,25 @@ const shopSeeds = [
     name: "Downtown Garage",
     location: "42 Main Street, Springfield",
     description: "Flagship location, full service and parts.",
-    attendant: { name: "Jordan Smith", email: "jordan@garage.io" },
+    attendant: { name: "Jordan Smith", username: "jordan", email: "jordan@garage.io" },
   },
   {
     name: "Northside Auto",
     location: "1200 North Avenue, Springfield",
     description: "Heavy equipment and fleet maintenance.",
-    attendant: { name: "Alex Reyes", email: "alex@garage.io" },
+    attendant: { name: "Alex Reyes", username: "alex", email: "alex@garage.io" },
   },
   {
     name: "Riverside Repairs",
     location: "8 River Road, Springfield",
     description: "Quick-service and diagnostics.",
-    attendant: { name: "Sam Patel", email: "sam@garage.io" },
+    attendant: { name: "Sam Patel", username: "sam", email: "sam@garage.io" },
   },
   {
     name: "East Bay Motors",
     location: "77 Harbor Drive, Springfield",
     description: "Tires, batteries, and accessories.",
-    attendant: { name: "Priya Nair", email: "priya@garage.io" },
+    attendant: { name: "Priya Nair", username: "priya", email: "priya@garage.io" },
   },
 ];
 
@@ -80,37 +80,36 @@ async function main() {
     .insert(users)
     .values({
       name: "Garage Owner",
+      username: "admin",
       email: "admin@garage.io",
       passwordHash: adminHash,
       role: "admin",
     })
     .returning({ id: users.id });
 
-  console.log(`Admin: admin@garage.io / ${ADMIN_PASSWORD}`);
+  console.log(`Admin: admin / ${ADMIN_PASSWORD}`);
 
   let shopIndex = 0;
   for (const seed of shopSeeds) {
-    const [attendant] = await db
-      .insert(users)
-      .values({
-        name: seed.attendant.name,
-        email: seed.attendant.email,
-        passwordHash: attendantHash,
-        role: "attendant",
-      })
-      .returning({ id: users.id });
-
     const [shop] = await db
       .insert(shops)
       .values({
         name: seed.name,
         location: seed.location,
         description: seed.description,
-        assignedAttendantId: attendant.id,
       })
       .returning({ id: shops.id });
 
-    console.log(`Shop "${seed.name}" → ${seed.attendant.email} / ${ATTENDANT_PASSWORD}`);
+    await db.insert(users).values({
+      name: seed.attendant.name,
+      username: seed.attendant.username,
+      email: seed.attendant.email,
+      shopId: shop.id,
+      passwordHash: attendantHash,
+      role: "attendant",
+    });
+
+    console.log(`Shop "${seed.name}" → ${seed.attendant.username} / ${ATTENDANT_PASSWORD}`);
 
     for (const template of inventoryTemplates) {
       const price = template.price * (1 + (shopIndex % 3) * 0.05);
@@ -142,7 +141,12 @@ async function main() {
   }
 
   const [s1] = await db.select().from(shops).limit(1);
-  const s1Attendant = s1.assignedAttendantId;
+  const [s1AttendantRow] = await db
+    .select({ id: users.id })
+    .from(users)
+    .where(eq(users.shopId, s1.id))
+    .limit(1);
+  const s1Attendant = s1AttendantRow?.id ?? null;
   const [oilItem] = await db
     .select()
     .from(inventoryItems)

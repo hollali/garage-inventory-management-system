@@ -33,15 +33,20 @@ export async function createShop(formData: FormData) {
 
   const { name, location, description, attendantId } = parsed.data;
 
+  let attendant: (typeof users.$inferSelect) | undefined;
   if (attendantId) {
-    const [attendant] = await db
+    const [candidate] = await db
       .select()
       .from(users)
       .where(eq(users.id, attendantId))
       .limit(1);
-    if (!attendant || attendant.role !== "attendant") {
+    if (!candidate || candidate.role !== "attendant") {
       return { error: "Selected user is not an attendant." };
     }
+    if (candidate.shopId) {
+      return { error: "Selected attendant is already assigned to a shop." };
+    }
+    attendant = candidate;
   }
 
   const [shop] = await db
@@ -50,11 +55,14 @@ export async function createShop(formData: FormData) {
       name,
       location,
       description: description || null,
-      assignedAttendantId: attendantId ?? null,
     })
     .returning({ id: shops.id });
 
   if (!shop) return { error: "Failed to create shop." };
+
+  if (attendant) {
+    await db.update(users).set({ shopId: shop.id }).where(eq(users.id, attendant.id));
+  }
 
   await logActivity({
     actorId: admin.id,
@@ -102,62 +110,96 @@ export async function deleteShop(formData: FormData) {
   return { ok: true };
 }
 
-export async function reassignAttendant(formData: FormData) {
+export async function assignAttendantToShop(formData: FormData) {
   const admin = await requireAdmin();
 
   const shopId = String(formData.get("shopId") ?? "");
-  const attendantId = String(formData.get("attendantId") ?? "") || null;
+  const attendantId = String(formData.get("attendantId") ?? "");
 
   const [shop] = await db
     .select()
     .from(shops)
     .where(eq(shops.id, shopId))
     .limit(1);
-
   if (!shop) return { error: "Shop not found." };
 
-  if (attendantId) {
-    const [attendant] = await db
-      .select()
-      .from(users)
-      .where(eq(users.id, attendantId))
-      .limit(1);
-    if (!attendant || attendant.role !== "attendant" || !attendant.active) {
-      return { error: "Selected user is not an active attendant." };
-    }
-    const [other] = await db
-      .select()
-      .from(shops)
-      .where(eq(shops.assignedAttendantId, attendantId))
-      .limit(1);
-    if (other && other.id !== shop.id) {
-      return { error: "That attendant is already assigned to another shop." };
-    }
+  const [attendant] = await db
+    .select()
+    .from(users)
+    .where(eq(users.id, attendantId))
+    .limit(1);
+  if (!attendant || attendant.role !== "attendant" || !attendant.active) {
+    return { error: "Selected user is not an active attendant." };
   }
 
-  await db
-    .update(shops)
-    .set({ assignedAttendantId: attendantId })
-    .where(eq(shops.id, shop.id));
+  await db.update(users).set({ shopId: shop.id }).where(eq(users.id, attendant.id));
 
   await logActivity({
     actorId: admin.id,
     actorName: admin.name,
     actorRole: "admin",
-    action: "attendant.reassign",
+    action: "attendant.assign",
     shopId: shop.id,
     entityType: "shop",
     entityId: shop.id,
-    metadata: { shopName: shop.name, assignedAttendantId: attendantId },
+    metadata: { shopName: shop.name, attendantId: attendant.id },
   });
 
   revalidatePath("/admin");
   revalidatePath("/admin/shops");
   revalidatePath("/admin/shops/[id]", "page");
+  return { ok: true };
+}
+
+export async function removeAttendantFromShop(formData: FormData) {
+  const admin = await requireAdmin();
+
+  const shopId = String(formData.get("shopId") ?? "");
+  const attendantId = String(formData.get("attendantId") ?? "");
+
+  const [shop] = await db.select().from(shops).where(eq(shops.id, shopId)).limit(1);
+  if (!shop) return { error: "Shop not found." };
+
+  const [attendant] = await db
+    .select()
+    .from(users)
+    .where(and(eq(users.id, attendantId), eq(users.shopId, shopId)))
+    .limit(1);
+  if (!attendant || attendant.role !== "attendant") {
+    return { error: "Attendant is not assigned to this shop." };
+  }
+
+  await db
+    .update(users)
+    .set({ shopId: null })
+    .where(eq(users.id, attendant.id));
+
+  await logActivity({
+    actorId: admin.id,
+    actorName: admin.name,
+    actorRole: "admin",
+    action: "attendant.unassign",
+    shopId: shop.id,
+    entityType: "shop",
+    entityId: shop.id,
+    metadata: { shopName: shop.name, attendantId: attendant.id },
+  });
+
+  revalidatePath("/admin");
+  revalidatePath("/admin/shops");
+  revalidatePath("/admin/shops/[id]", "page");
+  return { ok: true };
 }
 
 const attendantSchema = z.object({
   name: z.string().trim().min(1, "Name is required."),
+  username: z
+    .string()
+    .trim()
+    .toLowerCase()
+    .min(1, "Username is required.")
+    .regex(/^[a-z0-9._-]+$/, "Username may only contain letters, numbers, dots, dashes, and underscores.")
+    .max(30, "Username must be 30 characters or less."),
   email: z.string().email("Enter a valid email.").trim().toLowerCase(),
   password: z.string().min(8, "Password must be at least 8 characters."),
   shopId: z.string().optional(),
@@ -168,6 +210,7 @@ export async function createAttendant(formData: FormData) {
 
   const parsed = attendantSchema.safeParse({
     name: formData.get("name"),
+    username: formData.get("username"),
     email: formData.get("email"),
     password: formData.get("password"),
     shopId: formData.get("shopId") || undefined,
@@ -177,14 +220,23 @@ export async function createAttendant(formData: FormData) {
     return { error: parsed.error.issues.map((i) => i.message).join(" ") };
   }
 
-  const { name, email, password, shopId } = parsed.data;
+  const { name, username, email, password, shopId } = parsed.data;
 
   const [existing] = await db
     .select()
     .from(users)
-    .where(eq(users.email, email))
+    .where(eq(users.username, username))
     .limit(1);
   if (existing) {
+    return { error: "That username is already taken." };
+  }
+
+  const [existingEmail] = await db
+    .select()
+    .from(users)
+    .where(eq(users.email, email))
+    .limit(1);
+  if (existingEmail) {
     return { error: "An account with that email already exists." };
   }
 
@@ -194,27 +246,15 @@ export async function createAttendant(formData: FormData) {
     .insert(users)
     .values({
       name,
+      username,
       email,
+      shopId: shopId || null,
       passwordHash,
       role: "attendant",
     })
     .returning({ id: users.id });
 
   if (!user) return { error: "Failed to create attendant." };
-
-  if (shopId) {
-    const [shop] = await db
-      .select()
-      .from(shops)
-      .where(eq(shops.id, shopId))
-      .limit(1);
-    if (shop) {
-      await db
-        .update(shops)
-        .set({ assignedAttendantId: user.id })
-        .where(eq(shops.id, shop.id));
-    }
-  }
 
   await logActivity({
     actorId: admin.id,
@@ -224,7 +264,7 @@ export async function createAttendant(formData: FormData) {
     shopId: shopId ?? null,
     entityType: "user",
     entityId: user.id,
-    metadata: { name, email, shopId: shopId ?? null },
+    metadata: { name, username, email, shopId: shopId ?? null },
   });
 
   revalidatePath("/admin");
@@ -247,10 +287,7 @@ export async function deactivateAttendant(formData: FormData) {
 
   await db.update(users).set({ active: false }).where(eq(users.id, user.id));
 
-  await db
-    .update(shops)
-    .set({ assignedAttendantId: null })
-    .where(eq(shops.assignedAttendantId, user.id));
+  await db.update(users).set({ shopId: null }).where(eq(users.id, user.id));
 
   await logActivity({
     actorId: admin.id,
@@ -309,11 +346,6 @@ export async function deleteAttendant(formData: FormData) {
 
   if (!user || user.role !== "attendant") return { error: "Attendant not found." };
 
-  await db
-    .update(shops)
-    .set({ assignedAttendantId: null })
-    .where(eq(shops.assignedAttendantId, user.id));
-
   await db.delete(users).where(eq(users.id, user.id));
 
   await logActivity({
@@ -324,7 +356,7 @@ export async function deleteAttendant(formData: FormData) {
     shopId: null,
     entityType: "user",
     entityId: user.id,
-    metadata: { name: user.name, email: user.email },
+    metadata: { name: user.name, username: user.username, email: user.email },
   });
 
   revalidatePath("/admin");
@@ -337,12 +369,12 @@ export async function getUnassignedAttendants() {
     .select({
       id: users.id,
       name: users.name,
+      username: users.username,
       email: users.email,
       active: users.active,
     })
     .from(users)
-    .leftJoin(shops, eq(shops.assignedAttendantId, users.id))
-    .where(isNull(shops.id));
+    .where(and(eq(users.role, "attendant"), isNull(users.shopId)));
   return rows;
 }
 

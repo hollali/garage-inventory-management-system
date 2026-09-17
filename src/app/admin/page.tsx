@@ -121,7 +121,7 @@ export default async function AdminDashboardPage() {
             </div>
           ) : (
             <ul className="divide-y divide-zinc-100 dark:divide-zinc-800/70">
-              {shops.map(({ shop, attendantName, itemCount, lowStockCount, inventoryValueCents, revenueCents }) => (
+              {shops.map(({ shop, attendantNames, itemCount, lowStockCount, inventoryValueCents, revenueCents }) => (
                 <li key={shop.id}>
                   <Link
                     href={`/admin/shops/${shop.id}`}
@@ -131,7 +131,9 @@ export default async function AdminDashboardPage() {
                       <p className="font-semibold text-zinc-900 dark:text-zinc-100">{shop.name}</p>
                       <p className="truncate text-xs text-muted">
                         {shop.location}
-                        {attendantName ? ` · Attendant: ${attendantName}` : " · No attendant"}
+                        {attendantNames.length > 0
+                          ? ` · Attendants: ${attendantNames.join(", ")}`
+                          : " · No attendants"}
                       </p>
                     </div>
                     <div className="hidden gap-2 md:flex">

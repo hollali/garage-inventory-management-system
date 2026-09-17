@@ -29,6 +29,13 @@
       "when": 1788169340739,
       "tag": "0003_add_site_settings",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1789651515604,
+      "tag": "0004_username_login_and_shop_attendants",
+      "breakpoints": true
     }
   ]
 }

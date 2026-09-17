@@ -39,8 +39,8 @@ describe("LoginForm", () => {
     });
 
     render(<LoginForm />);
-    fireEvent.change(screen.getByLabelText("Email"), {
-      target: { value: "a@b.com" },
+    fireEvent.change(screen.getByLabelText("Username"), {
+      target: { value: "jordan" },
     });
     fireEvent.change(screen.getByLabelText("Password"), {
       target: { value: "wrong" },
@@ -48,7 +48,7 @@ describe("LoginForm", () => {
     fireEvent.click(screen.getByRole("button", { name: "Sign in" }));
 
     const alert = await screen.findByRole("alert");
-    expect(alert).toHaveTextContent("Invalid email or password.");
+    expect(alert).toHaveTextContent("Invalid username or password.");
   });
 
   it("redirects to the callback URL on success", async () => {
@@ -60,8 +60,8 @@ describe("LoginForm", () => {
     });
 
     render(<LoginForm />);
-    fireEvent.change(screen.getByLabelText("Email"), {
-      target: { value: "a@b.com" },
+    fireEvent.change(screen.getByLabelText("Username"), {
+      target: { value: "jordan" },
     });
     fireEvent.change(screen.getByLabelText("Password"), {
       target: { value: "secret" },

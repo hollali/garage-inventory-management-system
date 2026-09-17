@@ -39,10 +39,16 @@ export async function requireAttendant(): Promise<SessionUser> {
 }
 
 export const getShopForAttendant = cache(async (userId: string) => {
+  const [user] = await db
+    .select({ shopId: users.shopId })
+    .from(users)
+    .where(eq(users.id, userId))
+    .limit(1);
+  if (!user?.shopId) return null;
   const [shop] = await db
     .select()
     .from(shops)
-    .where(eq(shops.assignedAttendantId, userId))
+    .where(eq(shops.id, user.shopId))
     .limit(1);
   return shop ?? null;
 });
@@ -70,6 +76,7 @@ export const getUserById = cache(async (userId: string) => {
     .select({
       id: users.id,
       name: users.name,
+      username: users.username,
       email: users.email,
       role: users.role,
       active: users.active,

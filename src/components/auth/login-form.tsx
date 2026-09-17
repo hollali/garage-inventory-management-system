@@ -24,13 +24,13 @@ export function LoginForm() {
     setPending(true);
 
     const formData = new FormData(event.currentTarget);
-    const email = String(formData.get("email") ?? "");
+    const username = String(formData.get("username") ?? "");
     const password = String(formData.get("password") ?? "");
     const totpCode = String(formData.get("totpCode") ?? "");
 
     try {
       if (!otpRequired) {
-        const result = await needsTotp(email);
+        const result = await needsTotp(username);
         if (result.error) {
           setError(result.error);
           setPending(false);
@@ -44,14 +44,14 @@ export function LoginForm() {
       }
 
       const res = await signIn("credentials", {
-        email,
+        username,
         password,
         totpCode,
         redirect: false,
       });
 
       if (res?.error) {
-        setError("Invalid email or password.");
+        setError("Invalid username or password.");
         setPending(false);
         return;
       }
@@ -68,8 +68,8 @@ export function LoginForm() {
     <form onSubmit={handleSubmit} className="flex flex-col gap-4">
       {error && <FormError>{error}</FormError>}
       <div>
-        <Label htmlFor="email">Email</Label>
-        <Input id="email" name="email" type="email" autoComplete="email" required />
+        <Label htmlFor="username">Username</Label>
+        <Input id="username" name="username" type="text" autoComplete="username" required />
       </div>
       <div>
         <div className="flex items-center justify-between">
