@@ -1,7 +1,6 @@
 "use client";
 
 import {
-  isValidElement,
   useRef,
   useState,
   useTransition,
@@ -70,7 +69,12 @@ export function ConfirmAction({
     });
   }
 
-  const trigger = isValidElement(children) ? (
+  const isElement =
+    children != null &&
+    typeof children !== "string" &&
+    typeof children !== "number";
+
+  const trigger = isElement ? (
     <span className="inline-flex" onClick={() => setOpen(true)}>
       {children}
     </span>
