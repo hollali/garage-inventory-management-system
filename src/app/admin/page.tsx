@@ -18,6 +18,7 @@ import {
   Repeat,
   Wrench,
   Clipboard,
+  ArrowRight,
 } from "lucide-react";
 
 export default async function AdminDashboardPage() {
@@ -70,7 +71,13 @@ export default async function AdminDashboardPage() {
           icon={<Repeat className="size-4" />}
           rows={pendingTransfers.rows.slice(0, 3).map((transfer) => ({
             id: transfer.id,
-            label: `${transfer.fromShopName ?? "Shop"} → ${transfer.toShopName ?? "Shop"}`,
+            label: (
+              <span className="inline-flex items-center gap-1">
+                {transfer.fromShopName ?? "Shop"}
+                <ArrowRight className="size-3.5 shrink-0 text-zinc-400" aria-hidden />
+                {transfer.toShopName ?? "Shop"}
+              </span>
+            ),
             meta: formatDateTime(transfer.createdAt),
           }))}
         />

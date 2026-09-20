@@ -33,6 +33,7 @@ type ShellProps = {
   brand: string;
   logoUrl?: string | null;
   workspaceLabel?: string;
+  workspaceSwitcher?: React.ReactNode;
   userName: string;
   roleLabel: string;
   sections: NavSection[];
@@ -106,6 +107,7 @@ export function AppShell({
   brand,
   logoUrl,
   workspaceLabel,
+  workspaceSwitcher,
   userName,
   roleLabel,
   sections,
@@ -122,6 +124,7 @@ export function AppShell({
         brand={brand}
         logoUrl={logoUrl}
         workspaceLabel={workspaceLabel}
+        workspaceSwitcher={workspaceSwitcher}
         userName={userName}
         roleLabel={roleLabel}
         sections={sections}
@@ -138,6 +141,7 @@ function ShellInner({
   brand,
   logoUrl,
   workspaceLabel,
+  workspaceSwitcher,
   userName,
   roleLabel,
   sections,
@@ -154,6 +158,7 @@ function ShellInner({
           brand={brand}
           logoUrl={logoUrl}
           workspaceLabel={workspaceLabel}
+          workspaceSwitcher={workspaceSwitcher}
           userName={userName}
           roleLabel={roleLabel}
           sections={sections}
@@ -162,7 +167,7 @@ function ShellInner({
         <div className="flex min-w-0 flex-1 flex-col">
           <Topbar sections={sections} />
 
-          <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-6 sm:px-6 lg:py-8">
+          <main className="w-full flex-1 px-4 py-6 sm:px-6 lg:px-10 lg:py-8">
             {children}
           </main>
         </div>
@@ -178,6 +183,7 @@ function ShellInner({
           brand={brand}
           logoUrl={logoUrl}
           workspaceLabel={workspaceLabel}
+          workspaceSwitcher={workspaceSwitcher}
           userName={userName}
           roleLabel={roleLabel}
           sections={sections}

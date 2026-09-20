@@ -69,9 +69,9 @@ export default async function ShopTransfersPage({
                 <TR>
                   <TH>Item</TH>
                   <TH className="text-right">Qty</TH>
-                  <TH>To</TH>
-                  <TH>Note</TH>
-                  <TH>Requested</TH>
+                  <TH className="hidden md:table-cell">To</TH>
+                  <TH className="hidden md:table-cell">Note</TH>
+                  <TH className="hidden md:table-cell">Requested</TH>
                   <TH>Status</TH>
                   <TH className="text-right">Actions</TH>
                 </TR>
@@ -80,15 +80,15 @@ export default async function ShopTransfersPage({
                 {rows.map((request) => (
                   <TR key={request.id}>
                     <TD className="font-medium text-zinc-900 dark:text-zinc-100">{request.itemName}</TD>
-                    <TD className="text-right tabular-nums">{request.quantity}</TD>
-                    <TD>
+                    <TD className="text-right whitespace-nowrap tabular-nums">{request.quantity}</TD>
+                    <TD className="hidden md:table-cell">
                       {request.toShopName ? (
                         request.toShopName
                       ) : (
                         <Badge variant="info">Central</Badge>
                       )}
                     </TD>
-                    <TD className="max-w-48">
+                    <TD className="hidden max-w-48 md:table-cell">
                       {request.note ? (
                         <span className="block truncate text-xs text-muted" title={request.note}>
                           {request.note}
@@ -97,7 +97,9 @@ export default async function ShopTransfersPage({
                         <span className="text-xs text-muted">—</span>
                       )}
                     </TD>
-                    <TD className="text-xs text-muted">{formatDateTime(request.createdAt)}</TD>
+                    <TD className="hidden text-xs whitespace-nowrap text-muted md:table-cell">
+                      {formatDateTime(request.createdAt)}
+                    </TD>
                     <TD>
                       <TransferStatusBadge status={request.status} />
                     </TD>

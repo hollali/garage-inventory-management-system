@@ -124,7 +124,7 @@ export function CommandMenu({
   return (
     <AnimatePresence>
       {open && (
-        <div className="fixed inset-0 z-50 flex items-start justify-center px-4 pt-[12vh]">
+        <div className="fixed inset-0 z-50 flex items-start justify-center px-4 pt-[12vh] print:hidden">
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}

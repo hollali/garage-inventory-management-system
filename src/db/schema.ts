@@ -5,6 +5,7 @@ import {
   jsonb,
   pgEnum,
   pgTable,
+  primaryKey,
   text,
   timestamp,
   uniqueIndex,
@@ -53,7 +54,6 @@ export const users = pgTable(
     name: text("name").notNull(),
     username: text("username").notNull(),
     email: text("email").notNull(),
-    shopId: uuid("shop_id").references(() => shops.id, { onDelete: "set null" }),
     passwordHash: text("password_hash").notNull(),
     role: roleEnum("role").notNull(),
     active: boolean("active").notNull().default(true),
@@ -65,7 +65,6 @@ export const users = pgTable(
     uniqueIndex("users_username_unique").on(table.username),
     uniqueIndex("users_email_unique").on(table.email),
     index("users_role_idx").on(table.role),
-    index("users_shop_idx").on(table.shopId),
   ],
 );
 
@@ -79,6 +78,23 @@ export const shops = pgTable(
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   },
   (table) => [index("shops_name_idx").on(table.name)],
+);
+
+export const userShops = pgTable(
+  "user_shops",
+  {
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    shopId: uuid("shop_id")
+      .notNull()
+      .references(() => shops.id, { onDelete: "cascade" }),
+    createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (table) => [
+    primaryKey({ columns: [table.userId, table.shopId] }),
+    index("user_shops_shop_idx").on(table.shopId),
+  ],
 );
 
 export const inventoryItems = pgTable(
@@ -355,6 +371,7 @@ export const siteSettings = pgTable("site_settings", {
 export type User = typeof users.$inferSelect;
 export type NewUser = typeof users.$inferInsert;
 export type Shop = typeof shops.$inferSelect;
+export type UserShop = typeof userShops.$inferSelect;
 export type InventoryItem = typeof inventoryItems.$inferSelect;
 export type Sale = typeof sales.$inferSelect;
 export type Supplier = typeof suppliers.$inferSelect;

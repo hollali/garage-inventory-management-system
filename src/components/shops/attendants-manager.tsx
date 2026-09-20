@@ -92,7 +92,8 @@ export function AttendantsManager({
         </Button>
         {candidates.length === 0 && (
           <p className="text-xs text-muted">
-            All other attendants are already assigned. Create a new attendant first.
+            Every active attendant is already assigned to this shop. Create a new attendant or
+            adjust assignments elsewhere.
           </p>
         )}
       </form>

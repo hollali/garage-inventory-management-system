@@ -109,3 +109,63 @@
   background: transparent;
 }
 
+@media print {
+  :root,
+  .dark {
+    --color-background: #ffffff;
+    --color-surface: #ffffff;
+    --color-foreground: #18181b;
+    --color-muted: #52525b;
+    --color-border: #e4e4e7;
+    --color-brand: #18181b;
+    --color-brand-hover: #3f3f46;
+    --color-brand-soft: #f4f4f5;
+    --color-brand-foreground: #ffffff;
+  }
+
+  body {
+    background: #ffffff !important;
+    color: #18181b !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  main {
+    padding: 0 !important;
+  }
+
+  .overflow-x-auto {
+    overflow: visible !important;
+  }
+
+  button,
+  input,
+  select,
+  textarea {
+    display: none !important;
+  }
+
+  table {
+    width: 100% !important;
+  }
+
+  thead {
+    display: table-header-group;
+  }
+
+  thead,
+  th {
+    position: static !important;
+  }
+
+  tr {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  th.md\:table-cell,
+  td.md\:table-cell {
+    display: table-cell !important;
+  }
+}
+

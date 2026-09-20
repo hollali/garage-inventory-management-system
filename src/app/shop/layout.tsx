@@ -1,7 +1,8 @@
 import { cookies } from "next/headers";
-import { requireAttendant, getShopForAttendant } from "@/lib/dal";
+import { requireAttendant, getAttendantShops, getShopForAttendant } from "@/lib/dal";
 import { getSiteSettings } from "@/lib/queries/settings";
 import { AppShell, type NavSection } from "@/components/app-shell";
+import { ActiveShopSelector } from "@/components/shops/active-shop-selector";
 
 const navSections: NavSection[] = [
   {
@@ -32,7 +33,10 @@ export default async function ShopLayout({ children }: { children: React.ReactNo
     cookies(),
     getSiteSettings(),
   ]);
-  const shop = await getShopForAttendant(user.id);
+  const [assignedShops, shop] = await Promise.all([
+    getAttendantShops(user.id),
+    getShopForAttendant(user.id),
+  ]);
   const initiallyCollapsed = cookieStore.get("sidebar-collapsed")?.value === "1";
 
   return (
@@ -40,6 +44,12 @@ export default async function ShopLayout({ children }: { children: React.ReactNo
       brand={settings.brandName}
       logoUrl={settings.logoUrl}
       workspaceLabel={shop?.name ?? "Unassigned shop"}
+      workspaceSwitcher={
+        <ActiveShopSelector
+          shops={assignedShops.map((s) => ({ id: s.id, name: s.name }))}
+          activeShopId={shop?.id ?? assignedShops[0]?.id ?? null}
+        />
+      }
       userName={user.name ?? ""}
       roleLabel="Shop Attendant"
       sections={navSections}

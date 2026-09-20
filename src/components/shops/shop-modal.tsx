@@ -14,7 +14,6 @@ export type ShopAttendantOption = {
   id: string;
   name: string;
   email: string;
-  assignedShopName: string | null;
 };
 
 export function ShopModal({
@@ -56,8 +55,6 @@ export function ShopModal({
     if (!actionState?.ok) prevOk.current = false;
   }, [open, actionState, router, setOpen, toast]);
 
-  const assignable = attendants.filter((a) => !a.assignedShopName);
-
   return (
     <>
       <span onClick={() => setOpen(true)}>{trigger}</span>
@@ -73,19 +70,17 @@ export function ShopModal({
             <Input id="location" name="location" required placeholder="e.g. 42 Main Street" />
           </div>
           <div>
-            <Label htmlFor="attendantId">Assigned attendant</Label>
+            <Label htmlFor="attendantId">Assign an attendant (optional)</Label>
             <Select id="attendantId" name="attendantId" defaultValue="">
               <option value="">No attendant (assign later)</option>
-              {assignable.map((a) => (
+              {attendants.map((a) => (
                 <option key={a.id} value={a.id}>
                   {a.name} — {a.email}
                 </option>
               ))}
             </Select>
             <p className="mt-1 text-xs text-muted">
-              {assignable.length === 0
-                ? "All attendants are already assigned to a shop. Create an attendant first."
-                : `${assignable.length} unassigned attendant(s) available.`}
+              An attendant can work at multiple shops. Manage assignments later too.
             </p>
           </div>
           <div>

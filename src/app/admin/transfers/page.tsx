@@ -43,6 +43,7 @@ export default async function AdminTransfersPage({
 
   const data = await getTransferRequests({ status, page, pageSize });
   const { rows, total, totalPages } = data;
+  const hasPending = rows.some((request) => request.status === "pending");
 
   return (
     <div className="flex flex-col gap-6">
@@ -91,20 +92,20 @@ export default async function AdminTransfersPage({
             <Table>
               <THead>
                 <TR>
-                  <TH>From</TH>
+                  <TH className="hidden md:table-cell">From</TH>
                   <TH>Item</TH>
                   <TH className="text-right">Qty</TH>
-                  <TH>To</TH>
-                  <TH>Requested by</TH>
-                  <TH>Date</TH>
+                  <TH className="hidden md:table-cell">To</TH>
+                  <TH className="hidden md:table-cell">Requested by</TH>
+                  <TH className="hidden md:table-cell">Date</TH>
                   <TH>Status</TH>
-                  <TH className="text-right">Actions</TH>
+                  {hasPending && <TH className="text-right">Actions</TH>}
                 </TR>
               </THead>
               <TBody>
                 {rows.map((request) => (
                   <TR key={request.id}>
-                    <TD className="font-medium text-zinc-900 dark:text-zinc-100">{request.fromShopName}</TD>
+                    <TD className="hidden font-medium whitespace-nowrap text-zinc-900 md:table-cell dark:text-zinc-100">{request.fromShopName}</TD>
                     <TD>
                       {request.itemName}
                       {request.note && (
@@ -116,45 +117,49 @@ export default async function AdminTransfersPage({
                         </span>
                       )}
                     </TD>
-                    <TD className="text-right tabular-nums">{request.quantity}</TD>
-                    <TD>
+                    <TD className="text-right whitespace-nowrap tabular-nums">{request.quantity}</TD>
+                    <TD className="hidden md:table-cell">
                       {request.toShopName ? (
                         request.toShopName
                       ) : (
                         <Badge variant="info">Central</Badge>
                       )}
                     </TD>
-                    <TD className="text-sm text-muted">
+                    <TD className="hidden text-sm whitespace-nowrap text-muted md:table-cell">
                       {request.requesterName ?? "Unknown"}
                     </TD>
-                    <TD className="text-xs text-muted">{formatDateTime(request.createdAt)}</TD>
+                    <TD className="hidden text-xs whitespace-nowrap text-muted md:table-cell">
+                      {formatDateTime(request.createdAt)}
+                    </TD>
                     <TD>
                       <TransferStatusBadge status={request.status} />
                     </TD>
-                    <TD className="text-right">
-                      {request.status === "pending" && (
-                        <div className="flex items-center justify-end gap-1">
-                          <ConfirmAction
-                            action={approveTransfer}
-                            hiddenFields={{ requestId: request.id }}
-                            confirmTitle="Approve transfer?"
-                            confirmBody="Approving immediately moves this stock. This cannot be undone."
-                            successMessage="Transfer approved"
-                          >
-                            <Check className="size-4" /> Approve
-                          </ConfirmAction>
-                          <ConfirmAction
-                            action={rejectTransfer}
-                            hiddenFields={{ requestId: request.id }}
-                            confirmTitle="Reject transfer?"
-                            successMessage="Transfer rejected"
-                            buttonProps={{ variant: "danger" }}
-                          >
-                            <X className="size-4" /> Reject
-                          </ConfirmAction>
-                        </div>
-                      )}
-                    </TD>
+                    {hasPending && (
+                      <TD className="text-right">
+                        {request.status === "pending" && (
+                          <div className="flex items-center justify-end gap-1">
+                            <ConfirmAction
+                              action={approveTransfer}
+                              hiddenFields={{ requestId: request.id }}
+                              confirmTitle="Approve transfer?"
+                              confirmBody="Approving immediately moves this stock. This cannot be undone."
+                              successMessage="Transfer approved"
+                            >
+                              <Check className="size-4" /> Approve
+                            </ConfirmAction>
+                            <ConfirmAction
+                              action={rejectTransfer}
+                              hiddenFields={{ requestId: request.id }}
+                              confirmTitle="Reject transfer?"
+                              successMessage="Transfer rejected"
+                              buttonProps={{ variant: "danger" }}
+                            >
+                              <X className="size-4" /> Reject
+                            </ConfirmAction>
+                          </div>
+                        )}
+                      </TD>
+                    )}
                   </TR>
                 ))}
               </TBody>

@@ -15,11 +15,10 @@ export default async function AdminShopsPage() {
 
   const options: ShopAttendantOption[] = attendants
     .filter(({ user }) => user.active)
-    .map(({ user, shop }) => ({
+    .map(({ user }) => ({
       id: user.id,
       name: user.name,
       email: user.email,
-      assignedShopName: shop?.name ?? null,
     }));
 
   return (
@@ -28,7 +27,7 @@ export default async function AdminShopsPage() {
         <div>
           <h1 className="text-2xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-100">Shops</h1>
           <p className="text-sm text-muted">
-            {shops.length} shop{shops.length === 1 ? "" : "s"} · each shop can have one or more attendants.
+            {shops.length} shop{shops.length === 1 ? "" : "s"} · attendants can be assigned to one or more shops.
           </p>
         </div>
         <ShopModal

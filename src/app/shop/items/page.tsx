@@ -106,7 +106,13 @@ export default async function ShopInventoryPage({
               <THead>
                 <TR>
                   <SortableTh base="/shop/items" params={params} column="name" label="Item" />
-                  <SortableTh base="/shop/items" params={params} column="category" label="Category" />
+                  <SortableTh
+                    base="/shop/items"
+                    params={params}
+                    column="category"
+                    label="Category"
+                    className="hidden md:table-cell"
+                  />
                   <SortableTh base="/shop/items" params={params} column="price" label="Price" align="right" />
                   <SortableTh base="/shop/items" params={params} column="quantity" label="Qty" align="right" />
                   <TH>Status</TH>
@@ -138,11 +144,11 @@ export default async function ShopInventoryPage({
                         </div>
                       </div>
                     </TD>
-                    <TD>
+                    <TD className="hidden md:table-cell">
                       <Badge variant="neutral">{item.category}</Badge>
                     </TD>
-                    <TD className="text-right tabular-nums">{formatMoney(item.unitPriceCents)}</TD>
-                    <TD className="text-right tabular-nums font-medium">
+                    <TD className="text-right whitespace-nowrap tabular-nums">{formatMoney(item.unitPriceCents)}</TD>
+                    <TD className="text-right whitespace-nowrap tabular-nums font-medium">
                       {item.quantity}
                       {item.unitName && item.unitName !== "piece" && (
                         <span className="ml-1 text-xs font-normal text-muted">{item.unitName}</span>

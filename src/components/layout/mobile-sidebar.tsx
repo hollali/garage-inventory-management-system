@@ -15,6 +15,7 @@ const FOCUSABLE =
 export function MobileSidebar({
   brand,
   workspaceLabel,
+  workspaceSwitcher,
   userName,
   roleLabel,
   sections,
@@ -22,6 +23,7 @@ export function MobileSidebar({
 }: {
   brand: string;
   workspaceLabel?: string;
+  workspaceSwitcher?: React.ReactNode;
   userName: string;
   roleLabel: string;
   sections: NavSection[];
@@ -77,7 +79,7 @@ export function MobileSidebar({
   return (
     <AnimatePresence>
       {mobileOpen && (
-        <div className="fixed inset-0 z-50 lg:hidden">
+        <div className="fixed inset-0 z-50 print:hidden lg:hidden">
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -117,12 +119,16 @@ export function MobileSidebar({
               />
             </div>
 
-            {workspaceLabel && (
+            {workspaceSwitcher ? (
+              <div className="border-b border-zinc-200 px-3 py-2 dark:border-zinc-800">
+                {workspaceSwitcher}
+              </div>
+            ) : workspaceLabel ? (
               <p className="truncate border-b border-zinc-200 px-4 py-2 text-[11px] font-medium text-zinc-500 dark:border-zinc-800 dark:text-zinc-400">
                 <span className="text-muted">Workspace · </span>
                 {workspaceLabel}
               </p>
-            )}
+            ) : null}
 
             <SidebarNavigation sections={sections} collapsed={false} />
 

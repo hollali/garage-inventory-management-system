@@ -1,12 +1,13 @@
 import "server-only";
 
 import { cache } from "react";
+import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import type { Session } from "next-auth";
 import { eq } from "drizzle-orm";
 import { auth } from "@/auth";
 import { db } from "@/db";
-import { shops, users } from "@/db/schema";
+import { shops, userShops, users } from "@/db/schema";
 
 export type SessionUser = NonNullable<Session["user"]>;
 
@@ -38,20 +39,25 @@ export async function requireAttendant(): Promise<SessionUser> {
   return user;
 }
 
-export const getShopForAttendant = cache(async (userId: string) => {
-  const [user] = await db
-    .select({ shopId: users.shopId })
-    .from(users)
-    .where(eq(users.id, userId))
-    .limit(1);
-  if (!user?.shopId) return null;
-  const [shop] = await db
-    .select()
-    .from(shops)
-    .where(eq(shops.id, user.shopId))
-    .limit(1);
-  return shop ?? null;
+export const ACTIVE_SHOP_COOKIE = "active_shop";
+
+export const getAttendantShops = cache(async (userId: string) => {
+  const rows = await db
+    .select({ shop: shops })
+    .from(userShops)
+    .innerJoin(shops, eq(shops.id, userShops.shopId))
+    .where(eq(userShops.userId, userId))
+    .orderBy(userShops.createdAt);
+  return rows.map((r) => r.shop);
 });
+
+export async function getShopForAttendant(userId: string) {
+  const assigned = await getAttendantShops(userId);
+  if (assigned.length === 0) return null;
+  const cookieStore = await cookies();
+  const active = cookieStore.get(ACTIVE_SHOP_COOKIE)?.value;
+  return assigned.find((s) => s.id === active) ?? assigned[0];
+}
 
 export const getShopById = cache(async (shopId: string) => {
   const [shop] = await db

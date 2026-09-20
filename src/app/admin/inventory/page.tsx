@@ -117,8 +117,14 @@ export default async function AdminInventoryPage({
               <THead>
                 <TR>
                   <SortableTh base="/admin/inventory" params={params} column="name" label="Item" />
-                  <TH>Shop</TH>
-                  <SortableTh base="/admin/inventory" params={params} column="category" label="Category" />
+                  <TH className="hidden md:table-cell">Shop</TH>
+                  <SortableTh
+                    base="/admin/inventory"
+                    params={params}
+                    column="category"
+                    label="Category"
+                    className="hidden md:table-cell"
+                  />
                   <SortableTh base="/admin/inventory" params={params} column="price" label="Price" align="right" />
                   <SortableTh base="/admin/inventory" params={params} column="quantity" label="Qty" align="right" />
                   <TH>Status</TH>
@@ -148,7 +154,7 @@ export default async function AdminInventoryPage({
                         </div>
                       </div>
                     </TD>
-                    <TD>
+                    <TD className="hidden whitespace-nowrap md:table-cell">
                       {item.shopName && item.shopId ? (
                         <Link
                           href={`/admin/shops/${item.shopId}`}
@@ -160,11 +166,11 @@ export default async function AdminInventoryPage({
                         <Badge variant="info">Central</Badge>
                       )}
                     </TD>
-                    <TD>
+                    <TD className="hidden md:table-cell">
                       <Badge variant="neutral">{item.category}</Badge>
                     </TD>
-                    <TD className="text-right tabular-nums">{formatMoney(item.unitPriceCents)}</TD>
-                    <TD className="text-right tabular-nums font-medium">
+                    <TD className="text-right whitespace-nowrap tabular-nums">{formatMoney(item.unitPriceCents)}</TD>
+                    <TD className="text-right whitespace-nowrap tabular-nums font-medium">
                       {item.quantity}
                       {item.unitName && item.unitName !== "piece" && (
                         <span className="ml-1 text-xs font-normal text-muted">{item.unitName}</span>

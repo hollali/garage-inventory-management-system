@@ -74,10 +74,10 @@ export default async function ShopWorkOrdersPage({
               <THead>
                 <TR>
                   <TH>Vehicle</TH>
-                  <TH>Customer</TH>
+                  <TH className="hidden md:table-cell">Customer</TH>
                   <TH>Status</TH>
                   <TH className="text-right">Amounts</TH>
-                  <TH>Created</TH>
+                  <TH className="hidden md:table-cell">Created</TH>
                   <TH className="text-right">Actions</TH>
                 </TR>
               </THead>
@@ -85,11 +85,11 @@ export default async function ShopWorkOrdersPage({
                 {rows.map(({ workOrder, parts }) => (
                   <TR key={workOrder.id}>
                     <TD>
-                      <span className="font-mono text-sm font-medium text-zinc-900 dark:text-zinc-100">
+                      <span className="font-mono text-sm font-medium whitespace-nowrap text-zinc-900 dark:text-zinc-100">
                         {workOrder.vehicleReg || "—"}
                       </span>
                     </TD>
-                    <TD>
+                    <TD className="hidden md:table-cell">
                       <span className="text-zinc-900 dark:text-zinc-100">{workOrder.customerName || "—"}</span>
                       {workOrder.customerContact && (
                         <span className="ml-2 text-xs text-muted">{workOrder.customerContact}</span>
@@ -98,7 +98,7 @@ export default async function ShopWorkOrdersPage({
                     <TD>
                       <WorkOrderStatusBadge status={workOrder.status} />
                     </TD>
-                    <TD className="text-right tabular-nums">
+                    <TD className="text-right whitespace-nowrap tabular-nums">
                       <div className="text-xs text-muted">
                         L {formatMoney(workOrder.labourCents)} · P{" "}
                         {formatMoney(workOrder.partsTotalCents)}
@@ -107,7 +107,9 @@ export default async function ShopWorkOrdersPage({
                         {formatMoney(workOrder.labourCents + workOrder.partsTotalCents)}
                       </div>
                     </TD>
-                    <TD className="text-xs text-muted">{formatDateTime(workOrder.createdAt)}</TD>
+                    <TD className="hidden text-xs whitespace-nowrap text-muted md:table-cell">
+                      {formatDateTime(workOrder.createdAt)}
+                    </TD>
                     <TD className="text-right">
                       <WorkOrderDetailModal
                         workOrder={{ ...workOrder, createdAt: formatDateTime(workOrder.createdAt) }}

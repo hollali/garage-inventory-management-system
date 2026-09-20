@@ -148,8 +148,8 @@ export default async function AdminReportsPage({
                       {topSellers.map((t) => (
                         <TR key={t.itemName}>
                           <TD className="font-medium text-zinc-900 dark:text-zinc-100">{t.itemName}</TD>
-                          <TD className="text-right tabular-nums">{t.quantity}</TD>
-                          <TD className="text-right tabular-nums">{formatMoney(t.revenueCents)}</TD>
+                          <TD className="text-right whitespace-nowrap tabular-nums">{t.quantity}</TD>
+                          <TD className="text-right whitespace-nowrap tabular-nums">{formatMoney(t.revenueCents)}</TD>
                         </TR>
                       ))}
                     </TBody>
@@ -219,7 +219,7 @@ export default async function AdminReportsPage({
               <THead>
                 <TR>
                   <TH>Item</TH>
-                  <TH>Shop</TH>
+                  <TH className="hidden md:table-cell">Shop</TH>
                   <TH className="text-right">On hand</TH>
                   <TH className="text-right">Threshold</TH>
                   <TH className="text-right">Suggested</TH>
@@ -235,23 +235,23 @@ export default async function AdminReportsPage({
                         {it.category}
                       </Badge>
                     </TD>
-                    <TD>
+                    <TD className="hidden md:table-cell">
                       {it.shopName ? (
                         <Badge variant="info">{it.shopName}</Badge>
                       ) : (
                         <Badge variant="neutral">Central</Badge>
                       )}
                     </TD>
-                    <TD className="text-right tabular-nums">{it.quantity}</TD>
-                    <TD className="text-right tabular-nums">{it.lowStockThreshold}</TD>
-                    <TD className="text-right">
+                    <TD className="text-right whitespace-nowrap tabular-nums">{it.quantity}</TD>
+                    <TD className="text-right whitespace-nowrap tabular-nums">{it.lowStockThreshold}</TD>
+                    <TD className="text-right whitespace-nowrap">
                       {it.suggestedQuantity > 0 ? (
                         <Badge variant="warning">{it.suggestedQuantity}</Badge>
                       ) : (
                         <span className="tabular-nums text-muted">0</span>
                       )}
                     </TD>
-                    <TD className="text-right tabular-nums">{it.sales30Day}</TD>
+                    <TD className="text-right whitespace-nowrap tabular-nums">{it.sales30Day}</TD>
                   </TR>
                 ))}
               </TBody>

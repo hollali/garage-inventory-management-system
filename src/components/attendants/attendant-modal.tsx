@@ -6,8 +6,9 @@ import { useRouter } from "next/navigation";
 import { createAttendant } from "@/lib/actions/admin";
 import { Modal } from "@/components/ui/modal";
 import { Button } from "@/components/ui/button";
-import { Input, Label, Select, FormError } from "@/components/ui/forms";
+import { Input, Label, FormError } from "@/components/ui/forms";
 import { useToast } from "@/components/ui/toast";
+import { Store } from "lucide-react";
 
 export function AttendantModal({
   shops,
@@ -62,18 +63,33 @@ export function AttendantModal({
               <Input id="password" name="password" type="password" required minLength={8} />
               <p className="mt-1 text-xs text-muted">At least 8 characters.</p>
             </div>
-            <div>
-              <Label htmlFor="shopId">Assign to shop (optional)</Label>
-              <Select id="shopId" name="shopId" defaultValue="">
-                <option value="">No shop yet</option>
+          </div>
+          <div>
+            <Label>Assign to shops (optional)</Label>
+            {shops.length === 0 ? (
+              <p className="text-sm text-muted">No shops exist yet. Create a shop first.</p>
+            ) : (
+              <div className="max-h-44 space-y-1 overflow-y-auto rounded-md border border-zinc-200 p-2 dark:border-zinc-800">
                 {shops.map((s) => (
-                  <option key={s.id} value={s.id}>
-                    {s.name}
-                  </option>
+                  <label
+                    key={s.id}
+                    className="flex cursor-pointer items-center gap-2 rounded-md px-2 py-1.5 text-sm hover:bg-zinc-50 dark:hover:bg-zinc-900"
+                  >
+                    <input
+                      type="checkbox"
+                      name="shopId"
+                      value={s.id}
+                      className="size-4 rounded border-zinc-300 accent-zinc-900 dark:border-zinc-600"
+                    />
+                    <Store className="size-3.5 shrink-0 text-muted" aria-hidden />
+                    <span className="min-w-0 truncate text-zinc-900 dark:text-zinc-100">{s.name}</span>
+                  </label>
                 ))}
-              </Select>
-              <p className="mt-1 text-xs text-muted">A shop can have one or more attendants.</p>
-            </div>
+              </div>
+            )}
+            <p className="mt-1 text-xs text-muted">
+              An attendant can be assigned to one or more shops.
+            </p>
           </div>
           <div className="flex justify-end gap-3 pt-1">
             <Button type="button" variant="outline" onClick={() => setOpen(false)}>

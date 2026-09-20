@@ -55,7 +55,7 @@ export default async function AdminSuppliersPage() {
               <THead>
                 <TR>
                   <TH>Name</TH>
-                  <TH>Contact</TH>
+                  <TH className="hidden md:table-cell">Contact</TH>
                   <TH>Phone / Email</TH>
                   <TH className="text-right">Purchase orders</TH>
                   <TH className="text-right">Actions</TH>
@@ -70,7 +70,7 @@ export default async function AdminSuppliersPage() {
                         <span className="ml-2 text-xs text-muted">{supplier.notes}</span>
                       )}
                     </TD>
-                    <TD>
+                    <TD className="hidden md:table-cell">
                       {supplier.contactName || <span className="text-muted">—</span>}
                     </TD>
                     <TD>
@@ -80,7 +80,7 @@ export default async function AdminSuppliersPage() {
                         {!supplier.phone && !supplier.email && <span className="text-muted">—</span>}
                       </div>
                     </TD>
-                    <TD className="text-right tabular-nums">{supplier.purchaseOrderCount}</TD>
+                    <TD className="text-right whitespace-nowrap tabular-nums">{supplier.purchaseOrderCount}</TD>
                     <TD className="text-right">
                       <ConfirmAction
                         action={deleteSupplier}

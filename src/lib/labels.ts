@@ -33,6 +33,7 @@ const labels: Record<string, string> = {
   "workOrder.part": "Part added to work order",
   "workOrder.status": "Work order status updated",
   "sale.refund": "Sale refunded",
+  "shop.switch": "Switched active shop",
 };
 
 const tones: Record<string, "default" | "success" | "warning" | "danger" | "info" | "neutral"> = {
@@ -70,6 +71,7 @@ const tones: Record<string, "default" | "success" | "warning" | "danger" | "info
   "workOrder.part": "info",
   "workOrder.status": "info",
   "sale.refund": "danger",
+  "shop.switch": "info",
 };
 
 export function actionLabel(action: string): string {

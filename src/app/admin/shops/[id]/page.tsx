@@ -1,9 +1,9 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { requireAdmin } from "@/lib/dal";
-import { getAttendantList, getShopDetail } from "@/lib/queries";
+import { getShopDetail } from "@/lib/queries";
 import { formatDateTime, formatMoney } from "@/lib/utils";
-import { deleteShop } from "@/lib/actions/admin";
+import { deleteShop, getAttendantsNotInShop } from "@/lib/actions/admin";
 import { ConfirmAction } from "@/components/confirm-action";
 import {
   AttendantsManager,
@@ -14,7 +14,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { LowStockBadge, Badge } from "@/components/ui/badge";
 import { EmptyState, BoxIcon } from "@/components/ui/empty-state";
 import { Table, TBody, TD, THead, TH, TR } from "@/components/ui/table";
-import { Banknote, Package, AlertTriangle, TrendingUp } from "lucide-react";
+import { Banknote, Package, AlertTriangle, TrendingUp, ArrowLeft, ArrowRight } from "lucide-react";
 
 export default async function ShopDetailPage({
   params,
@@ -27,21 +27,21 @@ export default async function ShopDetailPage({
   if (!data) notFound();
 
   const { shop, attendants, stats, recentSales, inventoryValueCents } = data;
-  const allAttendants = await getAttendantList();
   const currentIds = new Set(attendants.map((a) => a.id));
-  const candidates: AttendantCandidate[] = allAttendants
-    .filter(({ user }) => user.active && !currentIds.has(user.id))
-    .map(({ user }) => ({
-      id: user.id,
-      name: user.name,
-      username: user.username,
+  const candidates: AttendantCandidate[] = (await getAttendantsNotInShop(shop.id))
+    .filter((c) => c.active && !currentIds.has(c.id))
+    .map((c) => ({
+      id: c.id,
+      name: c.name,
+      username: c.username,
     }));
 
   return (
     <div className="flex flex-col gap-6">
       <div>
-        <Link href="/admin/shops" className="text-sm text-muted hover:text-brand">
-          ← Back to shops
+        <Link href="/admin/shops" className="inline-flex items-center gap-1 text-sm text-muted hover:text-brand">
+          <ArrowLeft className="size-4" aria-hidden />
+          Back to shops
         </Link>
         <div className="mt-1 flex flex-wrap items-start justify-between gap-3">
           <div>
@@ -86,8 +86,13 @@ export default async function ShopDetailPage({
             <CardTitle>Inventory</CardTitle>
             <CardDescription>
               This shop&apos;s current stock. Manage items centrally from{" "}
-              <Link href="/admin/inventory" className="font-medium text-brand hover:underline">
-                Admin → Inventory
+              <Link
+                href="/admin/inventory"
+                className="inline-flex items-center gap-1 font-medium text-brand hover:underline"
+              >
+                Admin
+                <ArrowRight className="size-3.5" aria-hidden />
+                Inventory
               </Link>
               .
             </CardDescription>
@@ -102,7 +107,7 @@ export default async function ShopDetailPage({
                 <THead>
                   <TR>
                     <TH>Item</TH>
-                    <TH>Category</TH>
+                    <TH className="hidden md:table-cell">Category</TH>
                     <TH className="text-right">Price</TH>
                     <TH className="text-right">Qty</TH>
                     <TH>Status</TH>
@@ -111,12 +116,12 @@ export default async function ShopDetailPage({
                 <TBody>
                   {data.inventory.map((item) => (
                     <TR key={item.id}>
-                      <TD className="font-medium text-zinc-900 dark:text-zinc-100">{item.name}</TD>
-                      <TD>
+                      <TD className="font-medium truncate text-zinc-900 dark:text-zinc-100">{item.name}</TD>
+                      <TD className="hidden md:table-cell">
                         <Badge variant="neutral">{item.category}</Badge>
                       </TD>
-                      <TD className="text-right tabular-nums">{formatMoney(item.unitPriceCents)}</TD>
-                      <TD className="text-right tabular-nums">{item.quantity}</TD>
+                      <TD className="text-right whitespace-nowrap tabular-nums">{formatMoney(item.unitPriceCents)}</TD>
+                      <TD className="text-right whitespace-nowrap tabular-nums">{item.quantity}</TD>
                       <TD>
                         <LowStockBadge quantity={item.quantity} threshold={item.lowStockThreshold} />
                       </TD>
@@ -132,7 +137,7 @@ export default async function ShopDetailPage({
           <Card>
             <CardHeader>
               <CardTitle>Attendants</CardTitle>
-              <CardDescription>This shop can have one or more attendants.</CardDescription>
+              <CardDescription>Attendants can be assigned to one or more shops.</CardDescription>
             </CardHeader>
             <CardContent>
               <AttendantsManager

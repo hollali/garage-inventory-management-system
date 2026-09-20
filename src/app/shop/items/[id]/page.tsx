@@ -10,7 +10,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Badge, LowStockBadge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { EmptyState, BoxIcon } from "@/components/ui/empty-state";
-import { Pencil, Package } from "lucide-react";
+import { Pencil, Package, ArrowLeft } from "lucide-react";
 
 export default async function ItemDetailPage({
   params,
@@ -28,8 +28,9 @@ export default async function ItemDetailPage({
   return (
     <div className="flex flex-col gap-6">
       <div>
-        <Link href="/shop/items" className="text-sm text-muted hover:text-brand">
-          ← Back to inventory
+        <Link href="/shop/items" className="inline-flex items-center gap-1 text-sm text-muted hover:text-brand">
+          <ArrowLeft className="size-4" aria-hidden />
+          Back to inventory
         </Link>
         <div className="mt-1 flex flex-wrap items-center gap-3">
           <h1 className="text-2xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-100">{item.name}</h1>

@@ -1,6 +1,6 @@
 import "server-only";
 
-import { and, count, desc, eq, gte, gt, inArray, isNull, like, or, sql } from "drizzle-orm";
+import { and, count, desc, eq, gte, gt, inArray, isNull, like, not, or, sql } from "drizzle-orm";
 import { db } from "@/db";
 import {
   activityLog,
@@ -9,6 +9,7 @@ import {
   sales,
   shops,
   stockMovements,
+  userShops,
   users,
 } from "@/db/schema";
 
@@ -229,7 +230,8 @@ export async function getShopsWithSummary(): Promise<ShopSummary[]> {
       attendantName: users.name,
     })
     .from(shops)
-    .leftJoin(users, eq(users.shopId, shops.id))
+    .leftJoin(userShops, eq(userShops.shopId, shops.id))
+    .leftJoin(users, eq(users.id, userShops.userId))
     .orderBy(shops.createdAt);
 
   if (shopRows.length === 0) return [];
@@ -305,8 +307,9 @@ export async function getShopAttendants(shopId: string) {
       email: users.email,
       active: users.active,
     })
-    .from(users)
-    .where(and(eq(users.shopId, shopId), eq(users.role, "attendant")))
+    .from(userShops)
+    .innerJoin(users, eq(users.id, userShops.userId))
+    .where(and(eq(userShops.shopId, shopId), eq(users.role, "attendant")))
     .orderBy(users.name);
 }
 
@@ -329,15 +332,46 @@ export async function getAttendantList() {
       user: users,
       shop: shops,
     })
-    .from(users)
-    .leftJoin(shops, eq(users.shopId, shops.id))
+    .from(userShops)
+    .rightJoin(users, eq(users.id, userShops.userId))
+    .leftJoin(shops, eq(shops.id, userShops.shopId))
     .where(eq(users.role, "attendant"))
     .orderBy(users.createdAt);
-  return rows;
+
+  const byUser = new Map<string, typeof users.$inferSelect>();
+  const shopsByUser = new Map<string, typeof shops.$inferSelect[]>();
+  for (const row of rows) {
+    byUser.set(row.user.id, row.user);
+    if (row.shop) {
+      const list = shopsByUser.get(row.user.id) ?? [];
+      list.push(row.shop);
+      shopsByUser.set(row.user.id, list);
+    }
+  }
+  return [...byUser.values()].map((user) => ({
+    user,
+    shops: shopsByUser.get(user.id) ?? [],
+  }));
 }
 
 export async function getAllShops() {
   return db.select({ id: shops.id, name: shops.name }).from(shops).orderBy(shops.name);
+}
+
+export type ActivityType = "shop" | "auth" | "all";
+
+function authActionCondition() {
+  return or(
+    like(activityLog.action, "auth.%"),
+    like(activityLog.action, "password.reset.%"),
+  );
+}
+
+function activityTypeCondition(type?: ActivityType) {
+  if (!type || type === "all") return undefined;
+  const auth = authActionCondition();
+  if (!auth) return undefined;
+  return type === "auth" ? auth : not(auth);
 }
 
 export async function getActivityLog(opts?: {
@@ -359,13 +393,17 @@ export async function getActivityLog(opts?: {
     .limit(opts?.limit ?? 100);
 }
 
-export async function getActivityOptions() {
-  const [shops_, users_, actions] = await Promise.all([
+export async function getActivityOptions(type?: ActivityType) {
+  const [shops_, users_, rows] = await Promise.all([
     db.select().from(shops).orderBy(shops.name),
     db.select({ id: users.id, name: users.name, role: users.role }).from(users).orderBy(users.name),
-    db.selectDistinct({ action: activityLog.action }).from(activityLog).orderBy(activityLog.action),
+    db
+      .selectDistinct({ action: activityLog.action })
+      .from(activityLog)
+      .where(activityTypeCondition(type) ?? undefined)
+      .orderBy(activityLog.action),
   ]);
-  return { shops: shops_, users: users_, actions: actions.map((a) => a.action) };
+  return { shops: shops_, users: users_, actions: rows.map((a) => a.action) };
 }
 
 /* ---------- Listing: filtering, sorting, pagination ---------- */
@@ -595,6 +633,7 @@ export async function getActivityPage(
     shopId?: string;
     actorId?: string;
     action?: string;
+    type?: ActivityType;
     page?: number;
     pageSize?: number;
   } = {},
@@ -605,6 +644,8 @@ export async function getActivityPage(
   if (opts.shopId) conditions.push(eq(activityLog.shopId, opts.shopId));
   if (opts.actorId) conditions.push(eq(activityLog.actorId, opts.actorId));
   if (opts.action) conditions.push(eq(activityLog.action, opts.action));
+  const typeCond = activityTypeCondition(opts.type);
+  if (typeCond) conditions.push(typeCond);
   const where = conditions.length ? and(...conditions) : undefined;
   const [totalRow, rows] = await Promise.all([
     db.select({ count: count() }).from(activityLog).where(where),

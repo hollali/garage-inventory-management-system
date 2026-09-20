@@ -48,24 +48,36 @@ export default async function AdminAttendantsPage() {
               <THead>
                 <TR>
                   <TH>Attendant</TH>
-                  <TH>Username</TH>
+                  <TH className="hidden md:table-cell">Username</TH>
                   <TH>Shop</TH>
                   <TH>Status</TH>
-                  <TH>Created</TH>
+                  <TH className="hidden md:table-cell">Created</TH>
                   <TH className="text-right">Actions</TH>
                 </TR>
               </THead>
               <TBody>
-                {attendants.map(({ user, shop }) => (
+                {attendants.map(({ user, shops }) => (
                   <TR key={user.id}>
                     <TD>
                       <p className="font-medium text-zinc-900 dark:text-zinc-100">{user.name}</p>
                       <p className="text-xs text-muted">{user.email}</p>
                     </TD>
-                    <TD>
+                    <TD className="hidden whitespace-nowrap md:table-cell">
                       <span className="font-mono text-sm">@{user.username}</span>
                     </TD>
-                    <TD>{shop ? shop.name : <span className="text-muted">Unassigned</span>}</TD>
+                    <TD>
+                      {shops.length === 0 ? (
+                        <span className="text-muted">Unassigned</span>
+                      ) : (
+                        <div className="flex max-w-xs flex-wrap gap-1">
+                          {shops.map((s) => (
+                            <Badge key={s.id} variant="neutral">
+                              {s.name}
+                            </Badge>
+                          ))}
+                        </div>
+                      )}
+                    </TD>
                     <TD>
                       {user.active ? (
                         <Badge variant="success">Active</Badge>
@@ -73,7 +85,9 @@ export default async function AdminAttendantsPage() {
                         <Badge variant="danger">Deactivated</Badge>
                       )}
                     </TD>
-                    <TD className="text-xs text-muted">{formatDate(user.createdAt)}</TD>
+                    <TD className="hidden text-xs whitespace-nowrap text-muted md:table-cell">
+                      {formatDate(user.createdAt)}
+                    </TD>
                     <TD className="text-right">
                       <div className="flex items-center justify-end gap-1">
                         {user.active ? (

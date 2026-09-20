@@ -1,10 +1,13 @@
 import { requireAdmin } from "@/lib/dal";
-import { getActivityPage, getActivityOptions } from "@/lib/queries";
+import { getActivityPage, getActivityOptions, type ActivityType } from "@/lib/queries";
 import { formatDateTime } from "@/lib/utils";
+import { cn } from "@/lib/utils";
 import { actionLabel, actionTone } from "@/lib/labels";
 import { ActivityFilter } from "@/components/activity/activity-filter";
 import { Pagination } from "@/components/ui/pagination";
 import Link from "next/link";
+import type { ReactNode } from "react";
+import { ArrowRight } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { EmptyState, BoxIcon } from "@/components/ui/empty-state";
@@ -12,22 +15,29 @@ import { EmptyState, BoxIcon } from "@/components/ui/empty-state";
 export default async function ActivityLogPage({
   searchParams,
 }: {
-  searchParams: Promise<{ shop?: string; actor?: string; action?: string; page?: string }>;
+  searchParams: Promise<{ shop?: string; actor?: string; action?: string; page?: string; type?: string }>;
 }) {
   await requireAdmin();
   const params = await searchParams;
   const page = Math.max(1, Number(params.page) || 1);
   const pageSize = 20;
+  const type: ActivityType =
+    params.type === "auth"
+      ? "auth"
+      : params.type === "all"
+        ? "all"
+        : "shop";
 
   const [logData, options] = await Promise.all([
     getActivityPage({
       shopId: params.shop,
       actorId: params.actor,
       action: params.action,
+      type,
       page,
       pageSize,
     }),
-    getActivityOptions(),
+    getActivityOptions(type),
   ]);
 
   const log = logData.rows;
@@ -36,11 +46,18 @@ export default async function ActivityLogPage({
 
   return (
     <div className="flex flex-col gap-6">
-      <div>
-        <h1 className="text-2xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-100">Activity log</h1>
-        <p className="text-sm text-muted">
-          Chronological audit trail of actions across all shops and accounts.
-        </p>
+      <div className="flex flex-wrap items-start justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-100">Activity log</h1>
+          <p className="text-sm text-muted">
+            {type === "auth"
+              ? "Sign-ins, password resets, and two-factor authentication events across all accounts."
+              : type === "all"
+                ? "Every logged event, including sign-ins and security actions."
+                : "Chronological audit trail of operational actions across all shops and accounts."}
+          </p>
+        </div>
+        <ActivityTypeTabs type={type} />
       </div>
 
       <ActivityFilter shops={options.shops} actors={options.users} actions={options.actions} />
@@ -57,7 +74,7 @@ export default async function ActivityLogPage({
           action={
             hasFilters ? (
               <Link
-                href="/admin/activity"
+                href={`/admin/activity${type !== "shop" ? `?type=${type}` : ""}`}
                 className="inline-flex h-9 items-center justify-center rounded-md border border-zinc-200 bg-surface px-4 text-sm font-medium text-zinc-700 transition-colors hover:bg-zinc-50 dark:border-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-800"
               >
                 Clear filters
@@ -107,13 +124,28 @@ export default async function ActivityLogPage({
 }
 
 function MetadataText({ action, metadata }: { action: string; metadata: unknown }) {
-  const text = formatMetadata(action, metadata);
-  if (!text) return null;
+  const plain = formatMetadata(action, metadata);
+  const node = formatMetadataNode(action, metadata);
+  if (!node) return null;
   return (
-    <p className="mt-0.5 truncate text-xs text-muted" title={text}>
-      {text}
+    <p className="mt-0.5 truncate text-xs text-muted" title={plain ?? undefined}>
+      {node}
     </p>
   );
+}
+
+function formatMetadataNode(action: string, metadata: unknown): ReactNode | null {
+  const m = (metadata ?? {}) as Record<string, unknown>;
+  if (action === "stock.transfer" || action === "stock.distribute") {
+    return (
+      <span className="inline-flex items-center gap-1">
+        {String(m.name ?? "")} · {String(m.quantity ?? "")} · {String(m.fromShop ?? "")}
+        <ArrowRight className="size-3 shrink-0" aria-hidden />
+        {String(m.toShop ?? "")}
+      </span>
+    );
+  }
+  return formatMetadata(action, metadata);
 }
 
 function formatMetadata(action: string, metadata: unknown): string | null {
@@ -137,5 +169,38 @@ function formatMetadata(action: string, metadata: unknown): string | null {
   if (action === "shop.create" || action === "shop.delete") {
     return `Shop: ${String(m.name ?? "")}`;
   }
+  if (action === "shop.switch") {
+    return `Switched to: ${String(m.name ?? "")}`;
+  }
   return null;
+}
+
+function ActivityTypeTabs({ type }: { type: ActivityType }) {
+  const tabs: { value: ActivityType; label: string; href: string }[] = [
+    { value: "shop", label: "Shop activity", href: "/admin/activity" },
+    { value: "auth", label: "Sign-ins & security", href: "/admin/activity?type=auth" },
+    { value: "all", label: "All events", href: "/admin/activity?type=all" },
+  ];
+  return (
+    <nav
+      aria-label="Activity type"
+      className="inline-flex rounded-md border border-zinc-200 bg-surface p-0.5 dark:border-zinc-800"
+    >
+      {tabs.map((tab) => (
+        <Link
+          key={tab.value}
+          href={tab.href}
+          aria-current={type === tab.value ? "page" : undefined}
+          className={cn(
+            "rounded px-3 py-1.5 text-sm font-medium transition-colors",
+            type === tab.value
+              ? "bg-zinc-900 text-zinc-50 dark:bg-zinc-100 dark:text-zinc-900"
+              : "text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100",
+          )}
+        >
+          {tab.label}
+        </Link>
+      ))}
+    </nav>
+  );
 }

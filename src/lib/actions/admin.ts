@@ -1,11 +1,11 @@
 "use server";
 
-import { and, eq, isNull } from "drizzle-orm";
+import { and, eq, inArray, isNull } from "drizzle-orm";
 import { z } from "zod";
 import { hash } from "bcryptjs";
 import { revalidatePath } from "next/cache";
 import { db } from "@/db";
-import { inventoryItems, shops, stockMovements, users } from "@/db/schema";
+import { inventoryItems, shops, stockMovements, userShops, users } from "@/db/schema";
 import { requireAdmin } from "@/lib/dal";
 import { logActivity } from "@/lib/activity";
 import { resolveSku } from "@/lib/sku";
@@ -43,9 +43,6 @@ export async function createShop(formData: FormData) {
     if (!candidate || candidate.role !== "attendant") {
       return { error: "Selected user is not an attendant." };
     }
-    if (candidate.shopId) {
-      return { error: "Selected attendant is already assigned to a shop." };
-    }
     attendant = candidate;
   }
 
@@ -61,7 +58,10 @@ export async function createShop(formData: FormData) {
   if (!shop) return { error: "Failed to create shop." };
 
   if (attendant) {
-    await db.update(users).set({ shopId: shop.id }).where(eq(users.id, attendant.id));
+    await db
+      .insert(userShops)
+      .values({ userId: attendant.id, shopId: shop.id })
+      .onConflictDoNothing();
   }
 
   await logActivity({
@@ -132,7 +132,10 @@ export async function assignAttendantToShop(formData: FormData) {
     return { error: "Selected user is not an active attendant." };
   }
 
-  await db.update(users).set({ shopId: shop.id }).where(eq(users.id, attendant.id));
+  await db
+    .insert(userShops)
+    .values({ userId: attendant.id, shopId: shop.id })
+    .onConflictDoNothing();
 
   await logActivity({
     actorId: admin.id,
@@ -160,19 +163,27 @@ export async function removeAttendantFromShop(formData: FormData) {
   const [shop] = await db.select().from(shops).where(eq(shops.id, shopId)).limit(1);
   if (!shop) return { error: "Shop not found." };
 
-  const [attendant] = await db
+  const [membership] = await db
     .select()
-    .from(users)
-    .where(and(eq(users.id, attendantId), eq(users.shopId, shopId)))
+    .from(userShops)
+    .where(and(eq(userShops.userId, attendantId), eq(userShops.shopId, shopId)))
     .limit(1);
-  if (!attendant || attendant.role !== "attendant") {
+  if (!membership) {
     return { error: "Attendant is not assigned to this shop." };
   }
 
+  const [attendant] = await db
+    .select()
+    .from(users)
+    .where(eq(users.id, attendantId))
+    .limit(1);
+  if (!attendant || attendant.role !== "attendant") {
+    return { error: "Attendant not found." };
+  }
+
   await db
-    .update(users)
-    .set({ shopId: null })
-    .where(eq(users.id, attendant.id));
+    .delete(userShops)
+    .where(and(eq(userShops.userId, attendant.id), eq(userShops.shopId, shop.id)));
 
   await logActivity({
     actorId: admin.id,
@@ -202,7 +213,6 @@ const attendantSchema = z.object({
     .max(30, "Username must be 30 characters or less."),
   email: z.string().email("Enter a valid email.").trim().toLowerCase(),
   password: z.string().min(8, "Password must be at least 8 characters."),
-  shopId: z.string().optional(),
 });
 
 export async function createAttendant(formData: FormData) {
@@ -213,14 +223,14 @@ export async function createAttendant(formData: FormData) {
     username: formData.get("username"),
     email: formData.get("email"),
     password: formData.get("password"),
-    shopId: formData.get("shopId") || undefined,
   });
 
   if (!parsed.success) {
     return { error: parsed.error.issues.map((i) => i.message).join(" ") };
   }
 
-  const { name, username, email, password, shopId } = parsed.data;
+  const { name, username, email, password } = parsed.data;
+  const shopIds = formData.getAll("shopId").map((v) => String(v).trim()).filter(Boolean);
 
   const [existing] = await db
     .select()
@@ -240,6 +250,16 @@ export async function createAttendant(formData: FormData) {
     return { error: "An account with that email already exists." };
   }
 
+  if (shopIds.length > 0) {
+    const shopCount = await db
+      .select({ id: shops.id })
+      .from(shops)
+      .where(inArray(shops.id, [...new Set(shopIds)]));
+    if (shopCount.length !== new Set(shopIds).size) {
+      return { error: "One or more selected shops do not exist." };
+    }
+  }
+
   const passwordHash = await hash(password, 10);
 
   const [user] = await db
@@ -248,7 +268,6 @@ export async function createAttendant(formData: FormData) {
       name,
       username,
       email,
-      shopId: shopId || null,
       passwordHash,
       role: "attendant",
     })
@@ -256,15 +275,22 @@ export async function createAttendant(formData: FormData) {
 
   if (!user) return { error: "Failed to create attendant." };
 
+  if (shopIds.length > 0) {
+    await db
+      .insert(userShops)
+      .values([...new Set(shopIds)].map((shopId) => ({ userId: user.id, shopId })))
+      .onConflictDoNothing();
+  }
+
   await logActivity({
     actorId: admin.id,
     actorName: admin.name,
     actorRole: "admin",
     action: "attendant.create",
-    shopId: shopId ?? null,
+    shopId: shopIds[0] ?? null,
     entityType: "user",
     entityId: user.id,
-    metadata: { name, username, email, shopId: shopId ?? null },
+    metadata: { name, username, email, shopIds },
   });
 
   revalidatePath("/admin");
@@ -287,7 +313,7 @@ export async function deactivateAttendant(formData: FormData) {
 
   await db.update(users).set({ active: false }).where(eq(users.id, user.id));
 
-  await db.update(users).set({ shopId: null }).where(eq(users.id, user.id));
+  await db.delete(userShops).where(eq(userShops.userId, user.id));
 
   await logActivity({
     actorId: admin.id,
@@ -364,7 +390,7 @@ export async function deleteAttendant(formData: FormData) {
   revalidatePath("/admin/shops");
 }
 
-export async function getUnassignedAttendants() {
+export async function getAttendantsNotInShop(shopId: string) {
   const rows = await db
     .select({
       id: users.id,
@@ -374,7 +400,9 @@ export async function getUnassignedAttendants() {
       active: users.active,
     })
     .from(users)
-    .where(and(eq(users.role, "attendant"), isNull(users.shopId)));
+    .leftJoin(userShops, and(eq(userShops.userId, users.id), eq(userShops.shopId, shopId)))
+    .where(and(eq(users.role, "attendant"), isNull(userShops.userId)))
+    .orderBy(users.name);
   return rows;
 }
 

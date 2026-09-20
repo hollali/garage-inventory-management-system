@@ -60,10 +60,10 @@ export default async function AdminWorkOrdersPage({
                 <TR>
                   <TH>Shop</TH>
                   <TH>Vehicle</TH>
-                  <TH>Customer</TH>
+                  <TH className="hidden md:table-cell">Customer</TH>
                   <TH>Status</TH>
                   <TH className="text-right">Total</TH>
-                  <TH>Created</TH>
+                  <TH className="hidden md:table-cell">Created</TH>
                   <TH className="text-right">Actions</TH>
                 </TR>
               </THead>
@@ -76,18 +76,20 @@ export default async function AdminWorkOrdersPage({
                       </span>
                     </TD>
                     <TD>
-                      <span className="font-mono text-sm text-zinc-900 dark:text-zinc-100">
+                      <span className="font-mono text-sm whitespace-nowrap text-zinc-900 dark:text-zinc-100">
                         {workOrder.vehicleReg || "—"}
                       </span>
                     </TD>
-                    <TD>{workOrder.customerName || "—"}</TD>
+                    <TD className="hidden md:table-cell">{workOrder.customerName || "—"}</TD>
                     <TD>
                       <WorkOrderStatusBadge status={workOrder.status} />
                     </TD>
-                    <TD className="text-right font-semibold tabular-nums text-zinc-900 dark:text-zinc-100">
+                    <TD className="text-right font-semibold whitespace-nowrap tabular-nums text-zinc-900 dark:text-zinc-100">
                       {formatMoney(workOrder.labourCents + workOrder.partsTotalCents)}
                     </TD>
-                    <TD className="text-xs text-muted">{formatDateTime(workOrder.createdAt)}</TD>
+                    <TD className="hidden text-xs whitespace-nowrap text-muted md:table-cell">
+                      {formatDateTime(workOrder.createdAt)}
+                    </TD>
                     <TD className="text-right">
                       <WorkOrderDetailModal
                         workOrder={{ ...workOrder, createdAt: formatDateTime(workOrder.createdAt) }}

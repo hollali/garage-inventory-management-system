@@ -8,12 +8,14 @@ export function SortableTh({
   column,
   label,
   align,
+  className,
 }: {
   base: string;
   params: Record<string, string | undefined>;
   column: string;
   label: string;
   align?: "right";
+  className?: string;
 }) {
   const current = params.sort;
   const dir = params.dir;
@@ -33,7 +35,10 @@ export function SortableTh({
     <th
       scope="col"
       aria-sort={active ? (dir === "asc" ? "ascending" : "descending") : "none"}
-      className="px-3 py-2.5 text-[11px] font-medium tracking-wide text-zinc-500 uppercase dark:text-zinc-400"
+      className={cn(
+        "px-3 py-2.5 text-[11px] font-medium tracking-wide whitespace-nowrap text-zinc-500 uppercase dark:text-zinc-400",
+        className,
+      )}
     >
       <Link
         href={href}

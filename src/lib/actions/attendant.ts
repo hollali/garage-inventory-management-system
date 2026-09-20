@@ -2,21 +2,53 @@
 
 import { and, eq } from "drizzle-orm";
 import { z } from "zod";
+import { cookies } from "next/headers";
 import { revalidatePath } from "next/cache";
 import { db } from "@/db";
-import { inventoryItems, stockMovements, users } from "@/db/schema";
-import { requireAttendant } from "@/lib/dal";
+import { inventoryItems, stockMovements } from "@/db/schema";
+import {
+  ACTIVE_SHOP_COOKIE,
+  getAttendantShops,
+  getShopForAttendant,
+  requireAttendant,
+} from "@/lib/dal";
 import { logActivity } from "@/lib/activity";
 import { resolveSku } from "@/lib/sku";
 
 export async function getAttendantShopId(): Promise<string | null> {
   const user = await requireAttendant();
-  const [row] = await db
-    .select({ shopId: users.shopId })
-    .from(users)
-    .where(eq(users.id, user.id))
-    .limit(1);
-  return row?.shopId ?? null;
+  const shop = await getShopForAttendant(user.id);
+  return shop?.id ?? null;
+}
+
+export async function setActiveShop(
+  formData: FormData,
+): Promise<{ ok: boolean; error?: string }> {
+  const user = await requireAttendant();
+  const shopId = String(formData.get("shopId") ?? "");
+  const assigned = await getAttendantShops(user.id);
+  if (!assigned.some((s) => s.id === shopId)) {
+    return { ok: false, error: "You are not assigned to that shop." };
+  }
+  const cookieStore = await cookies();
+  cookieStore.set(ACTIVE_SHOP_COOKIE, shopId, {
+    path: "/",
+    maxAge: 60 * 60 * 24 * 365,
+    sameSite: "lax",
+  });
+  const shop = assigned.find((s) => s.id === shopId);
+  await logActivity({
+    actorId: user.id,
+    actorName: user.name,
+    actorRole: "attendant",
+    action: "shop.switch",
+    shopId,
+    entityType: "shop",
+    entityId: shopId,
+    metadata: { name: shop?.name ?? null },
+  });
+  revalidatePath("/shop", "layout");
+  return { ok: true };
 }
 
 const itemSchema = z.object({

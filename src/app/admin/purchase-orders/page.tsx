@@ -106,11 +106,11 @@ export default async function AdminPurchaseOrdersPage({
               <THead>
                 <TR>
                   <TH>Order</TH>
-                  <TH>Supplier</TH>
-                  <TH>Shop</TH>
+                  <TH className="hidden md:table-cell">Supplier</TH>
+                  <TH className="hidden md:table-cell">Shop</TH>
                   <TH>Status</TH>
                   <TH className="text-right">Total</TH>
-                  <TH>Created</TH>
+                  <TH className="hidden md:table-cell">Created</TH>
                   <TH className="text-right">Actions</TH>
                 </TR>
               </THead>
@@ -123,10 +123,10 @@ export default async function AdminPurchaseOrdersPage({
                         <span className="block text-xs text-muted">by {po.createdByName}</span>
                       )}
                     </TD>
-                    <TD>
+                    <TD className="hidden md:table-cell">
                       {po.supplierName || <span className="text-muted">—</span>}
                     </TD>
-                    <TD>
+                    <TD className="hidden md:table-cell">
                       {po.shopId && po.shopName ? (
                         <span className="text-zinc-900 dark:text-zinc-100">{po.shopName}</span>
                       ) : (
@@ -136,10 +136,12 @@ export default async function AdminPurchaseOrdersPage({
                     <TD>
                       <StatusBadge status={po.status} />
                     </TD>
-                    <TD className="text-right tabular-nums font-medium">
+                    <TD className="text-right whitespace-nowrap tabular-nums font-medium">
                       {formatMoney(po.totalCents)}
                     </TD>
-                    <TD className="text-muted">{formatDateTime(po.createdAt)}</TD>
+                    <TD className="hidden text-xs whitespace-nowrap text-muted md:table-cell">
+                      {formatDateTime(po.createdAt)}
+                    </TD>
                     <TD className="text-right">
                       <div className="flex items-center justify-end gap-1">
                         {po.status === "draft" && (

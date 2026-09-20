@@ -6,8 +6,8 @@ import { Badge } from "@/components/ui/badge";
 
 export type AttentionRow = {
   id: string;
-  label: string;
-  meta: string;
+  label: ReactNode;
+  meta: ReactNode;
 };
 
 type AttentionCardProps = {

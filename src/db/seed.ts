@@ -9,6 +9,7 @@ import {
   sales,
   shops,
   stockMovements,
+  userShops,
   users,
 } from "./schema";
 
@@ -100,14 +101,20 @@ async function main() {
       })
       .returning({ id: shops.id });
 
-    await db.insert(users).values({
-      name: seed.attendant.name,
-      username: seed.attendant.username,
-      email: seed.attendant.email,
-      shopId: shop.id,
-      passwordHash: attendantHash,
-      role: "attendant",
-    });
+    const [attendant] = await db
+      .insert(users)
+      .values({
+        name: seed.attendant.name,
+        username: seed.attendant.username,
+        email: seed.attendant.email,
+        passwordHash: attendantHash,
+        role: "attendant",
+      })
+      .returning({ id: users.id });
+
+    if (attendant) {
+      await db.insert(userShops).values({ userId: attendant.id, shopId: shop.id });
+    }
 
     console.log(`Shop "${seed.name}" → ${seed.attendant.username} / ${ATTENDANT_PASSWORD}`);
 
@@ -142,9 +149,9 @@ async function main() {
 
   const [s1] = await db.select().from(shops).limit(1);
   const [s1AttendantRow] = await db
-    .select({ id: users.id })
-    .from(users)
-    .where(eq(users.shopId, s1.id))
+    .select({ id: userShops.userId })
+    .from(userShops)
+    .where(eq(userShops.shopId, s1.id))
     .limit(1);
   const s1Attendant = s1AttendantRow?.id ?? null;
   const [oilItem] = await db
