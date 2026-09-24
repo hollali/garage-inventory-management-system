@@ -4,6 +4,7 @@ import { getTransferRequests, type TransferRequestStatus } from "@/lib/queries/t
 import { formatDateTime } from "@/lib/utils";
 import { approveTransfer, rejectTransfer } from "@/lib/actions/transfers";
 import { TransferStatusBadge } from "@/components/transfers/transfer-status-badge";
+import { PageHeader } from "@/components/ui/page-header";
 import { ConfirmAction } from "@/components/confirm-action";
 import { Pagination } from "@/components/ui/pagination";
 import { Badge } from "@/components/ui/badge";
@@ -47,13 +48,10 @@ export default async function AdminTransfersPage({
 
   return (
     <div className="flex flex-col gap-6">
-      <div>
-        <h1 className="text-2xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-100">Transfer requests</h1>
-        <p className="text-sm text-muted">
-          Attendants request stock moved from their shop to another shop or the central pool.
-          Approving a request executes the stock movement immediately.
-        </p>
-      </div>
+      <PageHeader
+        title="Transfer requests"
+        description="Attendants request stock moved from their shop to another shop or the central pool. Approving a request executes the stock movement immediately."
+      />
 
       <div className="flex flex-wrap items-center gap-2">
         {filters.map((f) => {
@@ -67,7 +65,7 @@ export default async function AdminTransfersPage({
               className={
                 active
                   ? "rounded-lg bg-brand px-3 py-1.5 text-sm font-medium text-brand-foreground shadow-sm"
-                  : "rounded-lg border border-zinc-300 dark:border-zinc-700 bg-surface px-3 py-1.5 text-sm font-medium text-zinc-700 dark:text-zinc-300 hover:bg-zinc-50 dark:hover:bg-zinc-800/40"
+                  : "rounded-lg border border-border-strong bg-surface px-3 py-1.5 text-sm font-medium text-zinc-700 shadow-sm hover:bg-surface-subtle dark:text-zinc-300 dark:hover:bg-zinc-800/60"
               }
             >
               {f.label}

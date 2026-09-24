@@ -45,7 +45,7 @@ export function SidebarUser({
       direction="up"
       align={collapsed ? "start" : "end"}
       buttonClassName={cn(
-        "w-full rounded-lg p-0 hover:bg-zinc-100 dark:hover:bg-zinc-900",
+        "w-full rounded-lg p-0 hover:bg-surface-strong dark:hover:bg-zinc-900",
       )}
       menuClassName="w-56"
       trigger={
@@ -56,12 +56,12 @@ export function SidebarUser({
             collapsed && "justify-center px-0",
           )}
         >
-          <span className="flex size-7 shrink-0 items-center justify-center rounded-md bg-zinc-100 text-[11px] font-semibold text-zinc-700 dark:bg-zinc-800 dark:text-zinc-200">
+          <span className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-brand text-[11px] font-semibold text-brand-foreground">
             {initials(userName || "?")}
           </span>
           {!collapsed && (
             <span className="flex min-w-0 flex-1 flex-col items-start leading-tight">
-              <span className="max-w-full truncate text-xs font-medium text-zinc-900 dark:text-zinc-100">
+              <span className="max-w-full truncate text-xs font-medium text-foreground">
                 {userName}
               </span>
               <span className="max-w-full truncate text-[11px] text-muted capitalize">

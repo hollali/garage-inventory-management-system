@@ -12,6 +12,7 @@ import {
 import { formatMoney } from "@/lib/utils";
 import { sendLowStockAlert } from "@/lib/actions/reports";
 import { StatCard } from "@/components/ui/stat";
+import { PageHeader } from "@/components/ui/page-header";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ButtonLink } from "@/components/ui/button";
@@ -68,12 +69,10 @@ export default async function AdminReportsPage({
 
   return (
     <div className="flex flex-col gap-6">
-      <div>
-        <h1 className="text-2xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-100">Reports</h1>
-        <p className="text-sm text-muted">
-          Revenue analytics, margins, and reorder suggestions.
-        </p>
-      </div>
+      <PageHeader
+        title="Reports"
+        description="Revenue analytics, margins, and reorder suggestions. Filter by shop to drill into a single location."
+      />
 
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
         <StatCard

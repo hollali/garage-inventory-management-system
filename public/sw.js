@@ -1,5 +1,6 @@
-const PRECACHE = "garage-inventory-precache-v1";
-const STATIC_CACHE = "garage-inventory-static-v1";
+const PRECACHE = "garage-inventory-precache-v2";
+const STATIC_CACHE = "garage-inventory-static-v2";
+const RUNTIME_CACHE = "garage-inventory-runtime-v2";
 
 const APP_SHELL = ["/", "/offline"];
 
@@ -24,13 +25,32 @@ self.addEventListener("activate", (event) => {
       .then((keys) =>
         Promise.all(
           keys
-            .filter((key) => key !== PRECACHE && key !== STATIC_CACHE)
+            .filter(
+              (key) => key !== PRECACHE && key !== STATIC_CACHE && key !== RUNTIME_CACHE,
+            )
             .map((key) => caches.delete(key)),
         ),
       )
       .then(() => self.clients.claim()),
   );
 });
+
+function cacheFirst(request, cacheName, event) {
+  event.respondWith(
+    caches.match(request).then((cached) => {
+      const fetched = fetch(request)
+        .then((response) => {
+          if (response && response.ok) {
+            const copy = response.clone();
+            caches.open(cacheName).then((cache) => cache.put(request, copy));
+          }
+          return response;
+        })
+        .catch(() => cached);
+      return cached || fetched;
+    }),
+  );
+}
 
 self.addEventListener("fetch", (event) => {
   const { request } = event;
@@ -60,19 +80,9 @@ self.addEventListener("fetch", (event) => {
     url.pathname.startsWith("/_next/static/") ||
     url.pathname.startsWith("/icons/")
   ) {
-    event.respondWith(
-      caches.match(request).then((cached) => {
-        const fetched = fetch(request)
-          .then((response) => {
-            if (response.ok) {
-              const copy = response.clone();
-              caches.open(STATIC_CACHE).then((cache) => cache.put(request, copy));
-            }
-            return response;
-          })
-          .catch(() => cached);
-        return cached || fetched;
-      }),
-    );
+    cacheFirst(request, STATIC_CACHE, event);
+    return;
   }
+
+  cacheFirst(request, RUNTIME_CACHE, event);
 });

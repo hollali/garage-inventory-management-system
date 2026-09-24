@@ -7,17 +7,20 @@ export function BrandMark({
   size = "sm",
   logoUrl,
   brandName,
+  className,
 }: {
   size?: "sm" | "md";
   logoUrl?: string | null;
   brandName?: string;
+  className?: string;
 }) {
   if (logoUrl) {
     return (
       <div
         className={cn(
-          "flex shrink-0 items-center justify-center overflow-hidden rounded-md",
-          size === "sm" ? "size-6" : "size-8",
+          "flex shrink-0 items-center justify-center overflow-hidden rounded-lg",
+          size === "sm" ? "size-7" : "size-9",
+          className,
         )}
       >
         {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -33,11 +36,12 @@ export function BrandMark({
   return (
     <div
       className={cn(
-        "flex shrink-0 items-center justify-center rounded-md bg-zinc-900 text-zinc-50 dark:bg-zinc-100 dark:text-zinc-900",
-        size === "sm" ? "size-6" : "size-8",
+        "flex shrink-0 items-center justify-center rounded-lg bg-brand text-brand-foreground shadow-sm",
+        size === "sm" ? "size-7" : "size-9",
+        className,
       )}
     >
-      <Wrench className={size === "sm" ? "size-3.5" : "size-4"} aria-hidden />
+      <Wrench className={size === "sm" ? "size-4" : "size-4.5"} aria-hidden />
     </div>
   );
 }
@@ -54,16 +58,18 @@ export function SidebarHeader({
   logoUrl?: string | null;
 }) {
   return (
-    <div className="flex h-14 w-full shrink-0 items-center gap-1 border-b border-zinc-200 py-2 pr-2 pl-3 dark:border-zinc-800">
+    <div className="flex h-16 w-full shrink-0 items-center gap-1 border-b border-border py-2 pr-2 pl-3">
       <div className="flex min-w-0 flex-1 items-center gap-2.5">
-        {!collapsed && <BrandMark logoUrl={logoUrl} brandName={brand} />}
-        {!collapsed && (
-          <div className="min-w-0 leading-tight">
-            <p className="truncate text-sm font-semibold text-zinc-900 dark:text-zinc-100">
-              {brand}
-            </p>
-            <p className="text-[11px] text-muted">Inventory platform</p>
-          </div>
+        {collapsed ? (
+          <BrandMark logoUrl={logoUrl} brandName={brand} className="mx-auto" />
+        ) : (
+          <>
+            <BrandMark logoUrl={logoUrl} brandName={brand} size="md" />
+            <div className="min-w-0 leading-tight">
+              <p className="truncate text-sm font-semibold text-foreground">{brand}</p>
+              <p className="text-[11px] text-muted">Inventory platform</p>
+            </div>
+          </>
         )}
       </div>
       {action}

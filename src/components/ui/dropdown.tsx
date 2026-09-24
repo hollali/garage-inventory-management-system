@@ -115,7 +115,7 @@ export function Dropdown({
           });
         }}
         className={cn(
-          "inline-flex items-center rounded-md p-1.5 text-zinc-500 transition-colors hover:bg-zinc-100 hover:text-zinc-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-zinc-100",
+          "inline-flex items-center rounded-md p-1.5 text-zinc-500 transition-colors hover:bg-zinc-100 hover:text-zinc-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring dark:text-zinc-400 dark:hover:bg-zinc-800/60 dark:hover:text-zinc-100",
           buttonClassName,
         )}
       >
@@ -195,7 +195,7 @@ function DropdownMenu({
         transition={{ duration: 0.12, ease: [0.16, 1, 0.3, 1] }}
         style={{ position: "fixed", ...styles }}
         className={cn(
-          "z-[60] w-max min-w-44 overflow-hidden rounded-md border border-zinc-200 bg-surface p-1 shadow-lg dark:border-zinc-800",
+          "z-[60] w-max min-w-44 overflow-hidden rounded-lg border border-border bg-surface-elevated p-1 shadow-popover",
           menuClassName,
         )}
       >
@@ -229,10 +229,10 @@ export function DropdownItem({
         onClick?.();
       }}
       className={cn(
-        "flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-left text-sm transition-colors focus-visible:outline-2 focus-visible:outline-offset-0 focus-visible:outline-brand",
+        "flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-left text-sm transition-colors focus-visible:outline-2 focus-visible:outline-offset-0 focus-visible:outline-ring",
         variant === "danger"
           ? "text-rose-600 hover:bg-rose-50 dark:text-rose-400 dark:hover:bg-rose-500/10"
-          : "text-zinc-700 hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-zinc-800",
+          : "text-zinc-700 hover:bg-surface-strong dark:text-zinc-300 dark:hover:bg-zinc-800/60",
         className,
       )}
     >
@@ -244,12 +244,12 @@ export function DropdownItem({
 
 export function DropdownLabel({ children }: { children: ReactNode }) {
   return (
-    <p className="px-2 pb-1 pt-1.5 text-[11px] font-medium tracking-wide text-zinc-400 uppercase dark:text-zinc-500">
+    <p className="px-2 pb-1 pt-2 text-[11px] font-medium text-zinc-400 dark:text-zinc-500">
       {children}
     </p>
   );
 }
 
 export function DropdownSeparator() {
-  return <div className="my-1 h-px bg-zinc-100 dark:bg-zinc-800" />;
+  return <div className="my-1 h-px bg-border" />;
 }

@@ -85,7 +85,7 @@ export function MobileSidebar({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.15 }}
-            className="absolute inset-0 bg-zinc-950/40 dark:bg-zinc-950/60"
+            className="absolute inset-0 bg-zinc-950/50 backdrop-blur-sm dark:bg-zinc-950/70"
             onClick={() => setMobileOpen(false)}
             aria-hidden
           />
@@ -99,7 +99,7 @@ export function MobileSidebar({
             animate={{ x: 0 }}
             exit={{ x: "-100%" }}
             transition={{ duration: 0.25, ease: "easeInOut" }}
-            className="absolute inset-y-0 left-0 flex w-72 max-w-[85vw] flex-col border-r border-zinc-200 bg-surface shadow-2xl dark:border-zinc-800 dark:bg-zinc-950"
+            className="absolute inset-y-0 left-0 flex w-72 max-w-[85vw] flex-col border-r border-border bg-surface shadow-modal"
           >
             <div className="flex items-center justify-between">
               <SidebarHeader
@@ -111,7 +111,7 @@ export function MobileSidebar({
                     type="button"
                     onClick={() => setMobileOpen(false)}
                     aria-label="Close navigation menu"
-                    className="rounded-md p-1.5 text-zinc-500 transition-colors hover:bg-zinc-100 hover:text-zinc-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-zinc-100"
+                    className="rounded-md p-1.5 text-zinc-500 transition-colors hover:bg-zinc-100 hover:text-zinc-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring dark:text-zinc-400 dark:hover:bg-zinc-800/60 dark:hover:text-zinc-100"
                   >
                     <X className="size-5" aria-hidden />
                   </button>
@@ -120,19 +120,18 @@ export function MobileSidebar({
             </div>
 
             {workspaceSwitcher ? (
-              <div className="border-b border-zinc-200 px-3 py-2 dark:border-zinc-800">
+              <div className="border-b border-border px-3 py-2">
                 {workspaceSwitcher}
               </div>
             ) : workspaceLabel ? (
-              <p className="truncate border-b border-zinc-200 px-4 py-2 text-[11px] font-medium text-zinc-500 dark:border-zinc-800 dark:text-zinc-400">
-                <span className="text-muted">Workspace · </span>
-                {workspaceLabel}
+              <p className="truncate border-b border-border px-4 py-2 text-[11px] font-medium text-muted">
+                Workspace · {workspaceLabel}
               </p>
             ) : null}
 
             <SidebarNavigation sections={sections} collapsed={false} />
 
-            <div className="shrink-0 border-t border-zinc-200 p-2 dark:border-zinc-800">
+            <div className="shrink-0 border-t border-border p-2">
               <SidebarUser
                 userName={userName}
                 roleLabel={roleLabel}

@@ -1,15 +1,15 @@
+import Link from "next/link";
 import { requireAdmin } from "@/lib/dal";
-import { getWorkOrderDetail, getWorkOrders } from "@/lib/queries/work-orders";
+import { getWorkOrders } from "@/lib/queries/work-orders";
 import { formatDateTime, formatMoney } from "@/lib/utils";
 import { WorkOrdersFilter } from "@/components/work-orders/work-orders-filter";
-import { WorkOrderDetailModal } from "@/components/work-orders/work-order-detail-modal";
+import { PageHeader } from "@/components/ui/page-header";
 import { WorkOrderStatusBadge } from "@/components/work-orders/work-order-status";
 import { Pagination } from "@/components/ui/pagination";
-import { Button } from "@/components/ui/button";
+import { ButtonLink } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Table, TBody, TD, THead, TH, TR } from "@/components/ui/table";
 import { EmptyState, BoxIcon } from "@/components/ui/empty-state";
-import { Eye } from "lucide-react";
 
 export default async function AdminWorkOrdersPage({
   searchParams,
@@ -23,24 +23,13 @@ export default async function AdminWorkOrdersPage({
 
   const data = await getWorkOrders(undefined, { page, pageSize, status: params.status });
 
-  const rows = (
-    await Promise.all(
-      data.rows.map(async (wo) => {
-        const detail = await getWorkOrderDetail(wo.id);
-        return detail ? { workOrder: detail.workOrder, parts: detail.parts } : null;
-      }),
-    )
-  ).filter((r): r is NonNullable<typeof r> => r !== null);
-
   return (
     <div className="flex flex-col gap-6">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-100">Work orders</h1>
-          <p className="text-sm text-muted">Job cards across all shops</p>
-        </div>
-        <WorkOrdersFilter />
-      </div>
+      <PageHeader
+        title="Work orders"
+        description="Job cards across all shops"
+        actions={<WorkOrdersFilter />}
+      />
 
       {data.total === 0 ? (
         <EmptyState
@@ -53,62 +42,94 @@ export default async function AdminWorkOrdersPage({
           }
         />
       ) : (
-        <Card>
-          <CardContent className="p-0">
-            <Table>
-              <THead>
-                <TR>
-                  <TH>Shop</TH>
-                  <TH>Vehicle</TH>
-                  <TH className="hidden md:table-cell">Customer</TH>
-                  <TH>Status</TH>
-                  <TH className="text-right">Total</TH>
-                  <TH className="hidden md:table-cell">Created</TH>
-                  <TH className="text-right">Actions</TH>
-                </TR>
-              </THead>
-              <TBody>
-                {rows.map(({ workOrder, parts }) => (
-                  <TR key={workOrder.id}>
-                    <TD>
-                      <span className="font-medium text-zinc-900 dark:text-zinc-100">
-                        {workOrder.shopName || "—"}
-                      </span>
-                    </TD>
-                    <TD>
-                      <span className="font-mono text-sm whitespace-nowrap text-zinc-900 dark:text-zinc-100">
+        <>
+          <div className="hidden md:block">
+            <Card>
+              <CardContent className="p-0">
+                <Table>
+                  <THead>
+                    <TR>
+                      <TH>Shop</TH>
+                      <TH>Vehicle</TH>
+                      <TH className="hidden md:table-cell">Customer</TH>
+                      <TH>Status</TH>
+                      <TH className="text-right">Total</TH>
+                      <TH className="hidden md:table-cell">Created</TH>
+                      <TH className="text-right">Actions</TH>
+                    </TR>
+                  </THead>
+                  <TBody>
+                    {data.rows.map((workOrder) => (
+                      <TR key={workOrder.id}>
+                        <TD>
+                          <span className="font-medium text-zinc-900 dark:text-zinc-100">
+                            {workOrder.shopName || "—"}
+                          </span>
+                        </TD>
+                        <TD>
+                          <Link
+                            href={`/admin/work-orders/${workOrder.id}`}
+                            className="font-mono text-sm whitespace-nowrap text-zinc-900 hover:underline dark:text-zinc-100"
+                          >
+                            {workOrder.vehicleReg || "—"}
+                          </Link>
+                        </TD>
+                        <TD className="hidden md:table-cell">{workOrder.customerName || "—"}</TD>
+                        <TD>
+                          <WorkOrderStatusBadge status={workOrder.status} />
+                        </TD>
+                        <TD className="text-right font-semibold whitespace-nowrap tabular-nums text-zinc-900 dark:text-zinc-100">
+                          {formatMoney(workOrder.labourCents + workOrder.partsTotalCents)}
+                        </TD>
+                        <TD className="hidden text-xs whitespace-nowrap text-muted md:table-cell">
+                          {formatDateTime(workOrder.createdAt)}
+                        </TD>
+                        <TD className="text-right">
+                          <ButtonLink href={`/admin/work-orders/${workOrder.id}`} variant="outline" size="sm">
+                            View
+                          </ButtonLink>
+                        </TD>
+                      </TR>
+                    ))}
+                  </TBody>
+                </Table>
+              </CardContent>
+            </Card>
+          </div>
+
+          <div className="flex flex-col gap-3 md:hidden">
+            {data.rows.map((workOrder) => (
+              <Card key={workOrder.id}>
+                <CardContent className="p-4">
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="min-w-0">
+                      <p className="text-xs text-muted">{workOrder.shopName || "—"}</p>
+                      <Link
+                        href={`/admin/work-orders/${workOrder.id}`}
+                        className="mt-0.5 block font-mono text-sm font-medium text-foreground hover:underline"
+                      >
                         {workOrder.vehicleReg || "—"}
-                      </span>
-                    </TD>
-                    <TD className="hidden md:table-cell">{workOrder.customerName || "—"}</TD>
-                    <TD>
+                      </Link>
+                      <div className="mt-1 text-xs text-muted">{workOrder.customerName || "No customer"}</div>
                       <WorkOrderStatusBadge status={workOrder.status} />
-                    </TD>
-                    <TD className="text-right font-semibold whitespace-nowrap tabular-nums text-zinc-900 dark:text-zinc-100">
-                      {formatMoney(workOrder.labourCents + workOrder.partsTotalCents)}
-                    </TD>
-                    <TD className="hidden text-xs whitespace-nowrap text-muted md:table-cell">
-                      {formatDateTime(workOrder.createdAt)}
-                    </TD>
-                    <TD className="text-right">
-                      <WorkOrderDetailModal
-                        workOrder={{ ...workOrder, createdAt: formatDateTime(workOrder.createdAt) }}
-                        parts={parts}
-                        items={[]}
-                        canEdit={false}
-                        trigger={
-                          <Button variant="outline" size="sm">
-                            <Eye className="size-4" /> View
-                          </Button>
-                        }
-                      />
-                    </TD>
-                  </TR>
-                ))}
-              </TBody>
-            </Table>
-          </CardContent>
-        </Card>
+                    </div>
+                    <div className="shrink-0 text-right">
+                      <div className="font-semibold tabular-nums text-foreground">
+                        {formatMoney(workOrder.labourCents + workOrder.partsTotalCents)}
+                      </div>
+                    </div>
+                  </div>
+                  <div className="mt-3 flex items-center justify-between border-t border-border pt-3">
+                    <span className="text-xs text-muted">{formatDateTime(workOrder.createdAt)}</span>
+                    <ButtonLink href={`/admin/work-orders/${workOrder.id}`} variant="outline" size="sm">
+                      View
+                    </ButtonLink>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </>
       )}
 
       <Pagination

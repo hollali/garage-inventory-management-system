@@ -2,6 +2,7 @@ import { requireAdmin } from "@/lib/dal";
 import { getSuppliers } from "@/lib/queries/purchasing";
 import { deleteSupplier } from "@/lib/actions/purchasing";
 import { SupplierModal } from "@/components/purchasing/supplier-modal";
+import { PageHeader } from "@/components/ui/page-header";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button, IconButton } from "@/components/ui/button";
 import { ConfirmAction } from "@/components/confirm-action";
@@ -15,23 +16,22 @@ export default async function AdminSuppliersPage() {
 
   return (
     <div className="flex flex-col gap-6">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-100">Suppliers</h1>
-          <p className="text-sm text-muted">
-            {suppliers.length} supplier{suppliers.length === 1 ? "" : "s"} · used to create
-            purchase orders.
-          </p>
-        </div>
-        <SupplierModal
-          urlAction="add"
-          trigger={
-            <Button>
-              <Plus className="size-4" /> New supplier
-            </Button>
-          }
-        />
-      </div>
+      <PageHeader
+        title="Suppliers"
+        description={`${suppliers.length} supplier${
+          suppliers.length === 1 ? "" : "s"
+        } · used to create purchase orders.`}
+        actions={
+          <SupplierModal
+            urlAction="add"
+            trigger={
+              <Button>
+                <Plus className="size-4" /> New supplier
+              </Button>
+            }
+          />
+        }
+      />
 
       {suppliers.length === 0 ? (
         <EmptyState

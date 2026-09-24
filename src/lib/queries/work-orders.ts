@@ -98,14 +98,19 @@ export async function getWorkOrderDetail(id: string) {
 }
 
 export async function getItemsForWorkOrder(shopId: string) {
-  return db
+  const rows = await db
     .select({
       id: inventoryItems.id,
       name: inventoryItems.name,
       quantity: inventoryItems.quantity,
+      reservedQuantity: inventoryItems.reservedQuantity,
       unitPriceCents: inventoryItems.unitPriceCents,
     })
     .from(inventoryItems)
     .where(and(eq(inventoryItems.shopId, shopId), gt(inventoryItems.quantity, 0)))
     .orderBy(inventoryItems.name);
+
+  return rows
+    .map((row) => ({ ...row, available: row.quantity - row.reservedQuantity }))
+    .filter((row) => row.available > 0);
 }

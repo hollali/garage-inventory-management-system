@@ -36,16 +36,16 @@ export function SortableTh({
       scope="col"
       aria-sort={active ? (dir === "asc" ? "ascending" : "descending") : "none"}
       className={cn(
-        "px-3 py-2.5 text-[11px] font-medium tracking-wide whitespace-nowrap text-zinc-500 uppercase dark:text-zinc-400",
+        "px-3 py-3 text-xs font-medium whitespace-nowrap text-muted",
         className,
       )}
     >
       <Link
         href={href}
         className={cn(
-          "inline-flex items-center gap-1 rounded-sm transition-colors hover:text-zinc-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand dark:hover:text-zinc-100",
+          "inline-flex items-center gap-1 rounded-sm transition-colors hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
           align === "right" && "justify-end",
-          active && "text-zinc-900 dark:text-zinc-100",
+          active && "text-foreground",
         )}
       >
         {label}
@@ -56,7 +56,7 @@ export function SortableTh({
             <ArrowDown className="size-3" aria-hidden />
           )
         ) : (
-          <ChevronsUpDown className="size-3 text-zinc-400" aria-hidden />
+          <ChevronsUpDown className="size-3 text-zinc-400 opacity-70" aria-hidden />
         )}
       </Link>
     </th>

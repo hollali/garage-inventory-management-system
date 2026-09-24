@@ -50,11 +50,11 @@ export function SidebarItem({
   const active = isNavActive(item, pathname);
 
   const rowClass = cn(
-    "group relative flex items-center gap-2.5 rounded-md px-2.5 py-2 text-sm font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand",
+    "group relative flex items-center gap-2.5 rounded-lg px-2.5 py-2 text-sm font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
     collapsed && "justify-center px-0",
     active
-      ? "text-zinc-900 dark:text-zinc-100"
-      : "text-zinc-500 hover:bg-zinc-50 hover:text-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-800/60 dark:hover:text-zinc-100",
+      ? "text-brand"
+      : "text-zinc-600 hover:bg-zinc-100/70 hover:text-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-800/60 dark:hover:text-zinc-100",
   );
 
   const iconClass = cn(
@@ -83,7 +83,14 @@ export function SidebarItem({
   const label = !collapsed && <span className="truncate">{item.label}</span>;
 
   const badge = !collapsed && item.badge != null && (
-    <span className="ml-auto shrink-0 rounded bg-zinc-100 px-1.5 py-0.5 text-[10px] font-semibold text-zinc-600 tabular-nums dark:bg-zinc-800 dark:text-zinc-300">
+    <span
+      className={cn(
+        "ml-auto shrink-0 rounded-md px-1.5 py-0.5 text-[10px] font-semibold tabular-nums transition-colors",
+        active
+          ? "bg-brand text-brand-foreground"
+          : "bg-surface-strong text-zinc-600 dark:text-zinc-300",
+      )}
+    >
       {item.badge}
     </span>
   );
@@ -95,13 +102,13 @@ export function SidebarItem({
   const collapsedBadge =
     collapsed && item.badge != null ? (
       collapsedBadgeIsCompact ? (
-        <span className="absolute right-1 top-1 rounded bg-zinc-200 px-1 text-[9px] leading-[14px] font-semibold text-zinc-600 tabular-nums dark:bg-zinc-700 dark:text-zinc-300">
+        <span className="absolute right-1 top-1 rounded-md bg-brand px-1 text-[9px] leading-[14px] font-semibold text-brand-foreground tabular-nums">
           {item.badge}
         </span>
       ) : (
         <span
           aria-hidden
-          className="absolute right-2 top-2 size-1.5 rounded-full bg-zinc-400 dark:bg-zinc-500"
+          className="absolute right-2 top-2 size-1.5 rounded-full bg-brand"
         />
       )
     ) : null;
@@ -123,7 +130,7 @@ export function SidebarItem({
           <motion.span
             layoutId="sidebar-active-nav"
             aria-hidden
-            className="absolute inset-0 rounded-md bg-zinc-100 dark:bg-zinc-800"
+            className="absolute inset-0 rounded-lg bg-brand-soft dark:bg-brand-soft-hover"
             transition={{ type: "spring", bounce: 0.15, duration: 0.4 }}
           />
         )}
@@ -159,7 +166,7 @@ export function SidebarItem({
           <motion.span
             layoutId="sidebar-active-nav"
             aria-hidden
-            className="absolute inset-0 rounded-md bg-zinc-100 dark:bg-zinc-800"
+            className="absolute inset-0 rounded-lg bg-brand-soft dark:bg-brand-soft-hover"
             transition={{ type: "spring", bounce: 0.15, duration: 0.4 }}
           />
         )}
@@ -183,7 +190,7 @@ export function SidebarItem({
             aria-expanded={open}
             aria-controls={open ? submenuId : undefined}
             aria-label={`${open ? "Collapse" : "Expand"} ${item.label} submenu`}
-            className="mr-1.5 rounded p-1 text-zinc-400 transition-colors hover:bg-zinc-100 hover:text-zinc-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand dark:text-zinc-500 dark:hover:bg-zinc-800 dark:hover:text-zinc-100"
+            className="mr-1.5 rounded-md p-1 text-zinc-400 transition-colors hover:bg-zinc-100 hover:text-zinc-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring dark:text-zinc-500 dark:hover:bg-zinc-800 dark:hover:text-zinc-100"
           >
               <ChevronRight
                 aria-hidden

@@ -4,6 +4,8 @@ import { useCallback, useEffect, useRef, useState, type ReactNode } from "react"
 import { useActionState } from "react";
 import { useRouter } from "next/navigation";
 import { createWorkOrder } from "@/lib/actions/work-orders";
+import { formDataToRecord } from "@/lib/offline/queue";
+import { useOffline } from "@/components/offline/offline-provider";
 import { Modal } from "@/components/ui/modal";
 import { Button } from "@/components/ui/button";
 import { Input, Label, Textarea, FormError } from "@/components/ui/forms";
@@ -19,6 +21,7 @@ export function WorkOrderModal({
 }) {
   const router = useRouter();
   const { toast } = useToast();
+  const { isOnline, enqueue } = useOffline();
   const { open: urlOpen, close: closeUrlModal } = useUrlModal(urlAction);
   const [localOpen, setLocalOpen] = useState(false);
   const open = localOpen || urlOpen;
@@ -57,7 +60,21 @@ export function WorkOrderModal({
         description="Open a job card for a vehicle in this shop."
         size="lg"
       >
-        <form action={formAction} className="flex flex-col gap-4">
+        <form
+          action={formAction}
+          onSubmit={(e) => {
+            if (isOnline) return;
+            e.preventDefault();
+            enqueue("createWorkOrder", formDataToRecord(new FormData(e.currentTarget)));
+            setOpen(false);
+            toast({
+              title: "Saved while offline",
+              description: "This work order will be created when you reconnect.",
+            });
+            router.refresh();
+          }}
+          className="flex flex-col gap-4"
+        >
           {actionState?.error && <FormError>{actionState.error}</FormError>}
 
           <div className="grid gap-4 sm:grid-cols-2">

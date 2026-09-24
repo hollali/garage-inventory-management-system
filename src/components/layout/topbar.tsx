@@ -16,7 +16,7 @@ export function Topbar({ sections }: { sections: NavSection[] }) {
     typeof navigator !== "undefined" && /Mac|iPhone|iPad/.test(navigator.platform);
 
   return (
-    <header className="sticky top-0 z-20 flex h-14 shrink-0 items-center justify-between gap-3 border-b border-zinc-200 bg-surface/80 px-4 backdrop-blur-md print:hidden dark:border-zinc-800 dark:bg-zinc-950/80">
+    <header className="sticky top-0 z-20 flex h-14 shrink-0 items-center justify-between gap-3 border-b border-border bg-background/70 px-4 backdrop-blur-xl print:hidden sm:px-6 lg:px-8">
       <div className="flex min-w-0 items-center gap-2">
         <button
           type="button"
@@ -25,11 +25,16 @@ export function Topbar({ sections }: { sections: NavSection[] }) {
           aria-label="Open navigation menu"
           aria-expanded={mobileOpen}
           aria-controls={mobileOpen ? "mobile-sidebar-nav" : undefined}
-          className="rounded-md p-2 text-zinc-500 transition-colors hover:bg-zinc-100 hover:text-zinc-900 lg:hidden dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-zinc-100"
+          className="-ml-1 rounded-md p-2 text-zinc-500 transition-colors hover:bg-zinc-100 hover:text-zinc-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring lg:hidden dark:text-zinc-400 dark:hover:bg-zinc-800/60 dark:hover:text-zinc-100"
         >
           <Menu className="size-5" aria-hidden />
         </button>
-        <p className="hidden text-sm font-medium text-zinc-400 sm:block dark:text-zinc-500">
+        <div className="hidden min-w-0 items-center gap-2 sm:flex">
+          <p className="truncate text-sm font-medium text-foreground">
+            {current?.label ?? "Overview"}
+          </p>
+        </div>
+        <p className="truncate text-sm font-medium text-foreground sm:hidden">
           {current?.label ?? "Overview"}
         </p>
       </div>
@@ -38,13 +43,13 @@ export function Topbar({ sections }: { sections: NavSection[] }) {
         <button
           type="button"
           onClick={() => setCommandOpen(true)}
-          className="hidden h-8 w-56 items-center justify-between gap-2 rounded-md border border-zinc-200 bg-surface px-2.5 text-xs text-zinc-400 transition-colors hover:bg-zinc-50 hover:text-zinc-600 md:flex dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-500 dark:hover:bg-zinc-800"
+          className="hidden h-9 w-64 items-center justify-between gap-2 rounded-lg border border-border-strong bg-surface px-3 text-sm text-zinc-400 shadow-sm transition-colors hover:border-zinc-300 hover:text-zinc-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring md:flex dark:border-zinc-700 dark:bg-zinc-900 dark:hover:border-zinc-600 dark:hover:text-zinc-300"
         >
           <span className="inline-flex items-center gap-2">
-            <Search className="size-3.5" aria-hidden />
+            <Search className="size-4" aria-hidden />
             Search…
           </span>
-          <kbd className="rounded border border-zinc-200 bg-zinc-50 px-1 py-0.5 font-mono text-[10px] font-medium text-zinc-400 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-500">
+          <kbd className="rounded-md border border-border-strong bg-surface-strong px-1.5 py-0.5 font-mono text-[10px] font-medium text-zinc-400 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-500">
             {isMac ? "⌘" : "Ctrl"} K
           </kbd>
         </button>
@@ -52,7 +57,7 @@ export function Topbar({ sections }: { sections: NavSection[] }) {
           type="button"
           onClick={() => setCommandOpen(true)}
           aria-label="Search"
-          className="rounded-md p-2 text-zinc-500 transition-colors hover:bg-zinc-100 hover:text-zinc-900 md:hidden dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-zinc-100"
+          className="rounded-md p-2 text-zinc-500 transition-colors hover:bg-zinc-100 hover:text-zinc-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring md:hidden dark:text-zinc-400 dark:hover:bg-zinc-800/60 dark:hover:text-zinc-100"
         >
           <Search className="size-4" aria-hidden />
         </button>
@@ -61,7 +66,7 @@ export function Topbar({ sections }: { sections: NavSection[] }) {
           type="button"
           onClick={toggleTheme}
           aria-label={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
-          className="rounded-md p-2 text-zinc-500 transition-colors hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-800 dark:hover:text-zinc-100"
+          className="rounded-md p-2 text-zinc-500 transition-colors hover:bg-zinc-100 hover:text-zinc-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring dark:text-zinc-400 dark:hover:bg-zinc-800/60 dark:hover:text-zinc-100"
         >
           {theme === "dark" ? (
             <Sun className="size-4" aria-hidden />

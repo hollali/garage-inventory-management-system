@@ -4,14 +4,14 @@ import { cn } from "@/lib/utils";
 export function Label({ className, ...props }: React.LabelHTMLAttributes<HTMLLabelElement>) {
   return (
     <label
-      className={cn("mb-1.5 block text-xs font-medium text-zinc-700 dark:text-zinc-300", className)}
+      className={cn("mb-1.5 block text-[13px] font-medium text-foreground", className)}
       {...props}
     />
   );
 }
 
 const fieldBase =
-  "w-full rounded-md border border-zinc-300 bg-surface px-3 py-2 text-sm text-zinc-900 shadow-sm transition-colors placeholder:text-zinc-400 focus:border-zinc-900 focus:outline-none focus:ring-2 focus:ring-zinc-900/10 disabled:cursor-not-allowed disabled:opacity-50 dark:border-zinc-700 dark:text-zinc-100 dark:placeholder:text-zinc-500 dark:focus:border-zinc-100 dark:focus:ring-zinc-100/10";
+  "w-full rounded-lg border border-border-strong bg-surface px-3 py-2 text-sm text-foreground shadow-sm transition-colors placeholder:text-zinc-400 focus:border-brand/40 focus:outline-none focus:ring-2 focus:ring-brand/20 disabled:cursor-not-allowed disabled:opacity-50 dark:text-zinc-100 dark:placeholder:text-zinc-500 dark:focus:border-brand/60 dark:focus:ring-brand/25";
 
 export function Input({ className, ...props }: React.InputHTMLAttributes<HTMLInputElement>) {
   return <input className={cn(fieldBase, "h-9", className)} {...props} />;
@@ -41,7 +41,7 @@ export function FormSection({
 }) {
   return (
     <section className={cn("flex flex-col gap-4", className)}>
-      <h3 className="border-b border-zinc-100 pb-1 text-[11px] font-semibold uppercase tracking-wide text-zinc-400 dark:border-zinc-800 dark:text-zinc-500">
+      <h3 className="border-b border-border pb-2 text-xs font-semibold text-foreground">
         {title}
       </h3>
       {children}

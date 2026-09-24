@@ -1,6 +1,6 @@
 import "server-only";
 
-import { and, count, desc, eq, sql } from "drizzle-orm";
+import { and, count, desc, eq, isNotNull, sql } from "drizzle-orm";
 import { db } from "@/db";
 import { saleItems, saleReturns, sales, users } from "@/db/schema";
 
@@ -51,6 +51,52 @@ export async function getSaleReturns(shopId: string, limit = 20) {
 }
 
 export type CustomerHistoryRow = Awaited<ReturnType<typeof getCustomerHistory>>[number];
+
+function customerKey(name: string): string {
+  return name.toLowerCase().trim().replace(/\s+/g, " ");
+}
+
+export type RecentCustomer = {
+  name: string;
+  contact: string | null;
+  lastVehicleReg: string | null;
+  lastSaleAt: Date;
+  totalSpentCents: number;
+};
+
+export async function getRecentCustomers(shopId: string, limit = 25): Promise<RecentCustomer[]> {
+  const rows = await db
+    .select({
+      customerName: sales.customerName,
+      customerContact: sales.customerContact,
+      vehicleReg: sales.vehicleReg,
+      createdAt: sales.createdAt,
+      totalCents: sales.totalCents,
+    })
+    .from(sales)
+    .where(and(eq(sales.shopId, shopId), isNotNull(sales.customerName)))
+    .orderBy(desc(sales.createdAt))
+    .limit(limit * 4);
+
+  const seen = new Map<string, RecentCustomer>();
+  for (const row of rows) {
+    if (!row.customerName) continue;
+    const key = customerKey(row.customerName);
+    if (seen.has(key)) continue;
+    const totalSpent = rows
+      .filter((r) => r.customerName && customerKey(r.customerName) === key)
+      .reduce((sum, r) => sum + r.totalCents, 0);
+    seen.set(key, {
+      name: row.customerName,
+      contact: row.customerContact,
+      lastVehicleReg: row.vehicleReg,
+      lastSaleAt: row.createdAt,
+      totalSpentCents: totalSpent,
+    });
+    if (seen.size >= limit) break;
+  }
+  return [...seen.values()];
+}
 
 export async function getCustomerHistory(shopId: string, customerName: string) {
   return db

@@ -14,6 +14,7 @@ import { BarcodeScanner } from "@/components/inventory/barcode-scanner";
 import { ImportCsvModal } from "@/components/inventory/import-csv-modal";
 import { TransferModal } from "@/components/inventory/transfer-modal";
 import { AdjustStockModal } from "@/components/inventory/adjust-stock-modal";
+import { PageHeader } from "@/components/ui/page-header";
 import { Pagination } from "@/components/ui/pagination";
 import { SortableTh } from "@/components/ui/sortable-th";
 import { Card, CardContent } from "@/components/ui/card";
@@ -70,30 +71,38 @@ export default async function AdminInventoryPage({
 
   return (
     <div className="flex flex-col gap-6">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-100">Inventory</h1>
-          <p className="text-sm text-muted">
-            Central pool + stock across {shops.length} shop{shops.length === 1 ? "" : "s"} ·{" "}
-            {total} item{total === 1 ? "" : "s"}
-          </p>
-        </div>
-        <div className="flex flex-wrap items-center justify-end gap-2">
-          <BarcodeScanner basePath="/admin/inventory" />
-          <ButtonLink href="/api/export/items" variant="outline">
-            <Upload className="size-4" /> Export CSV
-          </ButtonLink>
-          <ImportCsvModal
-            shops={shops}
-            trigger={
-              <Button variant="outline">
-                <Download className="size-4" /> Import CSV
-              </Button>
-            }
-          />
-          <AdminItemModal shops={shops} categories={categories} urlAction="add" trigger={<Button><Plus className="size-4" /> Add item</Button>} />
-        </div>
-      </div>
+      <PageHeader
+        title="Inventory"
+        description={`Central pool + stock across ${shops.length} shop${
+          shops.length === 1 ? "" : "s"
+        } · ${total} item${total === 1 ? "" : "s"}`}
+        actions={
+          <div className="flex flex-wrap items-center justify-end gap-2">
+            <BarcodeScanner basePath="/admin/inventory" />
+            <ButtonLink href="/api/export/items" variant="outline">
+              <Upload className="size-4" /> Export CSV
+            </ButtonLink>
+            <ImportCsvModal
+              shops={shops}
+              trigger={
+                <Button variant="outline">
+                  <Download className="size-4" /> Import CSV
+                </Button>
+              }
+            />
+            <AdminItemModal
+              shops={shops}
+              categories={categories}
+              urlAction="add"
+              trigger={
+                <Button>
+                  <Plus className="size-4" /> Add item
+                </Button>
+              }
+            />
+          </div>
+        }
+      />
 
       <AdminInventoryFilter categories={categories} shopList={shops} />
 
@@ -146,7 +155,7 @@ export default async function AdminInventoryPage({
                           />
                         )}
                         <div className="min-w-0">
-                          <span className="font-medium text-zinc-900 dark:text-zinc-100">{item.name}</span>
+                          <span className="font-medium text-foreground">{item.name}</span>
                           {item.sku && <span className="ml-2 text-xs text-muted">{item.sku}</span>}
                           {item.barcode && (
                             <span className="ml-2 text-xs text-muted">Barcode: {item.barcode}</span>
@@ -170,7 +179,7 @@ export default async function AdminInventoryPage({
                       <Badge variant="neutral">{item.category}</Badge>
                     </TD>
                     <TD className="text-right whitespace-nowrap tabular-nums">{formatMoney(item.unitPriceCents)}</TD>
-                    <TD className="text-right whitespace-nowrap tabular-nums font-medium">
+                    <TD className="text-right whitespace-nowrap tabular-nums font-medium text-foreground">
                       {item.quantity}
                       {item.unitName && item.unitName !== "piece" && (
                         <span className="ml-1 text-xs font-normal text-muted">{item.unitName}</span>

@@ -1,6 +1,7 @@
 import { cookies } from "next/headers";
 import { requireAdmin } from "@/lib/dal";
 import { getSiteSettings } from "@/lib/queries/settings";
+import { getGlobalSearchData } from "@/lib/queries/search";
 import { AppShell, type NavSection } from "@/components/app-shell";
 
 const navSections: NavSection[] = [
@@ -57,10 +58,11 @@ const navSections: NavSection[] = [
 ];
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
-  const [user, cookieStore, settings] = await Promise.all([
+  const [user, cookieStore, settings, searchGroups] = await Promise.all([
     requireAdmin(),
     cookies(),
     getSiteSettings(),
+    getGlobalSearchData(),
   ]);
   const initiallyCollapsed = cookieStore.get("sidebar-collapsed")?.value === "1";
 
@@ -72,6 +74,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
       userName={user.name ?? ""}
       roleLabel="Admin"
       sections={navSections}
+      searchGroups={searchGroups}
       initiallyCollapsed={initiallyCollapsed}
     >
       {children}

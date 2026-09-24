@@ -10,11 +10,11 @@ export default async function AuthLayout({ children }: { children: React.ReactNo
       <div className="w-full max-w-md">
         <div className="mb-8 flex flex-col items-center gap-3 text-center">
           <BrandMark size="md" logoUrl={settings.logoUrl} brandName={settings.brandName} />
-          <h1 className="text-xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-100">
+          <h1 className="text-xl font-semibold tracking-tight text-foreground">
             {settings.brandName}
           </h1>
         </div>
-        <div className="rounded-2xl border border-zinc-200 bg-surface p-6 shadow-sm sm:p-8 dark:border-zinc-800">
+        <div className="rounded-2xl border border-border bg-surface p-6 shadow-card sm:p-8">
           {children}
         </div>
       </div>

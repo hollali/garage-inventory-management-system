@@ -12,6 +12,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge, LowStockBadge } from "@/components/ui/badge";
 import { Button, ButtonLink, IconButton } from "@/components/ui/button";
 import { ConfirmAction } from "@/components/confirm-action";
+import { PageHeader } from "@/components/ui/page-header";
 import { EmptyState, BoxIcon } from "@/components/ui/empty-state";
 import { Table, TBody, TD, THead, TH, TR } from "@/components/ui/table";
 import { Download, Pencil, Plus, Trash2 } from "lucide-react";
@@ -45,31 +46,29 @@ export default async function ShopInventoryPage({
 
   return (
     <div className="flex flex-col gap-6">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-100">Inventory</h1>
-          <p className="text-sm text-muted">
-            {total} item{total === 1 ? "" : "s"} in {shop.name}
-          </p>
-        </div>
-        <div className="flex flex-wrap items-center justify-end gap-2">
-          {isAdmin && (
-            <ButtonLink href="/api/export/items" variant="outline">
-              <Download className="size-4" /> Export CSV
-            </ButtonLink>
-          )}
-          <BarcodeScanner basePath="/shop/items" />
-          <ItemModal
-            categories={categories}
-            urlAction="add"
-            trigger={
-              <Button>
-                <Plus className="size-4" /> Add item
-              </Button>
-            }
-          />
-        </div>
-      </div>
+      <PageHeader
+        title="Inventory"
+        description={`${total} item${total === 1 ? "" : "s"} in ${shop.name}`}
+        actions={
+          <div className="flex flex-wrap items-center justify-end gap-2">
+            {isAdmin && (
+              <ButtonLink href="/api/export/items" variant="outline">
+                <Download className="size-4" /> Export CSV
+              </ButtonLink>
+            )}
+            <BarcodeScanner basePath="/shop/items" />
+            <ItemModal
+              categories={categories}
+              urlAction="add"
+              trigger={
+                <Button>
+                  <Plus className="size-4" /> Add item
+                </Button>
+              }
+            />
+          </div>
+        }
+      />
 
       <InventoryFilter categories={categories} />
 
@@ -100,93 +99,163 @@ export default async function ShopInventoryPage({
           }
         />
       ) : (
-        <Card>
-          <CardContent className="p-0">
-            <Table>
-              <THead>
-                <TR>
-                  <SortableTh base="/shop/items" params={params} column="name" label="Item" />
-                  <SortableTh
-                    base="/shop/items"
-                    params={params}
-                    column="category"
-                    label="Category"
-                    className="hidden md:table-cell"
-                  />
-                  <SortableTh base="/shop/items" params={params} column="price" label="Price" align="right" />
-                  <SortableTh base="/shop/items" params={params} column="quantity" label="Qty" align="right" />
-                  <TH>Status</TH>
-                  <TH className="text-right">Actions</TH>
-                </TR>
-              </THead>
-              <TBody>
-                {items.map((item) => (
-                  <TR key={item.id}>
-                    <TD>
-                      <div className="flex items-center gap-3">
-                        {item.imageUrl && (
-                          // eslint-disable-next-line @next/next/no-img-element
-                          <img
-                            src={item.imageUrl}
-                            alt={item.name}
-                            referrerPolicy="no-referrer"
-                            className="h-8 w-8 shrink-0 rounded object-cover"
-                          />
-                        )}
-                        <div className="min-w-0">
-                          <Link
-                            href={`/shop/items/${item.id}`}
-                            className="font-medium text-zinc-900 dark:text-zinc-100 hover:text-brand"
-                          >
-                            {item.name}
-                          </Link>
-                          {item.sku && <span className="ml-2 text-xs text-muted">{item.sku}</span>}
+        <>
+          <div className="hidden md:block">
+            <Card>
+              <CardContent className="p-0">
+                <Table>
+                  <THead>
+                    <TR>
+                      <SortableTh base="/shop/items" params={params} column="name" label="Item" />
+                      <SortableTh
+                        base="/shop/items"
+                        params={params}
+                        column="category"
+                        label="Category"
+                        className="hidden md:table-cell"
+                      />
+                      <SortableTh base="/shop/items" params={params} column="price" label="Price" align="right" />
+                      <SortableTh base="/shop/items" params={params} column="quantity" label="Qty" align="right" />
+                      <TH>Status</TH>
+                      <TH className="text-right">Actions</TH>
+                    </TR>
+                  </THead>
+                  <TBody>
+                    {items.map((item) => (
+                      <TR key={item.id}>
+                        <TD>
+                          <div className="flex items-center gap-3">
+                            {item.imageUrl && (
+                              // eslint-disable-next-line @next/next/no-img-element
+                              <img
+                                src={item.imageUrl}
+                                alt={item.name}
+                                referrerPolicy="no-referrer"
+                                className="h-8 w-8 shrink-0 rounded object-cover"
+                              />
+                            )}
+                            <div className="min-w-0">
+                              <Link
+                                href={`/shop/items/${item.id}`}
+                                className="font-medium text-foreground hover:text-brand"
+                              >
+                                {item.name}
+                              </Link>
+                              {item.sku && <span className="ml-2 text-xs text-muted">{item.sku}</span>}
+                            </div>
+                          </div>
+                        </TD>
+                        <TD className="hidden md:table-cell">
+                          <Badge variant="neutral">{item.category}</Badge>
+                        </TD>
+                        <TD className="text-right whitespace-nowrap tabular-nums">{formatMoney(item.unitPriceCents)}</TD>
+                        <TD className="text-right whitespace-nowrap tabular-nums font-medium text-foreground">
+                          {item.quantity}
+                          {item.unitName && item.unitName !== "piece" && (
+                            <span className="ml-1 text-xs font-normal text-muted">{item.unitName}</span>
+                          )}
+                        </TD>
+                        <TD>
+                          <LowStockBadge quantity={item.quantity} threshold={item.lowStockThreshold} />
+                        </TD>
+                        <TD className="text-right">
+                          <div className="flex items-center justify-end gap-1">
+                            <ItemModal
+                              categories={categories}
+                              item={item}
+                              trigger={
+                                <IconButton label="Edit">
+                                  <Pencil className="size-4" />
+                                </IconButton>
+                              }
+                            />
+                            <ConfirmAction
+                              action={deleteItem}
+                              hiddenFields={{ id: item.id }}
+                              confirmTitle="Delete this item?"
+                              confirmBody={`"${item.name}" and its stock history will be removed. Past sales keep a snapshot.`}
+                              successMessage="Item deleted"
+                            >
+                              <IconButton label="Delete" variant="danger">
+                                <Trash2 className="size-4" />
+                              </IconButton>
+                            </ConfirmAction>
+                          </div>
+                        </TD>
+                      </TR>
+                    ))}
+                  </TBody>
+                </Table>
+              </CardContent>
+            </Card>
+          </div>
+
+          <div className="flex flex-col gap-3 md:hidden">
+            {items.map((item) => (
+              <Card key={item.id}>
+                <CardContent className="p-4">
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="flex min-w-0 items-start gap-3">
+                      {item.imageUrl && (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img
+                          src={item.imageUrl}
+                          alt={item.name}
+                          referrerPolicy="no-referrer"
+                          className="h-10 w-10 shrink-0 rounded object-cover"
+                        />
+                      )}
+                      <div className="min-w-0">
+                        <Link
+                          href={`/shop/items/${item.id}`}
+                          className="font-medium text-foreground hover:text-brand"
+                        >
+                          {item.name}
+                        </Link>
+                        <div className="mt-0.5 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-muted">
+                          <span>{formatMoney(item.unitPriceCents)}</span>
+                          {item.sku && <span>SKU {item.sku}</span>}
+                        </div>
+                        <div className="mt-1.5 flex flex-wrap items-center gap-2">
+                          <Badge variant="neutral">{item.category}</Badge>
+                          <LowStockBadge quantity={item.quantity} threshold={item.lowStockThreshold} />
                         </div>
                       </div>
-                    </TD>
-                    <TD className="hidden md:table-cell">
-                      <Badge variant="neutral">{item.category}</Badge>
-                    </TD>
-                    <TD className="text-right whitespace-nowrap tabular-nums">{formatMoney(item.unitPriceCents)}</TD>
-                    <TD className="text-right whitespace-nowrap tabular-nums font-medium">
+                    </div>
+                    <span className="text-sm font-semibold tabular-nums text-foreground">
                       {item.quantity}
                       {item.unitName && item.unitName !== "piece" && (
-                        <span className="ml-1 text-xs font-normal text-muted">{item.unitName}</span>
+                        <span className="ml-0.5 text-xs font-normal text-muted">{item.unitName}</span>
                       )}
-                    </TD>
-                    <TD>
-                      <LowStockBadge quantity={item.quantity} threshold={item.lowStockThreshold} />
-                    </TD>
-                    <TD className="text-right">
-                      <div className="flex items-center justify-end gap-1">
-                        <ItemModal
-                          categories={categories}
-                          item={item}
-                          trigger={
-                            <IconButton label="Edit">
-                              <Pencil className="size-4" />
-                            </IconButton>
-                          }
-                        />
-                        <ConfirmAction
-                          action={deleteItem}
-                          hiddenFields={{ id: item.id }}
-                          confirmTitle="Delete this item?"
-                          confirmBody={`"${item.name}" and its stock history will be removed. Past sales keep a snapshot.`}
-                          successMessage="Item deleted"
-                        >
-                          <IconButton label="Delete" variant="danger">
-                            <Trash2 className="size-4" />
-                          </IconButton>
-                        </ConfirmAction>
-                      </div>
-                    </TD>
-                  </TR>
-                ))}
-              </TBody>
-            </Table>
-          </CardContent>
-        </Card>
+                    </span>
+                  </div>
+                  <div className="mt-3 flex items-center justify-end gap-1 border-t border-border pt-3">
+                    <ItemModal
+                      categories={categories}
+                      item={item}
+                      trigger={
+                        <IconButton label="Edit">
+                          <Pencil className="size-4" />
+                        </IconButton>
+                      }
+                    />
+                    <ConfirmAction
+                      action={deleteItem}
+                      hiddenFields={{ id: item.id }}
+                      confirmTitle="Delete this item?"
+                      confirmBody={`"${item.name}" and its stock history will be removed. Past sales keep a snapshot.`}
+                      successMessage="Item deleted"
+                    >
+                      <IconButton label="Delete" variant="danger">
+                        <Trash2 className="size-4" />
+                      </IconButton>
+                    </ConfirmAction>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </>
       )}
 
       <Pagination base="/shop/items" page={page} totalPages={totalPages} total={total} pageSize={pageSize} />

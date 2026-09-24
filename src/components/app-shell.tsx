@@ -15,9 +15,11 @@ import { SidebarProvider, useSidebar } from "@/components/layout/sidebar-provide
 import { Sidebar } from "@/components/layout/sidebar";
 import { Topbar } from "@/components/layout/topbar";
 import { MobileSidebar } from "@/components/layout/mobile-sidebar";
+import { OfflineProvider } from "@/components/offline/offline-provider";
 import {
   CommandMenu,
   type CommandAction,
+  type CommandSearchGroup,
 } from "@/components/layout/command-menu";
 import {
   flattenSections,
@@ -38,6 +40,7 @@ type ShellProps = {
   roleLabel: string;
   sections: NavSection[];
   quickActions?: CommandAction[];
+  searchGroups?: CommandSearchGroup[];
   initiallyCollapsed?: boolean;
   children: React.ReactNode;
 };
@@ -59,8 +62,8 @@ function buildDefaultActions(items: NavItem[]): CommandAction[] {
   if (sales) {
     actions.push({
       label: "Record sale",
-      href: `${sales.href}?modal=record`,
-      hint: "Log an item sale",
+      href: "/shop/pos",
+      hint: "Open the register",
       icon: ShoppingCart,
     });
   }
@@ -112,6 +115,7 @@ export function AppShell({
   roleLabel,
   sections,
   quickActions,
+  searchGroups,
   initiallyCollapsed,
   children,
 }: ShellProps) {
@@ -130,6 +134,7 @@ export function AppShell({
         sections={sections}
         items={items}
         quickActions={quickActions ?? defaultActions}
+        searchGroups={searchGroups}
       >
         {children}
       </ShellInner>
@@ -147,48 +152,52 @@ function ShellInner({
   sections,
   items,
   quickActions,
+  searchGroups,
   children,
 }: ShellProps & { items: NavItem[]; quickActions: CommandAction[] }) {
   const { commandOpen, setCommandOpen } = useSidebar();
 
   return (
     <MotionConfig reducedMotion="user">
-      <div className="flex min-h-dvh bg-background">
-        <Sidebar
-          brand={brand}
-          logoUrl={logoUrl}
-          workspaceLabel={workspaceLabel}
-          workspaceSwitcher={workspaceSwitcher}
-          userName={userName}
-          roleLabel={roleLabel}
-          sections={sections}
-        />
+      <OfflineProvider>
+        <div className="flex min-h-dvh bg-background">
+          <Sidebar
+            brand={brand}
+            logoUrl={logoUrl}
+            workspaceLabel={workspaceLabel}
+            workspaceSwitcher={workspaceSwitcher}
+            userName={userName}
+            roleLabel={roleLabel}
+            sections={sections}
+          />
 
-        <div className="flex min-w-0 flex-1 flex-col">
-          <Topbar sections={sections} />
+          <div className="flex min-w-0 flex-1 flex-col">
+            <Topbar sections={sections} />
 
-          <main className="w-full flex-1 px-4 py-6 sm:px-6 lg:px-10 lg:py-8">
-            {children}
-          </main>
+            <main className="w-full flex-1 px-4 py-7 sm:px-6 lg:px-8 lg:py-9">
+              {children}
+            </main>
+          </div>
+
+          <CommandMenu
+            open={commandOpen}
+            onClose={() => setCommandOpen(false)}
+            items={items}
+            quickActions={quickActions}
+            searchGroups={searchGroups}
+          />
+
+          <MobileSidebar
+            brand={brand}
+            logoUrl={logoUrl}
+            workspaceLabel={workspaceLabel}
+            workspaceSwitcher={workspaceSwitcher}
+            userName={userName}
+            roleLabel={roleLabel}
+            sections={sections}
+          />
         </div>
-
-        <CommandMenu
-          open={commandOpen}
-          onClose={() => setCommandOpen(false)}
-          items={items}
-          quickActions={quickActions}
-        />
-
-        <MobileSidebar
-          brand={brand}
-          logoUrl={logoUrl}
-          workspaceLabel={workspaceLabel}
-          workspaceSwitcher={workspaceSwitcher}
-          userName={userName}
-          roleLabel={roleLabel}
-          sections={sections}
-        />
-      </div>
+      </OfflineProvider>
     </MotionConfig>
   );
 }

@@ -44,7 +44,7 @@ export function Pagination({
   const prevDisabled = page <= 1;
   const nextDisabled = page >= totalPages;
   const controlClasses =
-    "inline-flex h-7 items-center gap-1 rounded-md border border-zinc-200 px-2 text-xs font-medium text-zinc-700 transition-colors hover:bg-zinc-50 dark:border-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-800";
+    "inline-flex h-8 items-center gap-1 rounded-lg border border-border-strong px-2.5 text-xs font-medium text-zinc-700 transition-colors hover:bg-surface-subtle focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring dark:text-zinc-300 dark:hover:bg-zinc-800/60";
 
   return (
     <div className="flex flex-col items-center justify-between gap-3 sm:flex-row">
@@ -74,10 +74,10 @@ export function Pagination({
               href={href(p)}
               aria-current={p === page ? "page" : undefined}
               className={cn(
-                "inline-flex h-7 min-w-7 items-center justify-center rounded-md px-1.5 text-xs font-medium transition-colors",
+                "inline-flex h-8 min-w-8 items-center justify-center rounded-lg px-1.5 text-xs font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
                 p === page
-                  ? "bg-zinc-900 text-zinc-50 dark:bg-zinc-50 dark:text-zinc-900"
-                  : "border border-zinc-200 text-zinc-700 hover:bg-zinc-50 dark:border-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-800",
+                  ? "bg-brand text-brand-foreground shadow-sm"
+                  : "border border-border-strong text-zinc-700 hover:bg-surface-subtle dark:text-zinc-300 dark:hover:bg-zinc-800/60",
               )}
             >
               {p}

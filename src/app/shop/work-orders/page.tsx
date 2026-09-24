@@ -1,15 +1,16 @@
+import Link from "next/link";
 import { requireAttendantShop } from "@/lib/dal";
-import { getItemsForWorkOrder, getWorkOrderDetail, getWorkOrders } from "@/lib/queries/work-orders";
+import { getWorkOrders } from "@/lib/queries/work-orders";
 import { formatDateTime, formatMoney } from "@/lib/utils";
 import { WorkOrderModal } from "@/components/work-orders/work-order-modal";
-import { WorkOrderDetailModal } from "@/components/work-orders/work-order-detail-modal";
+import { PageHeader } from "@/components/ui/page-header";
 import { WorkOrderStatusBadge } from "@/components/work-orders/work-order-status";
 import { Pagination } from "@/components/ui/pagination";
-import { Button } from "@/components/ui/button";
+import { Button, ButtonLink } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Table, TBody, TD, THead, TH, TR } from "@/components/ui/table";
 import { EmptyState, BoxIcon } from "@/components/ui/empty-state";
-import { Eye, Plus } from "lucide-react";
+import { Plus } from "lucide-react";
 
 export default async function ShopWorkOrdersPage({
   searchParams,
@@ -21,36 +22,24 @@ export default async function ShopWorkOrdersPage({
   const page = Math.max(1, Number(params.page) || 1);
   const pageSize = 10;
 
-  const [data, items] = await Promise.all([
-    getWorkOrders(shop.id, { page, pageSize }),
-    getItemsForWorkOrder(shop.id),
-  ]);
-
-  const rows = (
-    await Promise.all(
-      data.rows.map(async (wo) => {
-        const detail = await getWorkOrderDetail(wo.id);
-        return detail ? { workOrder: detail.workOrder, parts: detail.parts } : null;
-      }),
-    )
-  ).filter((r): r is NonNullable<typeof r> => r !== null);
+  const data = await getWorkOrders(shop.id, { page, pageSize });
 
   return (
     <div className="flex flex-col gap-6">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-100">Work orders</h1>
-          <p className="text-sm text-muted">{shop.name}</p>
-        </div>
-        <WorkOrderModal
-          urlAction="new"
-          trigger={
-            <Button>
-              <Plus className="size-4" /> New work order
-            </Button>
-          }
-        />
-      </div>
+      <PageHeader
+        title="Work orders"
+        description={shop.name}
+        actions={
+          <WorkOrderModal
+            urlAction="new"
+            trigger={
+              <Button>
+                <Plus className="size-4" /> New work order
+              </Button>
+            }
+          />
+        }
+      />
 
       {data.total === 0 ? (
         <EmptyState
@@ -68,67 +57,105 @@ export default async function ShopWorkOrdersPage({
           }
         />
       ) : (
-        <Card>
-          <CardContent className="p-0">
-            <Table>
-              <THead>
-                <TR>
-                  <TH>Vehicle</TH>
-                  <TH className="hidden md:table-cell">Customer</TH>
-                  <TH>Status</TH>
-                  <TH className="text-right">Amounts</TH>
-                  <TH className="hidden md:table-cell">Created</TH>
-                  <TH className="text-right">Actions</TH>
-                </TR>
-              </THead>
-              <TBody>
-                {rows.map(({ workOrder, parts }) => (
-                  <TR key={workOrder.id}>
-                    <TD>
-                      <span className="font-mono text-sm font-medium whitespace-nowrap text-zinc-900 dark:text-zinc-100">
+        <>
+          <div className="hidden md:block">
+            <Card>
+              <CardContent className="p-0">
+                <Table>
+                  <THead>
+                    <TR>
+                      <TH>Vehicle</TH>
+                      <TH className="hidden md:table-cell">Customer</TH>
+                      <TH>Status</TH>
+                      <TH className="text-right">Amounts</TH>
+                      <TH className="hidden md:table-cell">Created</TH>
+                      <TH className="text-right">Actions</TH>
+                    </TR>
+                  </THead>
+                  <TBody>
+                    {data.rows.map((workOrder) => (
+                      <TR key={workOrder.id}>
+                        <TD>
+                          <Link
+                            href={`/shop/work-orders/${workOrder.id}`}
+                            className="font-mono text-sm font-medium whitespace-nowrap text-zinc-900 hover:underline dark:text-zinc-100"
+                          >
+                            {workOrder.vehicleReg || "—"}
+                          </Link>
+                        </TD>
+                        <TD className="hidden md:table-cell">
+                          <span className="text-zinc-900 dark:text-zinc-100">{workOrder.customerName || "—"}</span>
+                          {workOrder.customerContact && (
+                            <span className="ml-2 text-xs text-muted">{workOrder.customerContact}</span>
+                          )}
+                        </TD>
+                        <TD>
+                          <WorkOrderStatusBadge status={workOrder.status} />
+                        </TD>
+                        <TD className="text-right whitespace-nowrap tabular-nums">
+                          <div className="text-xs text-muted">
+                            L {formatMoney(workOrder.labourCents)} · P{" "}
+                            {formatMoney(workOrder.partsTotalCents)}
+                          </div>
+                          <div className="font-semibold text-zinc-900 dark:text-zinc-100">
+                            {formatMoney(workOrder.labourCents + workOrder.partsTotalCents)}
+                          </div>
+                        </TD>
+                        <TD className="hidden text-xs whitespace-nowrap text-muted md:table-cell">
+                          {formatDateTime(workOrder.createdAt)}
+                        </TD>
+                        <TD className="text-right">
+                          <ButtonLink href={`/shop/work-orders/${workOrder.id}`} variant="outline" size="sm">
+                            View
+                          </ButtonLink>
+                        </TD>
+                      </TR>
+                    ))}
+                  </TBody>
+                </Table>
+              </CardContent>
+            </Card>
+          </div>
+
+          <div className="flex flex-col gap-3 md:hidden">
+            {data.rows.map((workOrder) => (
+              <Card key={workOrder.id}>
+                <CardContent className="p-4">
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="min-w-0">
+                      <Link
+                        href={`/shop/work-orders/${workOrder.id}`}
+                        className="font-mono text-sm font-medium text-foreground hover:underline"
+                      >
                         {workOrder.vehicleReg || "—"}
-                      </span>
-                    </TD>
-                    <TD className="hidden md:table-cell">
-                      <span className="text-zinc-900 dark:text-zinc-100">{workOrder.customerName || "—"}</span>
-                      {workOrder.customerContact && (
-                        <span className="ml-2 text-xs text-muted">{workOrder.customerContact}</span>
-                      )}
-                    </TD>
-                    <TD>
+                      </Link>
+                      <div className="mt-1 text-xs text-muted">
+                        {workOrder.customerName || "No customer"}
+                        {workOrder.customerContact && ` · ${workOrder.customerContact}`}
+                      </div>
                       <WorkOrderStatusBadge status={workOrder.status} />
-                    </TD>
-                    <TD className="text-right whitespace-nowrap tabular-nums">
+                    </div>
+                    <div className="shrink-0 text-right">
+                      <div className="font-semibold tabular-nums text-foreground">
+                        {formatMoney(workOrder.labourCents + workOrder.partsTotalCents)}
+                      </div>
                       <div className="text-xs text-muted">
                         L {formatMoney(workOrder.labourCents)} · P{" "}
                         {formatMoney(workOrder.partsTotalCents)}
                       </div>
-                      <div className="font-semibold text-zinc-900 dark:text-zinc-100">
-                        {formatMoney(workOrder.labourCents + workOrder.partsTotalCents)}
-                      </div>
-                    </TD>
-                    <TD className="hidden text-xs whitespace-nowrap text-muted md:table-cell">
-                      {formatDateTime(workOrder.createdAt)}
-                    </TD>
-                    <TD className="text-right">
-                      <WorkOrderDetailModal
-                        workOrder={{ ...workOrder, createdAt: formatDateTime(workOrder.createdAt) }}
-                        parts={parts}
-                        items={items}
-                        canEdit
-                        trigger={
-                          <Button variant="outline" size="sm">
-                            <Eye className="size-4" /> View
-                          </Button>
-                        }
-                      />
-                    </TD>
-                  </TR>
-                ))}
-              </TBody>
-            </Table>
-          </CardContent>
-        </Card>
+                    </div>
+                  </div>
+                  <div className="mt-3 flex items-center justify-between border-t border-border pt-3">
+                    <span className="text-xs text-muted">{formatDateTime(workOrder.createdAt)}</span>
+                    <ButtonLink href={`/shop/work-orders/${workOrder.id}`} variant="outline" size="sm">
+                      View
+                    </ButtonLink>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
+        </>
       )}
 
       <Pagination

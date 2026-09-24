@@ -3,6 +3,7 @@ import { getAllShops, getAttendantList } from "@/lib/queries";
 import { formatDate } from "@/lib/utils";
 import { deactivateAttendant, reactivateAttendant, deleteAttendant } from "@/lib/actions/admin";
 import { AttendantModal } from "@/components/attendants/attendant-modal";
+import { PageHeader } from "@/components/ui/page-header";
 import { ConfirmAction } from "@/components/confirm-action";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -16,22 +17,20 @@ export default async function AdminAttendantsPage() {
 
   return (
     <div className="flex flex-col gap-6">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-100">Attendants</h1>
-          <p className="text-sm text-muted">
-            Shop attendant accounts and their shop assignments.
-          </p>
-        </div>
-        <AttendantModal
-          shops={shops}
-          trigger={
-            <Button>
-              <Plus className="size-4" /> Add attendant
-            </Button>
-          }
-        />
-      </div>
+      <PageHeader
+        title="Attendants"
+        description="Shop attendant accounts and their shop assignments."
+        actions={
+          <AttendantModal
+            shops={shops}
+            trigger={
+              <Button>
+                <Plus className="size-4" /> Add attendant
+              </Button>
+            }
+          />
+        }
+      />
 
       <Card>
         <CardHeader>

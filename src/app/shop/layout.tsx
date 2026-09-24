@@ -1,6 +1,7 @@
 import { cookies } from "next/headers";
 import { requireAttendant, getAttendantShops, getShopForAttendant } from "@/lib/dal";
 import { getSiteSettings } from "@/lib/queries/settings";
+import { getGlobalSearchData } from "@/lib/queries/search";
 import { AppShell, type NavSection } from "@/components/app-shell";
 import { ActiveShopSelector } from "@/components/shops/active-shop-selector";
 
@@ -20,6 +21,7 @@ const navSections: NavSection[] = [
   {
     label: "Operations",
     items: [
+      { href: "/shop/pos", label: "Register", icon: "pos" },
       { href: "/shop/sales", label: "Sales", icon: "sales" },
       { href: "/shop/transfers", label: "Transfers", icon: "transfer" },
       { href: "/shop/work-orders", label: "Work orders", icon: "workOrder" },
@@ -28,10 +30,11 @@ const navSections: NavSection[] = [
 ];
 
 export default async function ShopLayout({ children }: { children: React.ReactNode }) {
-  const [user, cookieStore, settings] = await Promise.all([
+  const [user, cookieStore, settings, searchGroups] = await Promise.all([
     requireAttendant(),
     cookies(),
     getSiteSettings(),
+    getGlobalSearchData(),
   ]);
   const [assignedShops, shop] = await Promise.all([
     getAttendantShops(user.id),
@@ -53,6 +56,7 @@ export default async function ShopLayout({ children }: { children: React.ReactNo
       userName={user.name ?? ""}
       roleLabel="Shop Attendant"
       sections={navSections}
+      searchGroups={searchGroups}
       initiallyCollapsed={initiallyCollapsed}
     >
       {children}

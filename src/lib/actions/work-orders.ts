@@ -38,6 +38,11 @@ const addPartSchema = z.object({
   quantity: z.coerce.number().int().positive("Quantity must be at least 1."),
 });
 
+const removePartSchema = z.object({
+  workOrderId: z.string().min(1),
+  partId: z.string().min(1),
+});
+
 const statusSchema = z.object({
   id: z.string().min(1),
   status: z.enum(["open", "in_progress", "completed", "cancelled"]),
@@ -201,10 +206,14 @@ export async function addWorkOrderPart(
         .select()
         .from(inventoryItems)
         .where(and(eq(inventoryItems.id, itemId), eq(inventoryItems.shopId, shop.id)))
+        .for("update")
         .limit(1);
       if (!item) throw new Error("Item not found in this shop.");
-      if (item.quantity < quantity) {
-        throw new Error(`Insufficient stock for "${item.name}". Only ${item.quantity} on hand.`);
+      const available = item.quantity - item.reservedQuantity;
+      if (quantity > available) {
+        throw new Error(
+          `Insufficient stock for "${item.name}". Only ${Math.max(0, available)} available.`,
+        );
       }
 
       await tx.insert(workOrderItems).values({
@@ -218,18 +227,8 @@ export async function addWorkOrderPart(
 
       await tx
         .update(inventoryItems)
-        .set({ quantity: item.quantity - quantity, updatedAt: new Date() })
+        .set({ reservedQuantity: item.reservedQuantity + quantity, updatedAt: new Date() })
         .where(eq(inventoryItems.id, item.id));
-
-      await tx.insert(stockMovements).values({
-        itemId: item.id,
-        shopId: shop.id,
-        userId: user.id,
-        type: "out",
-        reason: "sale",
-        quantity,
-        note: `Work order ${workOrder.id}`,
-      });
 
       await tx
         .update(workOrders)
@@ -261,6 +260,98 @@ export async function addWorkOrderPart(
   }
 }
 
+export async function removeWorkOrderPart(
+  formData: FormData,
+): Promise<WorkOrderActionState> {
+  const user = await requireAttendant();
+  const shop = await requireAttendantShop();
+
+  const parsed = removePartSchema.safeParse({
+    workOrderId: formData.get("workOrderId"),
+    partId: formData.get("partId"),
+  });
+  if (!parsed.success) {
+    return { error: parsed.error.issues.map((i) => i.message).join(" ") };
+  }
+
+  const { workOrderId, partId } = parsed.data;
+
+  try {
+    const result = await db.transaction(async (tx) => {
+      const [workOrder] = await tx
+        .select()
+        .from(workOrders)
+        .where(and(eq(workOrders.id, workOrderId), eq(workOrders.shopId, shop.id)))
+        .for("update")
+        .limit(1);
+      if (!workOrder) throw new Error("Work order not found.");
+      if (workOrder.status === "completed" || workOrder.status === "cancelled") {
+        throw new Error("Completed or cancelled work orders can't be changed.");
+      }
+
+      const [part] = await tx
+        .select()
+        .from(workOrderItems)
+        .where(eq(workOrderItems.id, partId))
+        .limit(1);
+      if (!part) throw new Error("Part not found.");
+      if (part.workOrderId !== workOrder.id) {
+        throw new Error("Part does not belong to this work order.");
+      }
+
+      await tx.delete(workOrderItems).where(eq(workOrderItems.id, part.id));
+
+      if (part.itemId) {
+        const [item] = await tx
+          .select()
+          .from(inventoryItems)
+          .where(eq(inventoryItems.id, part.itemId))
+          .for("update")
+          .limit(1);
+        if (item) {
+          await tx
+            .update(inventoryItems)
+            .set({
+              reservedQuantity: Math.max(0, item.reservedQuantity - part.quantity),
+              updatedAt: new Date(),
+            })
+            .where(eq(inventoryItems.id, item.id));
+        }
+      }
+
+      await tx
+        .update(workOrders)
+        .set({
+          partsTotalCents: Math.max(
+            0,
+            workOrder.partsTotalCents - part.unitPriceCents * part.quantity,
+          ),
+        })
+        .where(eq(workOrders.id, workOrder.id));
+
+      return { workOrderId: workOrder.id, itemName: part.itemName, quantity: part.quantity };
+    });
+
+    await logActivity({
+      actorId: user.id,
+      actorName: user.name,
+      actorRole: "attendant",
+      action: "workOrder.partRemoved",
+      shopId: shop.id,
+      entityType: "workOrder",
+      entityId: result.workOrderId,
+      metadata: { itemName: result.itemName, quantity: result.quantity },
+    });
+
+    revalidatePath("/shop/work-orders");
+    revalidatePath("/shop/items");
+    revalidatePath("/admin/work-orders");
+    return { ok: true };
+  } catch (error) {
+    return { error: error instanceof Error ? error.message : "Failed to remove part." };
+  }
+}
+
 export async function setWorkOrderStatus(
   formData: FormData,
 ): Promise<WorkOrderActionState> {
@@ -282,6 +373,7 @@ export async function setWorkOrderStatus(
         .select()
         .from(workOrders)
         .where(eq(workOrders.id, id))
+        .for("update")
         .limit(1);
       if (!workOrder) throw new Error("Work order not found.");
       if (user.role === "attendant" && (!shopId || workOrder.shopId !== shopId)) {
@@ -290,15 +382,76 @@ export async function setWorkOrderStatus(
       if (workOrder.status === "cancelled") {
         throw new Error("Cancelled work orders can't change status.");
       }
+      if (workOrder.status === "completed" && status !== "completed") {
+        throw new Error("Completed work orders can't be reopened.");
+      }
       if (workOrder.status === "completed" && status === "completed") {
         return workOrder;
+      }
+
+      const finalizing = status === "completed";
+      const cancelling = status === "cancelled";
+
+      if (finalizing || cancelling) {
+        const parts = await tx
+          .select()
+          .from(workOrderItems)
+          .where(eq(workOrderItems.workOrderId, workOrder.id));
+
+        const itemQuantities = new Map<string, number>();
+        for (const part of parts) {
+          if (!part.itemId) continue;
+          itemQuantities.set(part.itemId, (itemQuantities.get(part.itemId) ?? 0) + part.quantity);
+        }
+
+        for (const [itemId, qty] of itemQuantities) {
+          const [item] = await tx
+            .select()
+            .from(inventoryItems)
+            .where(eq(inventoryItems.id, itemId))
+            .for("update")
+            .limit(1);
+          if (!item) continue;
+
+          if (finalizing) {
+            const reserved = Math.min(Math.max(item.reservedQuantity, 0), qty);
+
+            await tx
+              .update(inventoryItems)
+              .set({
+                quantity: item.quantity - reserved,
+                reservedQuantity: item.reservedQuantity - reserved,
+                updatedAt: new Date(),
+              })
+              .where(eq(inventoryItems.id, item.id));
+
+            const causingPart = parts.find((p) => p.itemId === itemId);
+            await tx.insert(stockMovements).values({
+              itemId: item.id,
+              shopId: workOrder.shopId,
+              userId: user.id,
+              type: "out",
+              reason: "sale",
+              quantity: reserved,
+              note: `Work order ${workOrder.id} (${causingPart?.itemName ?? "parts"})`,
+            });
+          } else {
+            await tx
+              .update(inventoryItems)
+              .set({
+                reservedQuantity: Math.max(0, item.reservedQuantity - qty),
+                updatedAt: new Date(),
+              })
+              .where(eq(inventoryItems.id, item.id));
+          }
+        }
       }
 
       await tx
         .update(workOrders)
         .set({
           status,
-          completedAt: status === "completed" ? new Date() : null,
+          completedAt: finalizing ? new Date() : null,
         })
         .where(eq(workOrders.id, workOrder.id));
 

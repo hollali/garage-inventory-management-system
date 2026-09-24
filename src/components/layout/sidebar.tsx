@@ -31,9 +31,9 @@ export function Sidebar({
 
   return (
     <motion.aside
-      animate={{ width: collapsed ? 64 : 256 }}
+      animate={{ width: collapsed ? 72 : 256 }}
       transition={{ duration: 0.25, ease: "easeInOut" }}
-      className="sticky top-0 z-30 hidden h-dvh shrink-0 flex-col overflow-hidden border-r border-zinc-200 bg-surface dark:border-zinc-800 dark:bg-zinc-950 print:hidden lg:flex"
+      className="sticky top-0 z-30 hidden h-dvh shrink-0 flex-col overflow-hidden border-r border-border bg-surface print:hidden lg:flex"
     >
       <SidebarHeader
         brand={brand}
@@ -43,17 +43,16 @@ export function Sidebar({
       />
       <SidebarNavigation sections={sections} collapsed={collapsed} />
 
-      <div className="shrink-0 space-y-2 border-t border-zinc-200 px-2 py-2 dark:border-zinc-800">
+      <div className="shrink-0 space-y-2 border-t border-border px-2 py-2">
         {!collapsed &&
           (workspaceSwitcher ? (
             <div className="rounded-md px-1 py-0.5">{workspaceSwitcher}</div>
           ) : workspaceLabel ? (
             <p
               title={workspaceLabel}
-              className="truncate rounded-md px-3 py-1 text-[11px] font-medium text-zinc-500 dark:text-zinc-400"
+              className="truncate rounded-md px-3 py-1 text-[11px] font-medium text-muted"
             >
-              <span className="text-muted">Workspace · </span>
-              {workspaceLabel}
+              Workspace · {workspaceLabel}
             </p>
           ) : null)}
         <SidebarUser

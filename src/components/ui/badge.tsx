@@ -5,9 +5,9 @@ type Variant = "default" | "success" | "warning" | "danger" | "info" | "neutral"
 
 const variants: Record<Variant, string> = {
   default:
-    "bg-zinc-100 text-zinc-600 ring-1 ring-inset ring-zinc-500/10 dark:bg-zinc-800 dark:text-zinc-300 dark:ring-zinc-500/20",
+    "bg-surface-strong text-zinc-600 ring-1 ring-inset ring-zinc-500/10 dark:text-zinc-300 dark:ring-zinc-500/20",
   neutral:
-    "bg-zinc-100 text-zinc-600 ring-1 ring-inset ring-zinc-500/10 dark:bg-zinc-800 dark:text-zinc-300 dark:ring-zinc-500/20",
+    "bg-surface-strong text-zinc-600 ring-1 ring-inset ring-zinc-500/10 dark:text-zinc-300 dark:ring-zinc-500/20",
   success:
     "bg-emerald-50 text-emerald-700 ring-1 ring-inset ring-emerald-600/20 dark:bg-emerald-500/10 dark:text-emerald-400 dark:ring-emerald-500/20",
   warning:

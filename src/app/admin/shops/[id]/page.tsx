@@ -10,6 +10,7 @@ import {
   type AttendantCandidate,
 } from "@/components/shops/attendants-manager";
 import { StatCard } from "@/components/ui/stat";
+import { PageHeader } from "@/components/ui/page-header";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { LowStockBadge, Badge } from "@/components/ui/badge";
 import { EmptyState, BoxIcon } from "@/components/ui/empty-state";
@@ -39,28 +40,35 @@ export default async function ShopDetailPage({
   return (
     <div className="flex flex-col gap-6">
       <div>
-        <Link href="/admin/shops" className="inline-flex items-center gap-1 text-sm text-muted hover:text-brand">
+        <Link href="/admin/shops" className="inline-flex items-center gap-1 text-sm text-muted transition-colors hover:text-brand">
           <ArrowLeft className="size-4" aria-hidden />
           Back to shops
         </Link>
-        <div className="mt-1 flex flex-wrap items-start justify-between gap-3">
-          <div>
-            <h1 className="text-2xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-100">{shop.name}</h1>
-            <p className="text-sm text-muted">{shop.location}</p>
-            {shop.description && <p className="mt-1 max-w-xl text-sm text-zinc-600 dark:text-zinc-400">{shop.description}</p>}
-          </div>
-          <ConfirmAction
-            action={deleteShop}
-            hiddenFields={{ shopId: shop.id }}
-            confirmTitle="Delete this shop?"
-            confirmBody={`"${shop.name}" and all of its inventory, sales, and stock history will be permanently deleted. This cannot be undone.`}
-            successMessage="Shop deleted"
-            redirectTo="/admin/shops"
-            buttonProps={{ variant: "danger" }}
-          >
-            Delete shop
-          </ConfirmAction>
-        </div>
+        <PageHeader
+          className="mt-2"
+          title={shop.name}
+          description={
+            <>
+              {shop.location}
+              {shop.description && (
+                <span className="mt-1 block max-w-xl text-sm text-muted">{shop.description}</span>
+              )}
+            </>
+          }
+          actions={
+            <ConfirmAction
+              action={deleteShop}
+              hiddenFields={{ shopId: shop.id }}
+              confirmTitle="Delete this shop?"
+              confirmBody={`"${shop.name}" and all of its inventory, sales, and stock history will be permanently deleted. This cannot be undone.`}
+              successMessage="Shop deleted"
+              redirectTo="/admin/shops"
+              buttonProps={{ variant: "danger" }}
+            >
+              Delete shop
+            </ConfirmAction>
+          }
+        />
       </div>
 
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">

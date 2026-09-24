@@ -105,7 +105,7 @@ export function Modal({
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.15 }}
-          className="fixed inset-0 z-50 flex items-center justify-center bg-zinc-950/40 p-4 backdrop-blur-[2px] dark:bg-zinc-950/60"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-zinc-950/50 p-4 backdrop-blur-sm dark:bg-zinc-950/70"
           onMouseDown={(e) => {
             if (e.target === e.currentTarget) onClose();
           }}
@@ -122,13 +122,13 @@ export function Modal({
             exit={{ opacity: 0, scale: 0.98, y: 4 }}
             transition={{ duration: 0.18, ease: [0.16, 1, 0.3, 1] }}
             className={cn(
-              "w-full rounded-lg border border-zinc-200 bg-white shadow-xl outline-none dark:border-zinc-800 dark:bg-zinc-900",
+              "w-full rounded-xl border border-border bg-surface-elevated shadow-modal outline-none",
               sizes[size],
             )}
           >
-            <div className="flex items-start justify-between gap-4 border-b border-zinc-100 px-5 py-4 dark:border-zinc-800">
+            <div className="flex items-start justify-between gap-4 border-b border-border px-5 py-4">
               <div className="min-w-0">
-                <h2 id={titleId} className="text-base font-semibold text-zinc-900 dark:text-zinc-100">
+                <h2 id={titleId} className="text-base font-semibold text-foreground">
                   {title}
                 </h2>
                 {description && (
@@ -141,7 +141,7 @@ export function Modal({
                 type="button"
                 onClick={onClose}
                 aria-label="Close dialog"
-                className="shrink-0 rounded-md p-1 text-zinc-400 transition-colors hover:bg-zinc-100 hover:text-zinc-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand dark:hover:bg-zinc-800 dark:hover:text-zinc-300"
+                className="-m-1 shrink-0 rounded-md p-1 text-zinc-400 transition-colors hover:bg-zinc-100 hover:text-zinc-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring dark:hover:bg-zinc-800 dark:hover:text-zinc-300"
               >
                 <X className="size-4" aria-hidden />
               </button>

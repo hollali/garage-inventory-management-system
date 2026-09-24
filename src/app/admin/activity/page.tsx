@@ -4,6 +4,7 @@ import { formatDateTime } from "@/lib/utils";
 import { cn } from "@/lib/utils";
 import { actionLabel, actionTone } from "@/lib/labels";
 import { ActivityFilter } from "@/components/activity/activity-filter";
+import { PageHeader } from "@/components/ui/page-header";
 import { Pagination } from "@/components/ui/pagination";
 import Link from "next/link";
 import type { ReactNode } from "react";
@@ -46,19 +47,17 @@ export default async function ActivityLogPage({
 
   return (
     <div className="flex flex-col gap-6">
-      <div className="flex flex-wrap items-start justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-100">Activity log</h1>
-          <p className="text-sm text-muted">
-            {type === "auth"
-              ? "Sign-ins, password resets, and two-factor authentication events across all accounts."
-              : type === "all"
-                ? "Every logged event, including sign-ins and security actions."
-                : "Chronological audit trail of operational actions across all shops and accounts."}
-          </p>
-        </div>
-        <ActivityTypeTabs type={type} />
-      </div>
+      <PageHeader
+        title="Activity log"
+        description={
+          type === "auth"
+            ? "Sign-ins, password resets, and two-factor authentication events across all accounts."
+            : type === "all"
+              ? "Every logged event, including sign-ins and security actions."
+              : "Chronological audit trail of operational actions across all shops and accounts."
+        }
+        actions={<ActivityTypeTabs type={type} />}
+      />
 
       <ActivityFilter shops={options.shops} actors={options.users} actions={options.actions} />
 
@@ -184,7 +183,7 @@ function ActivityTypeTabs({ type }: { type: ActivityType }) {
   return (
     <nav
       aria-label="Activity type"
-      className="inline-flex rounded-md border border-zinc-200 bg-surface p-0.5 dark:border-zinc-800"
+      className="inline-flex rounded-lg border border-border-strong bg-surface p-0.5 shadow-sm"
     >
       {tabs.map((tab) => (
         <Link
@@ -192,9 +191,9 @@ function ActivityTypeTabs({ type }: { type: ActivityType }) {
           href={tab.href}
           aria-current={type === tab.value ? "page" : undefined}
           className={cn(
-            "rounded px-3 py-1.5 text-sm font-medium transition-colors",
+            "rounded-[7px] px-3 py-1.5 text-sm font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
             type === tab.value
-              ? "bg-zinc-900 text-zinc-50 dark:bg-zinc-100 dark:text-zinc-900"
+              ? "bg-brand text-brand-foreground shadow-sm"
               : "text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100",
           )}
         >

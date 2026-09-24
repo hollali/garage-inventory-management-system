@@ -27,6 +27,7 @@ export const paymentMethodEnum = pgEnum("payment_method", [
   "card",
   "mobile",
   "other",
+  "split",
 ]);
 export const saleStatusEnum = pgEnum("sale_status", ["complete", "refunded"]);
 export const purchaseOrderStatusEnum = pgEnum("purchase_order_status", [
@@ -111,6 +112,7 @@ export const inventoryItems = pgTable(
     unitName: text("unit_name").notNull().default("piece"),
     itemsPerUnit: integer("items_per_unit").notNull().default(1),
     quantity: integer("quantity").notNull().default(0),
+    reservedQuantity: integer("reserved_quantity").notNull().default(0),
     unitPriceCents: integer("unit_price_cents").notNull().default(0),
     costCents: integer("cost_cents").notNull().default(0),
     lowStockThreshold: integer("low_stock_threshold").notNull().default(5),
@@ -158,6 +160,7 @@ export const sales = pgTable(
     vehicleReg: text("vehicle_reg"),
     paymentMethod: paymentMethodEnum("payment_method").notNull().default("cash"),
     discountCents: integer("discount_cents").notNull().default(0),
+    paymentBreakdown: jsonb("payment_breakdown"),
     status: saleStatusEnum("status").notNull().default("complete"),
     totalCents: integer("total_cents").notNull(),
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
@@ -367,6 +370,8 @@ export const siteSettings = pgTable("site_settings", {
   brandName: text("brand_name").notNull().default("Garage Inventory"),
   updatedAt: timestamp("updated_at", { withTimezone: true }).notNull().defaultNow(),
 });
+
+export type PaymentLeg = { method: string; amountCents: number };
 
 export type User = typeof users.$inferSelect;
 export type NewUser = typeof users.$inferInsert;

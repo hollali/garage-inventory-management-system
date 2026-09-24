@@ -1,15 +1,15 @@
 import { requireAttendantShop } from "@/lib/dal";
-import { getSalesPage, getSalesSummary, getShopInventory } from "@/lib/queries";
+import { getSalesPage, getSalesSummary } from "@/lib/queries";
 import { getSaleReceipt, type SaleReceipt } from "@/lib/queries/sales";
 import { formatDateTime, formatMoney } from "@/lib/utils";
 import { SalesFilter } from "@/components/sales/sales-filter";
-import { SaleModal } from "@/components/sales/sale-modal";
+import { PageHeader } from "@/components/ui/page-header";
 import { SaleRowActions } from "@/components/sales/sale-row-actions";
 import { CustomerHistoryModal } from "@/components/sales/customer-history-modal";
 import { Pagination } from "@/components/ui/pagination";
 import { SortableTh } from "@/components/ui/sortable-th";
 import { StatCard } from "@/components/ui/stat";
-import { Button } from "@/components/ui/button";
+import { ButtonLink } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { EmptyState, BoxIcon } from "@/components/ui/empty-state";
 import { Plus, TrendingUp, Calendar, Clock, Flag } from "lucide-react";
@@ -31,7 +31,7 @@ export default async function ShopSalesPage({
   const page = Math.max(1, Number(params.page) || 1);
   const pageSize = 10;
 
-  const [summary, data, inventory] = await Promise.all([
+  const [summary, data] = await Promise.all([
     getSalesSummary(shop.id),
     getSalesPage(shop.id, {
       page,
@@ -40,15 +40,7 @@ export default async function ShopSalesPage({
       sort: params.sort,
       dir: params.dir,
     }),
-    getShopInventory(shop.id),
   ]);
-
-  const saleOptions = inventory.map((item) => ({
-    id: item.id,
-    name: item.name,
-    unitPriceCents: item.unitPriceCents,
-    quantity: item.quantity,
-  }));
 
   const rows = (
     await Promise.all(
@@ -61,21 +53,15 @@ export default async function ShopSalesPage({
 
   return (
     <div className="flex flex-col gap-6">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-100">Sales</h1>
-          <p className="text-sm text-muted">{shop.name}</p>
-        </div>
-        <SaleModal
-          items={saleOptions}
-          urlAction="record"
-          trigger={
-            <Button>
-              <Plus className="size-4" /> Record sale
-            </Button>
-          }
-        />
-      </div>
+      <PageHeader
+        title="Sales"
+        description={shop.name}
+        actions={
+          <ButtonLink href="/shop/pos">
+            <Plus className="size-4" /> Record sale
+          </ButtonLink>
+        }
+      />
 
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
         <StatCard label="Revenue today" value={formatMoney(summary.todayCents)} icon={<TrendingUp className="size-5" />} accent="success" />
@@ -96,16 +82,12 @@ export default async function ShopSalesPage({
               : "When you record a sale it will appear here."
           }
           action={
-            !params.q ? (
-              <SaleModal
-                items={saleOptions}
-                trigger={<Button>Record your first sale</Button>}
-              />
-            ) : undefined
+            !params.q ? <ButtonLink href="/shop/pos">Record your first sale</ButtonLink> : undefined
           }
         />
       ) : (
-        <div className="overflow-hidden rounded-lg border border-zinc-200 dark:border-zinc-800 bg-surface shadow-sm">
+        <>
+          <div className="hidden overflow-hidden rounded-lg border border-zinc-200 dark:border-zinc-800 bg-surface shadow-sm md:block">
           <table className="w-full text-sm">
             <thead className="border-b border-zinc-200 dark:border-zinc-800 bg-zinc-50/70 dark:bg-zinc-800/40 text-left">
               <tr>
@@ -137,7 +119,14 @@ export default async function ShopSalesPage({
               ))}
             </tbody>
           </table>
-        </div>
+          </div>
+
+          <div className="flex flex-col gap-3 md:hidden">
+            {rows.map(({ sale, receipt }) => (
+              <SaleCard key={sale.id} sale={sale} receipt={receipt} shopName={shop.name} />
+            ))}
+          </div>
+        </>
       )}
 
       <Pagination base="/shop/sales" page={page} totalPages={data.totalPages} total={data.total} pageSize={pageSize} />
@@ -242,5 +231,92 @@ function SaleRow({
         />
       </td>
     </tr>
+  );
+}
+
+function SaleCard({
+  sale,
+  receipt,
+  shopName,
+}: {
+  sale: { attendantName: string | null } & (typeof receipt)["sale"];
+  receipt: SaleReceipt;
+  shopName: string;
+}) {
+  return (
+    <div className="rounded-lg border border-zinc-200 dark:border-zinc-800 bg-surface shadow-sm">
+      <div className="flex items-center justify-between gap-2 px-4 pt-3">
+        <span className="font-mono text-xs font-medium text-zinc-500 dark:text-zinc-400">
+          #{sale.id.slice(0, 8).toUpperCase()}
+        </span>
+        <span className="text-xs text-muted">{formatDateTime(sale.createdAt)}</span>
+      </div>
+      <div className="flex items-start justify-between gap-3 px-4 pt-2">
+        <div className="min-w-0">
+          {sale.customerName ? (
+            <>
+              <CustomerHistoryModal
+                customerName={sale.customerName}
+                trigger={
+                  <button type="button" className="text-sm font-medium text-foreground hover:text-brand">
+                    {sale.customerName}
+                  </button>
+                }
+              />
+              {sale.customerContact && (
+                <span className="block text-xs text-muted">{sale.customerContact}</span>
+              )}
+            </>
+          ) : (
+            <span className="text-sm text-zinc-600 dark:text-zinc-400">Walk-in customer</span>
+          )}
+          {sale.vehicleReg && (
+            <span className="mt-0.5 block font-mono text-xs text-zinc-600 dark:text-zinc-400">
+              {sale.vehicleReg}
+            </span>
+          )}
+        </div>
+        <div className="flex shrink-0 items-center gap-1.5">
+          <Badge variant="neutral">{paymentLabels[sale.paymentMethod] ?? sale.paymentMethod}</Badge>
+          {sale.status === "refunded" ? (
+            <Badge variant="danger">Refunded</Badge>
+          ) : (
+            <Badge variant="success">Complete</Badge>
+          )}
+        </div>
+      </div>
+      <details className="group px-4 pt-3">
+        <summary className="flex cursor-pointer list-none items-center justify-between text-xs font-medium text-brand">
+          <span>{receipt.items.length} item{receipt.items.length === 1 ? "" : "s"}</span>
+          <span className="text-muted transition-transform group-open:rotate-180">▾</span>
+        </summary>
+        <ul className="mt-2 space-y-1 border-t border-zinc-100 pt-2 dark:border-zinc-800/70">
+          {receipt.items.map((line) => (
+            <li key={line.id} className="flex items-center justify-between text-sm">
+              <span className="text-zinc-700 dark:text-zinc-300">
+                {line.quantity} × {line.itemName}
+              </span>
+              <span className="tabular-nums text-zinc-600 dark:text-zinc-400">
+                {formatMoney(line.unitPriceCents * line.quantity)}
+              </span>
+            </li>
+          ))}
+        </ul>
+        <p className="mt-2 text-xs text-muted">
+          {sale.attendantName ? `Processed by ${sale.attendantName}` : "Attendant unavailable"}
+        </p>
+      </details>
+      <div className="flex items-center justify-between gap-2 border-t border-zinc-100 px-4 py-2.5 dark:border-zinc-800/70">
+        <span className="text-sm font-semibold tabular-nums text-foreground">
+          {formatMoney(sale.totalCents)}
+        </span>
+        <SaleRowActions
+          saleId={sale.id}
+          status={sale.status}
+          receipt={receipt}
+          shopName={shopName}
+        />
+      </div>
+    </div>
   );
 }

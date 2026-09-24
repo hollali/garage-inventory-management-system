@@ -10,6 +10,7 @@ import { cancelPurchaseOrder } from "@/lib/actions/purchasing";
 import { formatDateTime, formatMoney } from "@/lib/utils";
 import { PoModal } from "@/components/purchasing/po-modal";
 import { ReceivePoModal } from "@/components/purchasing/receive-po-modal";
+import { PageHeader } from "@/components/ui/page-header";
 import { Pagination } from "@/components/ui/pagination";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -60,26 +61,25 @@ export default async function AdminPurchaseOrdersPage({
 
   return (
     <div className="flex flex-col gap-6">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-100">Purchase orders</h1>
-          <p className="text-sm text-muted">
-            {total} order{total === 1 ? "" : "s"} · {suppliers.length} supplier
-            {suppliers.length === 1 ? "" : "s"}
-          </p>
-        </div>
-        <PoModal
-          shops={shops}
-          suppliers={suppliers.map((s) => ({ id: s.id, name: s.name }))}
-          items={items}
-          urlAction="new"
-          trigger={
-            <Button>
-              <Plus className="size-4" /> New purchase order
-            </Button>
-          }
-        />
-      </div>
+      <PageHeader
+        title="Purchase orders"
+        description={`${total} order${total === 1 ? "" : "s"} · ${suppliers.length} supplier${
+          suppliers.length === 1 ? "" : "s"
+        }`}
+        actions={
+          <PoModal
+            shops={shops}
+            suppliers={suppliers.map((s) => ({ id: s.id, name: s.name }))}
+            items={items}
+            urlAction="new"
+            trigger={
+              <Button>
+                <Plus className="size-4" /> New purchase order
+              </Button>
+            }
+          />
+        }
+      />
 
       {total === 0 ? (
         <EmptyState

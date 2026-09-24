@@ -10,6 +10,7 @@ import {
   saleReturns,
   sales,
   stockMovements,
+  type PaymentLeg,
 } from "@/db/schema";
 import { requireAttendant, requireAttendantShop } from "@/lib/dal";
 import { logActivity } from "@/lib/activity";
@@ -26,7 +27,26 @@ const saleSchema = z.object({
   vehicleReg: z.string().trim().max(200).optional(),
   paymentMethod: z.enum(["cash", "card", "mobile", "other"]).default("cash"),
   discount: z.coerce.number().min(0, "Discount cannot be negative.").default(0),
+  paymentBreakdown: z
+    .array(
+      z.object({
+        method: z.enum(["cash", "card", "mobile", "other"]),
+        amountCents: z.number().int().positive("Payment amounts must be positive."),
+      }),
+    )
+    .optional(),
 });
+
+export type PaymentBreakdownInput = { method: "cash" | "card" | "mobile" | "other"; amountCents: number }[];
+
+function parsePaymentBreakdown(raw: FormDataEntryValue | null): PaymentLeg[] | null | undefined {
+  if (raw === null || raw === "") return undefined;
+  try {
+    return JSON.parse(String(raw)) as PaymentLeg[];
+  } catch {
+    return null;
+  }
+}
 
 function toCents(dollars: number): number {
   return Math.round(dollars * 100);
@@ -45,6 +65,7 @@ export async function createSale(prevState: SaleState, formData: FormData): Prom
       vehicleReg: formData.get("vehicleReg"),
       paymentMethod: formData.get("paymentMethod") || "cash",
       discount: formData.get("discount") || "0",
+      paymentBreakdown: parsePaymentBreakdown(formData.get("paymentBreakdown")),
     });
   } catch {
     return { error: "Invalid sale data." };
@@ -54,8 +75,19 @@ export async function createSale(prevState: SaleState, formData: FormData): Prom
     return { error: parsed.error.issues.map((i) => i.message).join(" ") };
   }
 
-  const { lines, customerName, customerContact, vehicleReg, paymentMethod, discount } =
-    parsed.data;
+  if (parsed.data.paymentBreakdown === null) {
+    return { error: "Invalid payment breakdown." };
+  }
+
+  const {
+    lines,
+    customerName,
+    customerContact,
+    vehicleReg,
+    paymentMethod,
+    discount,
+    paymentBreakdown,
+  } = parsed.data;
   const discountCents = toCents(discount);
 
   try {
@@ -84,13 +116,17 @@ export async function createSale(prevState: SaleState, formData: FormData): Prom
           .select()
           .from(inventoryItems)
           .where(and(eq(inventoryItems.id, line.itemId), eq(inventoryItems.shopId, shop.id)))
+          .for("update")
           .limit(1);
 
         if (!item) {
           throw new Error("Item not found.");
         }
-        if (line.quantity > item.quantity) {
-          throw new Error(`Insufficient stock for "${item.name}".`);
+        const available = item.quantity - item.reservedQuantity;
+        if (line.quantity > available) {
+          throw new Error(
+            `Insufficient stock for "${item.name}". Only ${Math.max(0, available)} available.`,
+          );
         }
 
         subtotalCents += item.unitPriceCents * line.quantity;
@@ -126,7 +162,32 @@ export async function createSale(prevState: SaleState, formData: FormData): Prom
 
       const totalCents = Math.max(0, subtotalCents - discountCents);
 
-      await tx.update(sales).set({ totalCents }).where(eq(sales.id, saleId));
+      let resolvedMethod: "cash" | "card" | "mobile" | "other" | "split" = paymentMethod;
+      let storedBreakdown: PaymentLeg[] | null = null;
+
+      if (paymentBreakdown && paymentBreakdown.length > 0) {
+        const paidCents = paymentBreakdown.reduce((sum, leg) => sum + leg.amountCents, 0);
+        if (paidCents !== totalCents) {
+          throw new Error(
+            `Payment amounts (${paidCents}¢) must equal the total (${totalCents}¢).`,
+          );
+        }
+        const methods = new Set(paymentBreakdown.map((leg) => leg.method));
+        resolvedMethod = methods.size > 1 ? "split" : (paymentBreakdown[0].method as typeof paymentMethod);
+        storedBreakdown = paymentBreakdown.map((leg) => ({
+          method: leg.method,
+          amountCents: leg.amountCents,
+        }));
+      }
+
+      await tx
+        .update(sales)
+        .set({
+          totalCents,
+          paymentMethod: resolvedMethod,
+          paymentBreakdown: storedBreakdown,
+        })
+        .where(eq(sales.id, saleId));
 
       return { saleId, totalCents };
     });

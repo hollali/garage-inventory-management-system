@@ -5,6 +5,7 @@ import { users } from "@/db/schema";
 import { getSiteSettings } from "@/lib/queries/settings";
 import { TwoFactor } from "@/components/settings/two-factor";
 import { BrandingSettings } from "@/components/settings/branding";
+import { PageHeader } from "@/components/ui/page-header";
 
 export default async function AdminSettingsPage() {
   const user = await requireAdmin();
@@ -20,14 +21,10 @@ export default async function AdminSettingsPage() {
 
   return (
     <div className="flex flex-col gap-6">
-      <div>
-        <h1 className="text-2xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-100">
-          Settings
-        </h1>
-        <p className="text-sm text-muted">
-          Manage branding, security, and preferences.
-        </p>
-      </div>
+      <PageHeader
+        title="Settings"
+        description="Manage branding, security, and preferences."
+      />
 
       <BrandingSettings
         initialBrandName={settings.brandName}

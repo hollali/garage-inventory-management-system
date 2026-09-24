@@ -90,7 +90,7 @@ describe("Sidebar collapse", () => {
     });
 
     await waitFor(() => {
-      expect(aside?.style.width).toBe("64px");
+      expect(aside?.style.width).toBe("72px");
     });
 
     expect(screen.getByRole("button", { name: /expand sidebar/i })).toBeTruthy();
@@ -121,7 +121,7 @@ describe("Sidebar collapse", () => {
     });
 
     await waitFor(() => {
-      expect(aside?.style.width).toBe("64px");
+      expect(aside?.style.width).toBe("72px");
     });
 
     expect(screen.getByRole("button", { name: /expand sidebar/i })).toBeTruthy();
@@ -148,7 +148,7 @@ describe("Collapsed active state", () => {
 
     const button = screen.getByRole("button", { name: /^Inventory/ });
     const item = button.closest("li");
-    expect(item?.querySelector("span.bg-zinc-100")).toBeTruthy();
+    expect(item?.querySelector("span.bg-brand-soft")).toBeTruthy();
   });
 });
 

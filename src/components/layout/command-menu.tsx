@@ -3,7 +3,7 @@
 import { useEffect, useId, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { AnimatePresence, motion } from "framer-motion";
-import { CornerDownLeft, Search, type LucideIcon } from "lucide-react";
+import { CornerDownLeft, Package, Search, Users, Wrench, type LucideIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { navIcons, type NavItem } from "@/components/layout/nav";
 
@@ -14,12 +14,31 @@ export type CommandAction = {
   icon?: LucideIcon;
 };
 
+export type CommandSearchEntry = {
+  label: string;
+  sub?: string;
+  href: string;
+  icon?: LucideIcon;
+};
+
+export type CommandSearchGroup = {
+  label: string;
+  entries: CommandSearchEntry[];
+};
+
 type GroupedEntry = {
   kind: "action" | "item";
   label: string;
   hint?: string;
+  sub?: string;
   href: string;
   icon: LucideIcon;
+};
+
+const SEARCH_GROUP_ICONS: Record<string, LucideIcon> = {
+  Items: Package,
+  Customers: Users,
+  "Work orders": Wrench,
 };
 
 export function CommandMenu({
@@ -27,11 +46,13 @@ export function CommandMenu({
   onClose,
   items,
   quickActions,
+  searchGroups = [],
 }: {
   open: boolean;
   onClose: () => void;
   items: NavItem[];
   quickActions: CommandAction[];
+  searchGroups?: CommandSearchGroup[];
 }) {
   const router = useRouter();
   const titleId = useId();
@@ -80,8 +101,20 @@ export function CommandMenu({
     const result: { label: string; entries: GroupedEntry[] }[] = [];
     if (actions.length) result.push({ label: "Actions", entries: actions });
     if (nav.length) result.push({ label: "Go to", entries: nav });
+    for (const group of searchGroups) {
+      const entries = group.entries
+        .filter((e) => matches(e.label))
+        .map((e) => ({
+          kind: "item" as const,
+          label: e.label,
+          sub: e.sub,
+          href: e.href,
+          icon: e.icon ?? SEARCH_GROUP_ICONS[group.label] ?? Package,
+        }));
+      if (entries.length) result.push({ label: group.label, entries });
+    }
     return result;
-  }, [query, items, quickActions]);
+  }, [query, items, quickActions, searchGroups]);
 
   const flatEntries = useMemo(
     () => groups.flatMap((g) => g.entries),
@@ -130,7 +163,7 @@ export function CommandMenu({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.12 }}
-            className="absolute inset-0 bg-zinc-950/40 dark:bg-zinc-950/60"
+            className="absolute inset-0 bg-zinc-950/50 backdrop-blur-sm dark:bg-zinc-950/70"
             onClick={onClose}
             aria-hidden
           />
@@ -142,10 +175,10 @@ export function CommandMenu({
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.98, y: -4 }}
             transition={{ duration: 0.15, ease: [0.16, 1, 0.3, 1] }}
-            className="relative w-full max-w-xl overflow-hidden rounded-lg border border-zinc-200 bg-surface shadow-2xl focus:outline-none dark:border-zinc-800 dark:bg-zinc-900"
+            className="relative w-full max-w-xl overflow-hidden rounded-xl border border-border bg-surface-elevated shadow-modal focus:outline-none"
           >
-            <div className="flex items-center gap-2.5 border-b border-zinc-100 px-4 dark:border-zinc-800">
-              <Search className="size-4 shrink-0 text-zinc-400" aria-hidden />
+            <div className="flex items-center gap-2.5 border-b border-border px-4 dark:border-border">
+              <Search className="size-4 shrink-0 text-brand" aria-hidden />
               <input
                 ref={inputRef}
                 value={query}
@@ -155,9 +188,9 @@ export function CommandMenu({
                 }}
                 placeholder="Search pages and actions…"
                 aria-label="Search pages and actions"
-                className="h-12 w-full bg-transparent text-sm text-zinc-900 outline-none placeholder:text-zinc-400 dark:text-zinc-100"
+                className="h-12 w-full bg-transparent text-sm text-foreground outline-none placeholder:text-zinc-400"
               />
-              <kbd className="shrink-0 rounded border border-zinc-200 bg-zinc-50 px-1.5 py-0.5 text-[10px] font-medium text-zinc-400 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-500">
+              <kbd className="shrink-0 rounded-md border border-border-strong bg-surface-strong px-1.5 py-0.5 text-[10px] font-medium text-zinc-400 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-500">
                 Esc
               </kbd>
             </div>
@@ -170,7 +203,7 @@ export function CommandMenu({
               ) : (
                 groups.map((group) => (
                   <div key={group.label} className="mb-1">
-                    <p className="px-2.5 pt-2 pb-1 text-[11px] font-medium tracking-wide text-zinc-400 uppercase dark:text-zinc-500">
+                    <p className="px-2.5 pt-2 pb-1 text-[11px] font-medium text-zinc-400 dark:text-zinc-500">
                       {group.label}
                     </p>
                     {group.entries.map((entry) => {
@@ -188,14 +221,21 @@ export function CommandMenu({
                           className={cn(
                             "flex w-full items-center gap-2.5 rounded-md px-2.5 py-2 text-left text-sm transition-colors",
                             selected
-                              ? "bg-zinc-100 text-zinc-900 dark:bg-zinc-800 dark:text-zinc-100"
+                              ? "bg-brand-soft text-brand"
                               : "text-zinc-700 dark:text-zinc-300",
                           )}
                         >
-                          <span className="text-zinc-400 [&_svg]:size-4">
+                          <span className={selected ? "text-brand" : "text-zinc-400 [&_svg]:size-4"}>
                             <entry.icon aria-hidden />
                           </span>
-                          <span className="flex-1 truncate">{entry.label}</span>
+                          <span className="min-w-0 flex-1">
+                            <span className="block truncate">{entry.label}</span>
+                            {entry.sub && (
+                              <span className="block truncate text-[11px] text-zinc-400 dark:text-zinc-500">
+                                {entry.sub}
+                              </span>
+                            )}
+                          </span>
                           {selected && (
                             <CornerDownLeft className="size-3.5 text-zinc-400" aria-hidden />
                           )}
@@ -206,7 +246,7 @@ export function CommandMenu({
                 ))
               )}
             </div>
-            <div className="flex items-center justify-between border-t border-zinc-100 px-4 py-1.5 text-[11px] text-zinc-400 dark:border-zinc-800 dark:text-zinc-500">
+            <div className="flex items-center justify-between border-t border-border px-4 py-1.5 text-[11px] text-zinc-400 dark:text-zinc-500">
               <p>
                 <kbd className="mr-0.5">↑</kbd>
                 <kbd className="mr-2">↓</kbd> to navigate ·{" "}

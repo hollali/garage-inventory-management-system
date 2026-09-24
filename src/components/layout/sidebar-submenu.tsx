@@ -51,9 +51,9 @@ export function SidebarSubmenu({
                   data-nav-item
                   aria-current={active ? "page" : undefined}
                   className={cn(
-                    "group relative ml-6.5 flex items-center gap-2 border-l border-zinc-200 py-1.5 pl-3 text-sm font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand dark:border-zinc-800",
+                    "group relative ml-6.5 flex items-center gap-2 border-l border-border py-1.5 pl-3 text-sm font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
                     active
-                      ? "text-zinc-900 dark:text-zinc-100"
+                      ? "text-brand"
                       : "text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100",
                   )}
                 >
@@ -61,9 +61,7 @@ export function SidebarSubmenu({
                     aria-hidden
                     className={cn(
                       "absolute -left-px top-1/2 h-3 w-px -translate-y-1/2 rounded-full transition-colors",
-                      active
-                        ? "bg-zinc-900 dark:bg-zinc-100"
-                        : "bg-transparent",
+                      active ? "bg-brand" : "bg-transparent",
                     )}
                   />
                   {child.label}

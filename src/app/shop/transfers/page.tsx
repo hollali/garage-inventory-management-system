@@ -4,6 +4,7 @@ import { getShopsForTransfers, getTransferRequests } from "@/lib/queries/transfe
 import { formatDateTime } from "@/lib/utils";
 import { cancelTransfer } from "@/lib/actions/transfers";
 import { RequestTransferModal } from "@/components/transfers/request-transfer-modal";
+import { PageHeader } from "@/components/ui/page-header";
 import { TransferStatusBadge } from "@/components/transfers/transfer-status-badge";
 import { Pagination } from "@/components/ui/pagination";
 import { Button } from "@/components/ui/button";
@@ -35,25 +36,22 @@ export default async function ShopTransfersPage({
 
   return (
     <div className="flex flex-col gap-6">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-100">Transfers</h1>
-          <p className="text-sm text-muted">
-            Request stock from {shop.name} to another shop or the central pool. An admin approves
-            each request before stock moves.
-          </p>
-        </div>
-        <RequestTransferModal
-          items={items}
-          otherShops={otherShops}
-          urlAction="request"
-          trigger={
-            <Button disabled={items.length === 0}>
-              <Plus className="size-4" /> Request stock
-            </Button>
-          }
-        />
-      </div>
+      <PageHeader
+        title="Transfers"
+        description={`Request stock from ${shop.name} to another shop or the central pool. An admin approves each request before stock moves.`}
+        actions={
+          <RequestTransferModal
+            items={items}
+            otherShops={otherShops}
+            urlAction="request"
+            trigger={
+              <Button disabled={items.length === 0}>
+                <Plus className="size-4" /> Request stock
+              </Button>
+            }
+          />
+        }
+      />
 
       {total === 0 ? (
         <EmptyState

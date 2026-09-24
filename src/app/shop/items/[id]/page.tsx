@@ -10,6 +10,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Badge, LowStockBadge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { EmptyState, BoxIcon } from "@/components/ui/empty-state";
+import { PageHeader } from "@/components/ui/page-header";
 import { Pencil, Package, ArrowLeft } from "lucide-react";
 
 export default async function ItemDetailPage({
@@ -28,30 +29,33 @@ export default async function ItemDetailPage({
   return (
     <div className="flex flex-col gap-6">
       <div>
-        <Link href="/shop/items" className="inline-flex items-center gap-1 text-sm text-muted hover:text-brand">
+        <Link href="/shop/items" className="inline-flex items-center gap-1 text-sm text-muted transition-colors hover:text-brand">
           <ArrowLeft className="size-4" aria-hidden />
           Back to inventory
         </Link>
-        <div className="mt-1 flex flex-wrap items-center gap-3">
-          <h1 className="text-2xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-100">{item.name}</h1>
-          <LowStockBadge quantity={item.quantity} threshold={item.lowStockThreshold} />
-        </div>
-        <div className="mt-2 flex flex-wrap items-center justify-between gap-3">
-          <p className="text-sm text-muted">
-            {item.category}
-            {item.sku ? ` · ${item.sku}` : ""} · {formatMoney(item.unitPriceCents)} / unit ·{" "}
-            {item.quantity} on hand
-          </p>
-          <ItemModal
-            categories={categories}
-            item={item}
-            trigger={
-              <Button variant="outline">
-                <Pencil className="size-4" /> Edit item
-              </Button>
-            }
-          />
-        </div>
+        <PageHeader
+          className="mt-2"
+          title={
+            <span className="inline-flex flex-wrap items-center gap-2.5">
+              {item.name}
+              <LowStockBadge quantity={item.quantity} threshold={item.lowStockThreshold} />
+            </span>
+          }
+          description={`${item.category}${item.sku ? ` · ${item.sku}` : ""} · ${formatMoney(
+            item.unitPriceCents,
+          )} / unit · ${item.quantity} on hand`}
+          actions={
+            <ItemModal
+              categories={categories}
+              item={item}
+              trigger={
+                <Button variant="outline">
+                  <Pencil className="size-4" /> Edit item
+                </Button>
+              }
+            />
+          }
+        />
       </div>
 
       <div className="grid gap-6 lg:grid-cols-2">

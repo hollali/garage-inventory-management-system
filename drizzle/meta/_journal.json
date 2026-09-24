@@ -43,6 +43,13 @@
       "when": 1789862726936,
       "tag": "0005_dizzy_kronos",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1790282202871,
+      "tag": "0006_square_storm",
+      "breakpoints": true
     }
   ]
 }

@@ -3,6 +3,7 @@ import { requireAdmin } from "@/lib/dal";
 import { getAttendantList, getShopsWithSummary } from "@/lib/queries";
 import { formatMoney } from "@/lib/utils";
 import { ShopModal, type ShopAttendantOption } from "@/components/shops/shop-modal";
+import { PageHeader } from "@/components/ui/page-header";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -23,23 +24,21 @@ export default async function AdminShopsPage() {
 
   return (
     <div className="flex flex-col gap-6">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-100">Shops</h1>
-          <p className="text-sm text-muted">
-            {shops.length} shop{shops.length === 1 ? "" : "s"} · attendants can be assigned to one or more shops.
-          </p>
-        </div>
-        <ShopModal
-          attendants={options}
-          urlAction="add"
-          trigger={
-            <Button>
-              <Plus className="size-4" /> New shop
-            </Button>
-          }
-        />
-      </div>
+      <PageHeader
+        title="Shops"
+        description={`${shops.length} shop${shops.length === 1 ? "" : "s"} · attendants can be assigned to one or more shops.`}
+        actions={
+          <ShopModal
+            attendants={options}
+            urlAction="add"
+            trigger={
+              <Button>
+                <Plus className="size-4" /> New shop
+              </Button>
+            }
+          />
+        }
+      />
 
       {shops.length === 0 ? (
         <EmptyState

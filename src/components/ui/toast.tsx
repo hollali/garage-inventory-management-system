@@ -83,10 +83,10 @@ export function ToastProvider({ children }: { children: ReactNode }) {
               exit={{ opacity: 0, y: 4, scale: 0.98 }}
               transition={{ duration: 0.18, ease: [0.16, 1, 0.3, 1] }}
               className={cn(
-                "pointer-events-auto flex w-full max-w-sm items-start gap-2.5 rounded-lg border bg-white p-3 shadow-lg dark:bg-zinc-900",
+                "pointer-events-auto flex w-full max-w-sm items-start gap-2.5 rounded-xl border bg-surface-elevated p-3.5 shadow-popover",
                 item.variant === "success"
-                  ? "border-emerald-200 dark:border-emerald-900"
-                  : "border-rose-200 dark:border-rose-900",
+                  ? "border-emerald-200 dark:border-emerald-900/70"
+                  : "border-rose-200 dark:border-rose-900/70",
               )}
             >
               <span

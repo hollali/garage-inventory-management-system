@@ -6,6 +6,7 @@ import { getWorkOrders } from "@/lib/queries/work-orders";
 import { getPurchaseOrders } from "@/lib/queries/purchasing";
 import { formatDateTime, formatMoney } from "@/lib/utils";
 import { StatCard } from "@/components/ui/stat";
+import { PageHeader } from "@/components/ui/page-header";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ButtonLink } from "@/components/ui/button";
@@ -34,16 +35,13 @@ export default async function AdminDashboardPage() {
 
   return (
     <div className="flex flex-col gap-6">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-100">Dashboard</h1>
-          <p className="text-sm text-muted">
-            Consolidated view across {summary.shopCount} shop
-            {summary.shopCount === 1 ? "" : "s"}.
-          </p>
-        </div>
-        <ButtonLink href="/admin/shops">New shop</ButtonLink>
-      </div>
+      <PageHeader
+        title="Dashboard"
+        description={`Consolidated view across ${summary.shopCount} shop${
+          summary.shopCount === 1 ? "" : "s"
+        }.`}
+        actions={<ButtonLink href="/admin/shops">New shop</ButtonLink>}
+      />
 
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
         <StatCard label="Shops" value={summary.shopCount} icon={<Briefcase className="size-5" />} href="/admin/shops" />
@@ -127,15 +125,15 @@ export default async function AdminDashboardPage() {
               .
             </div>
           ) : (
-            <ul className="divide-y divide-zinc-100 dark:divide-zinc-800/70">
+            <ul className="divide-y divide-border/70">
               {shops.map(({ shop, attendantNames, itemCount, lowStockCount, inventoryValueCents, revenueCents }) => (
                 <li key={shop.id}>
                   <Link
                     href={`/admin/shops/${shop.id}`}
-                    className="flex flex-wrap items-center gap-3 px-5 py-4 transition-colors hover:bg-zinc-50 dark:hover:bg-zinc-800/40 sm:flex-nowrap"
+                    className="flex flex-wrap items-center gap-3 px-5 py-4 transition-colors hover:bg-surface-subtle sm:flex-nowrap"
                   >
                     <div className="min-w-0 flex-1">
-                      <p className="font-semibold text-zinc-900 dark:text-zinc-100">{shop.name}</p>
+                      <p className="font-semibold text-foreground">{shop.name}</p>
                       <p className="truncate text-xs text-muted">
                         {shop.location}
                         {attendantNames.length > 0
@@ -150,13 +148,13 @@ export default async function AdminDashboardPage() {
                       <Badge variant="neutral">{itemCount} items</Badge>
                     </div>
                     <div className="hidden w-32 text-right text-sm sm:block">
-                      <p className="font-medium tabular-nums text-zinc-900 dark:text-zinc-100">
+                      <p className="font-medium tabular-nums text-foreground">
                         {formatMoney(inventoryValueCents)}
                       </p>
                       <p className="text-xs text-muted">inventory value</p>
                     </div>
                     <div className="w-32 text-right text-sm">
-                      <p className="font-medium tabular-nums text-zinc-900 dark:text-zinc-100">
+                      <p className="font-medium tabular-nums text-foreground">
                         {formatMoney(revenueCents)}
                       </p>
                       <p className="text-xs text-muted">revenue</p>

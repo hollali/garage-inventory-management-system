@@ -4,31 +4,29 @@ import {
   getItemCategories,
   getLowStockItems,
   getRecentSales,
-  getShopInventory,
   getShopStats,
 } from "@/lib/queries";
 import { getTransferRequests } from "@/lib/queries/transfers";
 import { getWorkOrders } from "@/lib/queries/work-orders";
 import { formatDateTime, formatMoney } from "@/lib/utils";
 import { ItemModal } from "@/components/inventory/item-modal";
-import { SaleModal } from "@/components/sales/sale-modal";
 import { StatCard } from "@/components/ui/stat";
+import { PageHeader } from "@/components/ui/page-header";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { LowStockBadge, Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { Button, ButtonLink } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
 import { AttentionCard } from "@/components/ui/attention-card";
 import { Package, Banknote, AlertTriangle, TrendingUp, Repeat, Wrench } from "lucide-react";
 
 export default async function ShopDashboardPage() {
   const shop = await requireAttendantShop();
-  const [stats, lowStock, recentSales, categories, inventory, pendingTransfers, openWorkOrders] =
+  const [stats, lowStock, recentSales, categories, pendingTransfers, openWorkOrders] =
     await Promise.all([
       getShopStats(shop.id),
       getLowStockItems(shop.id, 6),
       getRecentSales(shop.id, 8),
       getItemCategories(shop.id),
-      getShopInventory(shop.id),
       getTransferRequests({ status: "pending", pageSize: 100 }),
       getWorkOrders(shop.id, { status: "open", pageSize: 50 }),
     ]);
@@ -37,30 +35,20 @@ export default async function ShopDashboardPage() {
     (transfer) => transfer.fromShopId === shop.id || transfer.toShopId === shop.id,
   );
 
-  const saleOptions = inventory.map((item) => ({
-    id: item.id,
-    name: item.name,
-    unitPriceCents: item.unitPriceCents,
-    quantity: item.quantity,
-  }));
-
   return (
     <div className="flex flex-col gap-6">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-semibold tracking-tight text-zinc-900 dark:text-zinc-100">
-            {shop.name}
-          </h1>
-          <p className="text-sm text-muted">{shop.location}</p>
-        </div>
-        <div className="flex gap-2">
-          <ItemModal
-            categories={categories}
-            trigger={<Button>Add item</Button>}
-          />
-          <SaleModal items={saleOptions} trigger={<Button variant="outline">Record sale</Button>} />
-        </div>
-      </div>
+      <PageHeader
+        title={shop.name}
+        description={shop.location}
+        actions={
+          <div className="flex gap-2">
+            <ItemModal categories={categories} trigger={<Button>Add item</Button>} />
+            <ButtonLink href="/shop/pos" variant="outline">
+              Record sale
+            </ButtonLink>
+          </div>
+        }
+      />
 
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
         <StatCard
@@ -139,11 +127,11 @@ export default async function ShopDashboardPage() {
             {lowStock.length === 0 ? (
               <EmptyState title="All stocked up" description="No items are below their threshold." />
             ) : (
-              <ul className="divide-y divide-zinc-100 dark:divide-zinc-800/70">
+              <ul className="divide-y divide-border/70">
                 {lowStock.map((item) => (
                   <li key={item.id} className="flex items-center justify-between gap-3 py-3">
                     <div className="min-w-0">
-                      <p className="truncate text-sm font-medium text-zinc-900 dark:text-zinc-100">{item.name}</p>
+                      <p className="truncate text-sm font-medium text-foreground">{item.name}</p>
                       <p className="text-xs text-muted">
                         {item.quantity} on hand · threshold {item.lowStockThreshold}
                       </p>
@@ -170,18 +158,18 @@ export default async function ShopDashboardPage() {
             {recentSales.length === 0 ? (
               <EmptyState title="No sales yet" description="Record your first sale to get started." />
             ) : (
-              <ul className="divide-y divide-zinc-100 dark:divide-zinc-800/70">
+              <ul className="divide-y divide-border/70">
                 {recentSales.map((sale) => (
                   <li key={sale.id} className="flex items-center justify-between gap-3 py-3">
                     <div className="min-w-0">
-                      <p className="truncate text-sm font-medium text-zinc-900 dark:text-zinc-100">
+                      <p className="truncate text-sm font-medium text-foreground">
                         {sale.customerName || "Walk-in customer"}
                       </p>
                       <p className="text-xs text-muted">{formatDateTime(sale.createdAt)}</p>
                     </div>
                     <div className="flex items-center gap-2">
                       <Badge variant="neutral">{sale.id.slice(0, 8).toUpperCase()}</Badge>
-                      <span className="text-sm font-semibold text-zinc-900 dark:text-zinc-100">
+                      <span className="text-sm font-semibold tabular-nums text-foreground">
                         {formatMoney(sale.totalCents)}
                       </span>
                     </div>
