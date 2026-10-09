@@ -5,7 +5,7 @@ import { db } from "@/db";
 import { inventoryItems, sales, shops, workOrders } from "@/db/schema";
 import { getShopForAttendant, requireUser } from "@/lib/dal";
 
-export type GlobalSearchEntry = { label: string; sub?: string; href: string };
+export type GlobalSearchEntry = { id: string; label: string; sub?: string; href: string };
 export type GlobalSearchGroup = { label: string; entries: GlobalSearchEntry[] };
 
 const ITEM_LIMIT = 15;
@@ -125,6 +125,7 @@ export async function getGlobalSearchData(): Promise<GlobalSearchGroup[]> {
     groups.push({
       label: "Items",
       entries: items.map((item) => ({
+        id: item.id,
         label: item.name,
         sub: [item.category || "General", item.sku && `SKU ${item.sku}`, isAdmin ? item.shop : null]
           .filter(Boolean)
@@ -138,6 +139,7 @@ export async function getGlobalSearchData(): Promise<GlobalSearchGroup[]> {
     groups.push({
       label: "Customers",
       entries: customers.map((c) => ({
+        id: c.name,
         label: c.name,
         sub: [c.contact && `Contact ${c.contact}`].filter(Boolean).join(" · "),
         href: `${"/shop/sales"}${query(c.name)}`,
@@ -149,6 +151,7 @@ export async function getGlobalSearchData(): Promise<GlobalSearchGroup[]> {
     groups.push({
       label: "Work orders",
       entries: workOrderRows.map((wo) => ({
+        id: wo.id,
         label: wo.vehicleReg || wo.customerName || wo.id,
         sub: [wo.customerName && `Customer ${wo.customerName}`, wo.status, isAdmin ? wo.shop : null]
           .filter(Boolean)

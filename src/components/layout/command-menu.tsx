@@ -15,6 +15,7 @@ export type CommandAction = {
 };
 
 export type CommandSearchEntry = {
+  id?: string;
   label: string;
   sub?: string;
   href: string;
@@ -27,6 +28,7 @@ export type CommandSearchGroup = {
 };
 
 type GroupedEntry = {
+  key: string;
   kind: "action" | "item";
   label: string;
   hint?: string;
@@ -81,7 +83,8 @@ export function CommandMenu({
 
     const actions: GroupedEntry[] = quickActions
       .filter((a) => matches(a.label))
-      .map((a) => ({
+      .map((a, index) => ({
+        key: `action-${a.href}-${index}`,
         kind: "action",
         label: a.label,
         hint: a.hint,
@@ -91,7 +94,8 @@ export function CommandMenu({
 
     const nav: GroupedEntry[] = items
       .filter((i) => matches(i.label))
-      .map((i) => ({
+      .map((i, index) => ({
+        key: `navigation-${i.href}-${index}`,
         kind: "item",
         label: i.label,
         href: i.href,
@@ -102,15 +106,18 @@ export function CommandMenu({
     if (actions.length) result.push({ label: "Actions", entries: actions });
     if (nav.length) result.push({ label: "Go to", entries: nav });
     for (const group of searchGroups) {
-      const entries = group.entries
-        .filter((e) => matches(e.label))
-        .map((e) => ({
+      const entries = group.entries.flatMap((e, index) =>
+        matches(e.label)
+          ? [{
+          key: `search-${group.label}-${e.id ?? e.href}-${index}`,
           kind: "item" as const,
           label: e.label,
           sub: e.sub,
           href: e.href,
           icon: e.icon ?? SEARCH_GROUP_ICONS[group.label] ?? Package,
-        }));
+          }]
+          : [],
+      );
       if (entries.length) result.push({ label: group.label, entries });
     }
     return result;
@@ -211,7 +218,7 @@ export function CommandMenu({
                       const selected = index === selectedIndex;
                       return (
                         <button
-                          key={`${entry.kind}-${entry.label}`}
+                          key={entry.key}
                           type="button"
                           onMouseMove={() => setActive(index)}
                           onClick={() => {
