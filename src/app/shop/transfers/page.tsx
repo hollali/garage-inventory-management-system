@@ -77,7 +77,7 @@ export default async function ShopTransfersPage({
               <TBody>
                 {rows.map((request) => (
                   <TR key={request.id}>
-                    <TD className="font-medium text-zinc-900 dark:text-zinc-100">{request.itemName}</TD>
+                    <TD className="font-medium text-foreground">{request.itemName}</TD>
                     <TD className="text-right whitespace-nowrap tabular-nums">{request.quantity}</TD>
                     <TD className="hidden md:table-cell">
                       {request.toShopName ? (

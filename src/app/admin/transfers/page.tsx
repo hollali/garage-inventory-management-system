@@ -65,7 +65,7 @@ export default async function AdminTransfersPage({
               className={
                 active
                   ? "rounded-lg bg-brand px-3 py-1.5 text-sm font-medium text-brand-foreground shadow-sm"
-                  : "rounded-lg border border-border-strong bg-surface px-3 py-1.5 text-sm font-medium text-zinc-700 shadow-sm hover:bg-surface-subtle dark:text-zinc-300 dark:hover:bg-zinc-800/60"
+                  : "rounded-lg border border-border-strong bg-surface px-3 py-1.5 text-sm font-medium text-foreground shadow-sm hover:bg-surface-subtle"
               }
             >
               {f.label}
@@ -103,7 +103,7 @@ export default async function AdminTransfersPage({
               <TBody>
                 {rows.map((request) => (
                   <TR key={request.id}>
-                    <TD className="hidden font-medium whitespace-nowrap text-zinc-900 md:table-cell dark:text-zinc-100">{request.fromShopName}</TD>
+                    <TD className="hidden font-medium whitespace-nowrap text-foreground md:table-cell">{request.fromShopName}</TD>
                     <TD>
                       {request.itemName}
                       {request.note && (

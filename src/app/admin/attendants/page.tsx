@@ -58,7 +58,7 @@ export default async function AdminAttendantsPage() {
                 {attendants.map(({ user, shops }) => (
                   <TR key={user.id}>
                     <TD>
-                      <p className="font-medium text-zinc-900 dark:text-zinc-100">{user.name}</p>
+                      <p className="font-medium text-foreground">{user.name}</p>
                       <p className="text-xs text-muted">{user.email}</p>
                     </TD>
                     <TD className="hidden whitespace-nowrap md:table-cell">

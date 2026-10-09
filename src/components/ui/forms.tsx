@@ -11,10 +11,10 @@ export function Label({ className, ...props }: React.LabelHTMLAttributes<HTMLLab
 }
 
 const fieldBase =
-  "w-full rounded-lg border border-border-strong bg-surface px-3 py-2 text-sm text-foreground shadow-sm transition-colors placeholder:text-zinc-400 focus:border-brand/40 focus:outline-none focus:ring-2 focus:ring-brand/20 disabled:cursor-not-allowed disabled:opacity-50 dark:text-zinc-100 dark:placeholder:text-zinc-500 dark:focus:border-brand/60 dark:focus:ring-brand/25";
+  "w-full rounded-xl border border-border bg-surface px-3.5 py-2.5 text-sm text-foreground shadow-sm transition-[border-color,box-shadow] placeholder:text-muted/70 focus:border-brand/60 focus:outline-none focus:ring-4 focus:ring-brand/10 disabled:cursor-not-allowed disabled:opacity-50";
 
 export function Input({ className, ...props }: React.InputHTMLAttributes<HTMLInputElement>) {
-  return <input className={cn(fieldBase, "h-9", className)} {...props} />;
+  return <input className={cn(fieldBase, "h-10", className)} {...props} />;
 }
 
 export function Textarea({ className, ...props }: React.TextareaHTMLAttributes<HTMLTextAreaElement>) {
@@ -22,7 +22,7 @@ export function Textarea({ className, ...props }: React.TextareaHTMLAttributes<H
 }
 
 export function Select({ className, ...props }: React.SelectHTMLAttributes<HTMLSelectElement>) {
-  return <select className={cn(fieldBase, "h-9 pr-8", className)} {...props} />;
+  return <select className={cn(fieldBase, "h-10 pr-8", className)} {...props} />;
 }
 
 export function FieldError({ children }: { children?: React.ReactNode }) {
@@ -41,7 +41,7 @@ export function FormSection({
 }) {
   return (
     <section className={cn("flex flex-col gap-4", className)}>
-      <h3 className="border-b border-border pb-2 text-xs font-semibold text-foreground">
+        <h3 className="border-b border-border pb-2 text-xs font-semibold tracking-wide text-muted uppercase">
         {title}
       </h3>
       {children}

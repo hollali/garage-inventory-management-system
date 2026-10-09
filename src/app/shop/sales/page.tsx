@@ -87,9 +87,9 @@ export default async function ShopSalesPage({
         />
       ) : (
         <>
-          <div className="hidden overflow-hidden rounded-lg border border-zinc-200 dark:border-zinc-800 bg-surface shadow-sm md:block">
+          <div className="hidden overflow-hidden rounded-lg border border-border bg-surface shadow-sm md:block">
           <table className="w-full text-sm">
-            <thead className="border-b border-zinc-200 dark:border-zinc-800 bg-zinc-50/70 dark:bg-zinc-800/40 text-left">
+            <thead className="border-b border-border bg-surface-subtle text-left">
               <tr>
                 <th className="px-4 py-2.5 text-xs font-semibold uppercase tracking-wide text-muted">
                   Transaction
@@ -147,23 +147,23 @@ function SaleRow({
     <tr>
       <td className="p-0 align-top">
         <details className="group">
-          <summary className="flex cursor-pointer list-none items-center gap-2 px-4 py-3 hover:bg-zinc-50 dark:hover:bg-zinc-800/40">
-            <span className="font-mono text-xs font-medium text-zinc-500 dark:text-zinc-400">
+          <summary className="flex cursor-pointer list-none items-center gap-2 px-4 py-3 hover:bg-surface-subtle">
+            <span className="font-mono text-xs font-medium text-muted">
               #{sale.id.slice(0, 8).toUpperCase()}
             </span>
             <span className="text-xs text-muted transition-transform group-open:rotate-180">▾</span>
           </summary>
-          <div className="bg-zinc-50/60 dark:bg-zinc-800/40 px-4 py-3">
+          <div className="bg-surface-subtle px-4 py-3">
             <ul className="space-y-1">
               {receipt.items.map((line) => (
                 <li
                   key={line.id}
                   className="flex items-center justify-between text-sm"
                 >
-                  <span className="text-zinc-700 dark:text-zinc-300">
+                  <span className="text-foreground">
                     {line.quantity} × {line.itemName}
                   </span>
-                  <span className="tabular-nums text-zinc-600 dark:text-zinc-400">
+                  <span className="tabular-nums text-muted">
                     {formatMoney(line.unitPriceCents * line.quantity)}
                   </span>
                 </li>
@@ -183,7 +183,7 @@ function SaleRow({
               trigger={
                 <button
                   type="button"
-                  className="text-sm font-medium text-zinc-900 dark:text-zinc-100 hover:text-brand"
+                  className="text-sm font-medium text-foreground hover:text-brand"
                 >
                   {sale.customerName}
                 </button>
@@ -194,7 +194,7 @@ function SaleRow({
             )}
           </>
         ) : (
-          <span className="text-sm text-zinc-600 dark:text-zinc-400">Walk-in customer</span>
+          <span className="text-sm text-muted">Walk-in customer</span>
         )}
       </td>
       <td>
@@ -211,14 +211,14 @@ function SaleRow({
       </td>
       <td>
         {sale.vehicleReg ? (
-          <span className="font-mono text-xs text-zinc-600 dark:text-zinc-400">{sale.vehicleReg}</span>
+        <span className="font-mono text-xs text-muted">{sale.vehicleReg}</span>
         ) : (
-          <span className="text-xs text-zinc-400 dark:text-zinc-500">—</span>
+          <span className="text-xs text-muted">—</span>
         )}
       </td>
       <td className="text-xs text-muted">{formatDateTime(sale.createdAt)}</td>
       <td className="text-right">
-        <span className="text-sm font-semibold tabular-nums text-zinc-900 dark:text-zinc-100">
+        <span className="text-sm font-semibold tabular-nums text-foreground">
           {formatMoney(sale.totalCents)}
         </span>
       </td>
@@ -244,9 +244,9 @@ function SaleCard({
   shopName: string;
 }) {
   return (
-    <div className="rounded-lg border border-zinc-200 dark:border-zinc-800 bg-surface shadow-sm">
+    <div className="rounded-lg border border-border bg-surface shadow-sm">
       <div className="flex items-center justify-between gap-2 px-4 pt-3">
-        <span className="font-mono text-xs font-medium text-zinc-500 dark:text-zinc-400">
+        <span className="font-mono text-xs font-medium text-muted">
           #{sale.id.slice(0, 8).toUpperCase()}
         </span>
         <span className="text-xs text-muted">{formatDateTime(sale.createdAt)}</span>
@@ -268,10 +268,10 @@ function SaleCard({
               )}
             </>
           ) : (
-            <span className="text-sm text-zinc-600 dark:text-zinc-400">Walk-in customer</span>
+            <span className="text-sm text-muted">Walk-in customer</span>
           )}
           {sale.vehicleReg && (
-            <span className="mt-0.5 block font-mono text-xs text-zinc-600 dark:text-zinc-400">
+            <span className="mt-0.5 block font-mono text-xs text-muted">
               {sale.vehicleReg}
             </span>
           )}
@@ -290,13 +290,13 @@ function SaleCard({
           <span>{receipt.items.length} item{receipt.items.length === 1 ? "" : "s"}</span>
           <span className="text-muted transition-transform group-open:rotate-180">▾</span>
         </summary>
-        <ul className="mt-2 space-y-1 border-t border-zinc-100 pt-2 dark:border-zinc-800/70">
+        <ul className="mt-2 space-y-1 border-t border-border pt-2">
           {receipt.items.map((line) => (
             <li key={line.id} className="flex items-center justify-between text-sm">
-              <span className="text-zinc-700 dark:text-zinc-300">
+              <span className="text-foreground">
                 {line.quantity} × {line.itemName}
               </span>
-              <span className="tabular-nums text-zinc-600 dark:text-zinc-400">
+              <span className="tabular-nums text-muted">
                 {formatMoney(line.unitPriceCents * line.quantity)}
               </span>
             </li>
@@ -306,7 +306,7 @@ function SaleCard({
           {sale.attendantName ? `Processed by ${sale.attendantName}` : "Attendant unavailable"}
         </p>
       </details>
-      <div className="flex items-center justify-between gap-2 border-t border-zinc-100 px-4 py-2.5 dark:border-zinc-800/70">
+      <div className="flex items-center justify-between gap-2 border-t border-border px-4 py-2.5">
         <span className="text-sm font-semibold tabular-nums text-foreground">
           {formatMoney(sale.totalCents)}
         </span>

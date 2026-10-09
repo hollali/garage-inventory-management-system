@@ -122,7 +122,7 @@ export function Modal({
             exit={{ opacity: 0, scale: 0.98, y: 4 }}
             transition={{ duration: 0.18, ease: [0.16, 1, 0.3, 1] }}
             className={cn(
-              "w-full rounded-xl border border-border bg-surface-elevated shadow-modal outline-none",
+              "w-full rounded-2xl border border-border bg-surface-elevated shadow-modal outline-none",
               sizes[size],
             )}
           >

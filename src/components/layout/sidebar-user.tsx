@@ -45,7 +45,7 @@ export function SidebarUser({
       direction="up"
       align={collapsed ? "start" : "end"}
       buttonClassName={cn(
-        "w-full rounded-lg p-0 hover:bg-surface-strong dark:hover:bg-zinc-900",
+        "w-full rounded-lg p-0 hover:bg-surface-strong",
       )}
       menuClassName="w-56"
       trigger={

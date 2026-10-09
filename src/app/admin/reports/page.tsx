@@ -146,7 +146,7 @@ export default async function AdminReportsPage({
                     <TBody>
                       {topSellers.map((t) => (
                         <TR key={t.itemName}>
-                          <TD className="font-medium text-zinc-900 dark:text-zinc-100">{t.itemName}</TD>
+                          <TD className="font-medium text-foreground">{t.itemName}</TD>
                           <TD className="text-right whitespace-nowrap tabular-nums">{t.quantity}</TD>
                           <TD className="text-right whitespace-nowrap tabular-nums">{formatMoney(t.revenueCents)}</TD>
                         </TR>
@@ -229,7 +229,7 @@ export default async function AdminReportsPage({
                 {reorder.map((it) => (
                   <TR key={it.itemId}>
                     <TD>
-                      <span className="font-medium text-zinc-900 dark:text-zinc-100">{it.itemName}</span>
+                      <span className="font-medium text-foreground">{it.itemName}</span>
                       <Badge variant="neutral" className="ml-2">
                         {it.category}
                       </Badge>

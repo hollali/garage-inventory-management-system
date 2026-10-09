@@ -174,8 +174,8 @@ function ShellInner({
           <div className="flex min-w-0 flex-1 flex-col">
             <Topbar sections={sections} />
 
-            <main className="w-full flex-1 px-4 py-7 sm:px-6 lg:px-8 lg:py-9">
-              {children}
+            <main className="w-full flex-1 px-4 py-6 sm:px-6 lg:px-9 lg:py-8">
+              <div className="mx-auto w-full max-w-[1600px]">{children}</div>
             </main>
           </div>
 

@@ -9,23 +9,23 @@ const variants: Record<Variant, string> = {
   primary:
     "bg-brand text-brand-foreground shadow-sm hover:bg-brand-hover active:bg-brand-active disabled:shadow-none",
   secondary:
-    "bg-surface-strong text-zinc-800 hover:bg-zinc-200/80 dark:bg-zinc-800 dark:text-zinc-100 dark:hover:bg-zinc-700",
+    "bg-surface-strong text-foreground hover:bg-border-strong",
   outline:
-    "border border-border-strong bg-surface text-zinc-800 shadow-sm hover:border-zinc-300 hover:bg-surface-subtle dark:text-zinc-100 dark:hover:border-zinc-600 dark:hover:bg-zinc-800/60",
+    "border border-border-strong bg-surface text-foreground shadow-sm hover:border-brand/40 hover:bg-surface-subtle",
   ghost:
-    "text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-800/60 dark:hover:text-zinc-100",
+    "text-muted hover:bg-surface-strong hover:text-foreground",
   danger:
     "bg-rose-600 text-white shadow-sm hover:bg-rose-500 dark:bg-rose-600 dark:text-white dark:hover:bg-rose-500",
 };
 
 const sizes: Record<Size, string> = {
   sm: "h-8 px-3 text-xs gap-1.5",
-  md: "h-9 px-3.5 text-sm gap-2",
-  lg: "h-10 px-4 text-sm gap-2",
+  md: "h-10 px-4 text-sm gap-2",
+  lg: "h-11 px-5 text-sm gap-2",
 };
 
 const baseClasses =
-  "relative inline-flex select-none items-center justify-center rounded-lg font-medium transition-[color,background-color,border-color,box-shadow,transform] duration-150 active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:shrink-0";
+  "relative inline-flex select-none items-center justify-center rounded-xl font-semibold transition-[color,background-color,border-color,box-shadow,transform] duration-150 active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:shrink-0";
 
 export interface ButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement> {

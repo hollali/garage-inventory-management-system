@@ -59,7 +59,15 @@ export default async function ActivityLogPage({
         actions={<ActivityTypeTabs type={type} />}
       />
 
-      <ActivityFilter shops={options.shops} actors={options.users} actions={options.actions} />
+      <Card>
+        <CardHeader className="pb-3">
+          <CardTitle>Filter activity</CardTitle>
+          <CardDescription>Narrow events by shop, person, or action.</CardDescription>
+        </CardHeader>
+        <CardContent className="pt-0">
+          <ActivityFilter shops={options.shops} actors={options.users} actions={options.actions} />
+        </CardContent>
+      </Card>
 
       {log.length === 0 ? (
         <EmptyState
@@ -74,7 +82,7 @@ export default async function ActivityLogPage({
             hasFilters ? (
               <Link
                 href={`/admin/activity${type !== "shop" ? `?type=${type}` : ""}`}
-                className="inline-flex h-9 items-center justify-center rounded-md border border-zinc-200 bg-surface px-4 text-sm font-medium text-zinc-700 transition-colors hover:bg-zinc-50 dark:border-zinc-800 dark:text-zinc-300 dark:hover:bg-zinc-800"
+                className="inline-flex h-9 items-center justify-center rounded-lg border border-border bg-surface px-4 text-sm font-medium text-foreground transition-colors hover:bg-surface-subtle"
               >
                 Clear filters
               </Link>
@@ -90,26 +98,32 @@ export default async function ActivityLogPage({
             </CardDescription>
           </CardHeader>
           <CardContent className="p-0">
-            <ul className="divide-y divide-zinc-100 dark:divide-zinc-800/70">
+            <ul className="divide-y divide-border/70">
               {log.map((entry) => (
-                <li key={entry.id} className="flex flex-col gap-1 px-5 py-3.5 sm:flex-row sm:items-center sm:gap-3">
-                  <div className="flex items-start gap-3 sm:w-32 sm:shrink-0">
-                    <Badge variant={actionTone(entry.action)} className="whitespace-normal">
+                <li
+                  key={entry.id}
+                  className="grid min-w-0 grid-cols-1 gap-2.5 px-4 py-4 sm:grid-cols-[140px_minmax(0,1fr)_auto] sm:items-center sm:gap-4 sm:px-5"
+                >
+                  <div className="flex min-w-0 items-start">
+                    <Badge variant={actionTone(entry.action)} className="max-w-full whitespace-normal break-words">
                       {actionLabel(entry.action)}
                     </Badge>
                   </div>
                   <div className="min-w-0 flex-1">
-                    <p className="text-sm text-zinc-900 dark:text-zinc-100">
+                    <p className="break-words text-sm text-foreground">
                       <span className="font-medium">{entry.actorName}</span>
                       {entry.shopId && shopName.has(entry.shopId) && (
                         <span className="text-muted"> · {shopName.get(entry.shopId)}</span>
                       )}
                     </p>
-                    {entry.metadata ? (
-                      <MetadataText action={entry.action} metadata={entry.metadata} />
-                    ) : null}
+                    {entry.metadata ? <MetadataText action={entry.action} metadata={entry.metadata} /> : null}
                   </div>
-                  <p className="text-xs text-muted sm:shrink-0">{formatDateTime(entry.createdAt)}</p>
+                  <time
+                    dateTime={new Date(entry.createdAt).toISOString()}
+                    className="text-xs text-muted sm:shrink-0 sm:text-right"
+                  >
+                    {formatDateTime(entry.createdAt)}
+                  </time>
                 </li>
               ))}
             </ul>
@@ -127,7 +141,7 @@ function MetadataText({ action, metadata }: { action: string; metadata: unknown 
   const node = formatMetadataNode(action, metadata);
   if (!node) return null;
   return (
-    <p className="mt-0.5 truncate text-xs text-muted" title={plain ?? undefined}>
+    <p className="mt-1 break-words text-xs leading-5 text-muted" title={plain ?? undefined}>
       {node}
     </p>
   );
@@ -137,7 +151,7 @@ function formatMetadataNode(action: string, metadata: unknown): ReactNode | null
   const m = (metadata ?? {}) as Record<string, unknown>;
   if (action === "stock.transfer" || action === "stock.distribute") {
     return (
-      <span className="inline-flex items-center gap-1">
+      <span className="inline-flex max-w-full flex-wrap items-center gap-1 break-words">
         {String(m.name ?? "")} · {String(m.quantity ?? "")} · {String(m.fromShop ?? "")}
         <ArrowRight className="size-3 shrink-0" aria-hidden />
         {String(m.toShop ?? "")}
@@ -183,7 +197,7 @@ function ActivityTypeTabs({ type }: { type: ActivityType }) {
   return (
     <nav
       aria-label="Activity type"
-      className="inline-flex rounded-lg border border-border-strong bg-surface p-0.5 shadow-sm"
+      className="inline-flex max-w-full overflow-x-auto rounded-xl border border-border bg-surface-subtle p-1 shadow-sm"
     >
       {tabs.map((tab) => (
         <Link
@@ -191,10 +205,10 @@ function ActivityTypeTabs({ type }: { type: ActivityType }) {
           href={tab.href}
           aria-current={type === tab.value ? "page" : undefined}
           className={cn(
-            "rounded-[7px] px-3 py-1.5 text-sm font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
+            "shrink-0 rounded-lg px-2.5 py-1.5 text-xs font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring sm:px-3 sm:text-sm",
             type === tab.value
               ? "bg-brand text-brand-foreground shadow-sm"
-              : "text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100",
+              : "text-muted hover:text-foreground",
           )}
         >
           {tab.label}

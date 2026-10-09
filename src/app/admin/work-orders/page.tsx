@@ -62,14 +62,14 @@ export default async function AdminWorkOrdersPage({
                     {data.rows.map((workOrder) => (
                       <TR key={workOrder.id}>
                         <TD>
-                          <span className="font-medium text-zinc-900 dark:text-zinc-100">
+                          <span className="font-medium text-foreground">
                             {workOrder.shopName || "—"}
                           </span>
                         </TD>
                         <TD>
                           <Link
                             href={`/admin/work-orders/${workOrder.id}`}
-                            className="font-mono text-sm whitespace-nowrap text-zinc-900 hover:underline dark:text-zinc-100"
+                            className="font-mono text-sm whitespace-nowrap text-foreground hover:underline"
                           >
                             {workOrder.vehicleReg || "—"}
                           </Link>
@@ -78,7 +78,7 @@ export default async function AdminWorkOrdersPage({
                         <TD>
                           <WorkOrderStatusBadge status={workOrder.status} />
                         </TD>
-                        <TD className="text-right font-semibold whitespace-nowrap tabular-nums text-zinc-900 dark:text-zinc-100">
+                        <TD className="text-right font-semibold whitespace-nowrap tabular-nums text-foreground">
                           {formatMoney(workOrder.labourCents + workOrder.partsTotalCents)}
                         </TD>
                         <TD className="hidden text-xs whitespace-nowrap text-muted md:table-cell">

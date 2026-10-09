@@ -6,7 +6,7 @@ import { getWorkOrders } from "@/lib/queries/work-orders";
 import { getPurchaseOrders } from "@/lib/queries/purchasing";
 import { formatDateTime, formatMoney } from "@/lib/utils";
 import { StatCard } from "@/components/ui/stat";
-import { PageHeader } from "@/components/ui/page-header";
+import { DashboardBanner } from "@/components/ui/dashboard-banner";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { ButtonLink } from "@/components/ui/button";
@@ -35,15 +35,21 @@ export default async function AdminDashboardPage() {
 
   return (
     <div className="flex flex-col gap-6">
-      <PageHeader
-        title="Dashboard"
-        description={`Consolidated view across ${summary.shopCount} shop${
-          summary.shopCount === 1 ? "" : "s"
-        }.`}
-        actions={<ButtonLink href="/admin/shops">New shop</ButtonLink>}
+      <DashboardBanner
+        eyebrow="Company operations"
+        title="Operations overview"
+        description={`A clear view of inventory, service and sales across ${summary.shopCount} ${summary.shopCount === 1 ? "shop" : "shops"}.`}
+        actions={
+          <>
+            <ButtonLink href="/admin/reports" variant="outline">
+              View reports
+            </ButtonLink>
+            <ButtonLink href="/admin/shops">New shop</ButtonLink>
+          </>
+        }
       />
 
-      <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
         <StatCard label="Shops" value={summary.shopCount} icon={<Briefcase className="size-5" />} href="/admin/shops" />
         <StatCard label="Total items" value={summary.itemCount} icon={<Package className="size-5" />} href="/admin/inventory" />
         <StatCard
@@ -60,7 +66,7 @@ export default async function AdminDashboardPage() {
         />
       </div>
 
-      <div className="grid gap-4 lg:grid-cols-3">
+      <div className="grid gap-4 xl:grid-cols-3">
         <AttentionCard
           title="Pending transfers"
           href="/admin/transfers"
@@ -72,7 +78,7 @@ export default async function AdminDashboardPage() {
             label: (
               <span className="inline-flex items-center gap-1">
                 {transfer.fromShopName ?? "Shop"}
-                <ArrowRight className="size-3.5 shrink-0 text-zinc-400" aria-hidden />
+                <ArrowRight className="size-3.5 shrink-0 text-muted" aria-hidden />
                 {transfer.toShopName ?? "Shop"}
               </span>
             ),
@@ -107,7 +113,10 @@ export default async function AdminDashboardPage() {
 
       <Card>
         <CardHeader className="flex-row items-center justify-between">
-          <CardTitle>Shops overview</CardTitle>
+          <div>
+            <CardTitle>Shops overview</CardTitle>
+            <p className="mt-1 text-xs text-muted">Location performance and stock health</p>
+          </div>
           <Link
             href="/admin/shops"
             className="text-xs font-medium text-brand hover:text-brand-hover"

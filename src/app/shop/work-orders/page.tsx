@@ -78,13 +78,13 @@ export default async function ShopWorkOrdersPage({
                         <TD>
                           <Link
                             href={`/shop/work-orders/${workOrder.id}`}
-                            className="font-mono text-sm font-medium whitespace-nowrap text-zinc-900 hover:underline dark:text-zinc-100"
+                            className="font-mono text-sm font-medium whitespace-nowrap text-foreground hover:underline"
                           >
                             {workOrder.vehicleReg || "—"}
                           </Link>
                         </TD>
                         <TD className="hidden md:table-cell">
-                          <span className="text-zinc-900 dark:text-zinc-100">{workOrder.customerName || "—"}</span>
+                          <span className="text-foreground">{workOrder.customerName || "—"}</span>
                           {workOrder.customerContact && (
                             <span className="ml-2 text-xs text-muted">{workOrder.customerContact}</span>
                           )}
@@ -97,7 +97,7 @@ export default async function ShopWorkOrdersPage({
                             L {formatMoney(workOrder.labourCents)} · P{" "}
                             {formatMoney(workOrder.partsTotalCents)}
                           </div>
-                          <div className="font-semibold text-zinc-900 dark:text-zinc-100">
+                          <div className="font-semibold text-foreground">
                             {formatMoney(workOrder.labourCents + workOrder.partsTotalCents)}
                           </div>
                         </TD>

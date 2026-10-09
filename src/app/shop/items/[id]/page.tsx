@@ -96,7 +96,7 @@ export default async function ItemDetailPage({
                         <Badge variant={m.type === "in" ? "success" : "danger"}>
                           {m.type === "in" ? "In" : "Out"}
                         </Badge>
-                        <span className="text-xs capitalize text-zinc-600 dark:text-zinc-400">{m.reason}</span>
+                        <span className="text-xs capitalize text-muted">{m.reason}</span>
                       </div>
                       <p className="mt-0.5 text-xs text-muted">{formatDateTime(m.createdAt)}</p>
                     </div>

@@ -54,7 +54,7 @@ export function SidebarItem({
     collapsed && "justify-center px-0",
     active
       ? "text-brand"
-      : "text-zinc-600 hover:bg-zinc-100/70 hover:text-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-800/60 dark:hover:text-zinc-100",
+      : "text-muted hover:bg-surface-strong hover:text-foreground",
   );
 
   const iconClass = cn(
@@ -88,7 +88,7 @@ export function SidebarItem({
         "ml-auto shrink-0 rounded-md px-1.5 py-0.5 text-[10px] font-semibold tabular-nums transition-colors",
         active
           ? "bg-brand text-brand-foreground"
-          : "bg-surface-strong text-zinc-600 dark:text-zinc-300",
+          : "bg-surface-strong text-muted",
       )}
     >
       {item.badge}
@@ -151,7 +151,7 @@ export function SidebarItem({
           {collapsedBadge}
           <ChevronRight
             aria-hidden
-            className="absolute right-1.5 bottom-1.5 size-3 text-zinc-400 dark:text-zinc-500"
+            className="absolute right-1.5 bottom-1.5 size-3 text-muted"
           />
         </button>
         {tooltipPortal}
@@ -190,7 +190,7 @@ export function SidebarItem({
             aria-expanded={open}
             aria-controls={open ? submenuId : undefined}
             aria-label={`${open ? "Collapse" : "Expand"} ${item.label} submenu`}
-            className="mr-1.5 rounded-md p-1 text-zinc-400 transition-colors hover:bg-zinc-100 hover:text-zinc-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring dark:text-zinc-500 dark:hover:bg-zinc-800 dark:hover:text-zinc-100"
+            className="mr-1.5 rounded-md p-1 text-muted transition-colors hover:bg-surface-strong hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
           >
               <ChevronRight
                 aria-hidden
@@ -212,7 +212,7 @@ export function SidebarItem({
         <motion.span
           layoutId="sidebar-active-nav"
           aria-hidden
-          className="absolute inset-0 rounded-md bg-zinc-100 dark:bg-zinc-800"
+            className="absolute inset-0 rounded-md bg-brand-soft"
           transition={{ type: "spring", bounce: 0.15, duration: 0.4 }}
         />
       )}

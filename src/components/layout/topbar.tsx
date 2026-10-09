@@ -16,7 +16,7 @@ export function Topbar({ sections }: { sections: NavSection[] }) {
     typeof navigator !== "undefined" && /Mac|iPhone|iPad/.test(navigator.platform);
 
   return (
-    <header className="sticky top-0 z-20 flex h-14 shrink-0 items-center justify-between gap-3 border-b border-border bg-background/70 px-4 backdrop-blur-xl print:hidden sm:px-6 lg:px-8">
+    <header className="sticky top-0 z-20 flex h-16 shrink-0 items-center justify-between gap-3 border-b border-border bg-background/85 px-4 backdrop-blur-xl print:hidden sm:px-6 lg:px-9">
       <div className="flex min-w-0 items-center gap-2">
         <button
           type="button"
@@ -25,7 +25,7 @@ export function Topbar({ sections }: { sections: NavSection[] }) {
           aria-label="Open navigation menu"
           aria-expanded={mobileOpen}
           aria-controls={mobileOpen ? "mobile-sidebar-nav" : undefined}
-          className="-ml-1 rounded-md p-2 text-zinc-500 transition-colors hover:bg-zinc-100 hover:text-zinc-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring lg:hidden dark:text-zinc-400 dark:hover:bg-zinc-800/60 dark:hover:text-zinc-100"
+          className="-ml-1 rounded-lg p-2 text-muted transition-colors hover:bg-surface-strong hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring lg:hidden"
         >
           <Menu className="size-5" aria-hidden />
         </button>
@@ -43,13 +43,13 @@ export function Topbar({ sections }: { sections: NavSection[] }) {
         <button
           type="button"
           onClick={() => setCommandOpen(true)}
-          className="hidden h-9 w-64 items-center justify-between gap-2 rounded-lg border border-border-strong bg-surface px-3 text-sm text-zinc-400 shadow-sm transition-colors hover:border-zinc-300 hover:text-zinc-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring md:flex dark:border-zinc-700 dark:bg-zinc-900 dark:hover:border-zinc-600 dark:hover:text-zinc-300"
+          className="hidden h-9 w-64 items-center justify-between gap-2 rounded-xl border border-border bg-surface px-3 text-sm text-muted shadow-sm transition-colors hover:border-border-strong hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring md:flex"
         >
           <span className="inline-flex items-center gap-2">
             <Search className="size-4" aria-hidden />
             Search…
           </span>
-          <kbd className="rounded-md border border-border-strong bg-surface-strong px-1.5 py-0.5 font-mono text-[10px] font-medium text-zinc-400 dark:border-zinc-700 dark:bg-zinc-800 dark:text-zinc-500">
+          <kbd className="rounded-md border border-border bg-surface-strong px-1.5 py-0.5 font-mono text-[10px] font-medium text-muted">
             {isMac ? "⌘" : "Ctrl"} K
           </kbd>
         </button>
@@ -57,7 +57,7 @@ export function Topbar({ sections }: { sections: NavSection[] }) {
           type="button"
           onClick={() => setCommandOpen(true)}
           aria-label="Search"
-          className="rounded-md p-2 text-zinc-500 transition-colors hover:bg-zinc-100 hover:text-zinc-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring md:hidden dark:text-zinc-400 dark:hover:bg-zinc-800/60 dark:hover:text-zinc-100"
+          className="rounded-lg p-2 text-muted transition-colors hover:bg-surface-strong hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring md:hidden"
         >
           <Search className="size-4" aria-hidden />
         </button>
@@ -66,7 +66,7 @@ export function Topbar({ sections }: { sections: NavSection[] }) {
           type="button"
           onClick={toggleTheme}
           aria-label={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
-          className="rounded-md p-2 text-zinc-500 transition-colors hover:bg-zinc-100 hover:text-zinc-900 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring dark:text-zinc-400 dark:hover:bg-zinc-800/60 dark:hover:text-zinc-100"
+          className="rounded-lg p-2 text-muted transition-colors hover:bg-surface-strong hover:text-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
         >
           {theme === "dark" ? (
             <Sun className="size-4" aria-hidden />

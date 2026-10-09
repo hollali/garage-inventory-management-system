@@ -65,7 +65,7 @@ export default async function AdminSuppliersPage() {
                 {suppliers.map((supplier) => (
                   <TR key={supplier.id}>
                     <TD>
-                      <span className="font-medium text-zinc-900 dark:text-zinc-100">{supplier.name}</span>
+                      <span className="font-medium text-foreground">{supplier.name}</span>
                       {supplier.notes && (
                         <span className="ml-2 text-xs text-muted">{supplier.notes}</span>
                       )}

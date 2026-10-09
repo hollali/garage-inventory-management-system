@@ -45,7 +45,7 @@ export function ActivityFilter({
 
   return (
     <div
-      className="flex flex-col gap-2 transition-opacity sm:flex-row"
+      className="grid min-w-0 grid-cols-1 gap-3 transition-opacity sm:grid-cols-2 xl:grid-cols-[repeat(3,minmax(0,1fr))_auto]"
       aria-busy={isPending}
       style={{ opacity: isPending ? 0.6 : undefined }}
     >
@@ -54,7 +54,7 @@ export function ActivityFilter({
         value={shopId}
         disabled={isPending}
         onChange={(e) => apply({ shop: e.target.value })}
-        className="sm:w-48"
+        className="w-full min-w-0"
       >
         <option value="">All shops</option>
         {shops.map((s) => (
@@ -68,7 +68,7 @@ export function ActivityFilter({
         value={actorId}
         disabled={isPending}
         onChange={(e) => apply({ actor: e.target.value })}
-        className="sm:w-52"
+        className="w-full min-w-0"
       >
         <option value="">All people</option>
         {actors.map((a) => (
@@ -82,7 +82,7 @@ export function ActivityFilter({
         value={action}
         disabled={isPending}
         onChange={(e) => apply({ action: e.target.value })}
-        className="sm:w-56"
+        className="w-full min-w-0"
       >
         <option value="">All actions</option>
         {actions.map((a) => (
@@ -92,7 +92,12 @@ export function ActivityFilter({
         ))}
       </Select>
       {hasFilters && (
-        <Button variant="ghost" disabled={isPending} onClick={() => apply({ shop: "", actor: "", action: "" })}>
+        <Button
+          variant="outline"
+          disabled={isPending}
+          onClick={() => apply({ shop: "", actor: "", action: "" })}
+          className="w-full sm:w-auto xl:self-end"
+        >
           Clear
         </Button>
       )}

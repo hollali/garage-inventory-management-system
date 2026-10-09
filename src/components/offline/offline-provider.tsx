@@ -8,6 +8,7 @@ import {
   useMemo,
   useRef,
   useState,
+  useSyncExternalStore,
   type ReactNode,
 } from "react";
 import { useRouter } from "next/navigation";
@@ -36,21 +37,49 @@ type OfflineContextValue = {
 
 const OfflineContext = createContext<OfflineContextValue | null>(null);
 
+function subscribeOnline(listener: () => void) {
+  window.addEventListener("online", listener);
+  window.addEventListener("offline", listener);
+  return () => {
+    window.removeEventListener("online", listener);
+    window.removeEventListener("offline", listener);
+  };
+}
+
+function getOnlineSnapshot() {
+  return navigator.onLine;
+}
+
+function getServerOnlineSnapshot() {
+  return true;
+}
+
+function getPendingCountSnapshot() {
+  return getPendingOps().length;
+}
+
+function getServerPendingCountSnapshot() {
+  return 0;
+}
+
 export function OfflineProvider({ children }: { children: ReactNode }) {
   const router = useRouter();
   const { toast } = useToast();
-  const [isOnline, setIsOnline] = useState(
-    typeof navigator !== "undefined" ? navigator.onLine : true,
+  // Keep the server and first client render identical; read browser state after mount.
+  const isOnline = useSyncExternalStore(
+    subscribeOnline,
+    getOnlineSnapshot,
+    getServerOnlineSnapshot,
   );
-  const [pendingCount, setPendingCount] = useState(() => getPendingOps().length);
+  const pendingCount = useSyncExternalStore(
+    subscribeQueue,
+    getPendingCountSnapshot,
+    getServerPendingCountSnapshot,
+  );
   const [syncing, setSyncing] = useState(false);
   const [syncedToast, setSyncedToast] = useState<string | null>(null);
   const [lastSyncError, setLastSyncError] = useState<string | null>(null);
   const syncingRef = useRef(false);
-
-  const refreshCount = useCallback(() => setPendingCount(getPendingOps().length), []);
-
-  useEffect(() => subscribeQueue(refreshCount), [refreshCount]);
 
   const syncNow = useCallback(async () => {
     if (syncingRef.current || typeof navigator === "undefined" || !navigator.onLine) {
@@ -81,7 +110,6 @@ export function OfflineProvider({ children }: { children: ReactNode }) {
 
     syncingRef.current = false;
     setSyncing(false);
-    setPendingCount(getPendingOps().length);
 
     if (failed === 0 && done > 0) {
       setSyncedToast(
@@ -95,22 +123,18 @@ export function OfflineProvider({ children }: { children: ReactNode }) {
   }, [router]);
 
   useEffect(() => {
-    const update = () => {
-      setIsOnline(navigator.onLine);
+    const onOnline = () => {
       if (navigator.onLine) syncNow();
     };
-    window.addEventListener("online", update);
-    window.addEventListener("offline", update);
+    window.addEventListener("online", onOnline);
     return () => {
-      window.removeEventListener("online", update);
-      window.removeEventListener("offline", update);
+      window.removeEventListener("online", onOnline);
     };
   }, [syncNow]);
 
   const enqueue = useCallback(
     (type: string, data: Record<string, unknown>) => {
       const op = enqueueOp({ type, data });
-      setPendingCount(getPendingOps().length);
       if (!navigator.onLine) {
         toast({
           title: "Saved while offline",

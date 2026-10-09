@@ -118,7 +118,7 @@ export default async function AdminPurchaseOrdersPage({
                 {rows.map((po) => (
                   <TR key={po.id}>
                     <TD>
-                      <span className="font-medium text-zinc-900 dark:text-zinc-100">{poNumber(po.id)}</span>
+                      <span className="font-medium text-foreground">{poNumber(po.id)}</span>
                       {po.createdByName && (
                         <span className="block text-xs text-muted">by {po.createdByName}</span>
                       )}
@@ -128,7 +128,7 @@ export default async function AdminPurchaseOrdersPage({
                     </TD>
                     <TD className="hidden md:table-cell">
                       {po.shopId && po.shopName ? (
-                        <span className="text-zinc-900 dark:text-zinc-100">{po.shopName}</span>
+                        <span className="text-foreground">{po.shopName}</span>
                       ) : (
                         <Badge variant="info">Central</Badge>
                       )}

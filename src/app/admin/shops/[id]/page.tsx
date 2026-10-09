@@ -124,7 +124,7 @@ export default async function ShopDetailPage({
                 <TBody>
                   {data.inventory.map((item) => (
                     <TR key={item.id}>
-                      <TD className="font-medium truncate text-zinc-900 dark:text-zinc-100">{item.name}</TD>
+                      <TD className="font-medium truncate text-foreground">{item.name}</TD>
                       <TD className="hidden md:table-cell">
                         <Badge variant="neutral">{item.category}</Badge>
                       </TD>
@@ -168,7 +168,7 @@ export default async function ShopDetailPage({
                   {recentSales.map((sale) => (
                     <li key={sale.id} className="flex items-center justify-between gap-2 py-2.5">
                       <div className="min-w-0">
-                        <p className="truncate text-sm font-medium text-zinc-900 dark:text-zinc-100">
+                        <p className="truncate text-sm font-medium text-foreground">
                           {sale.customerName || "Walk-in customer"}
                         </p>
                         <p className="text-xs text-muted">{formatDateTime(sale.createdAt)}</p>

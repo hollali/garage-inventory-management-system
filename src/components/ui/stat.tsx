@@ -51,7 +51,7 @@ export function StatCard({
   );
 
   const cardClass =
-    "rounded-xl border border-border bg-surface p-5 shadow-card transition-[box-shadow,transform] duration-200";
+    "rounded-2xl border border-border bg-surface p-5 shadow-card transition-[box-shadow,transform] duration-200";
 
   if (!href) {
     return <div className={cardClass}>{body}</div>;

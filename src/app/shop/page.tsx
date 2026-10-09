@@ -11,13 +11,22 @@ import { getWorkOrders } from "@/lib/queries/work-orders";
 import { formatDateTime, formatMoney } from "@/lib/utils";
 import { ItemModal } from "@/components/inventory/item-modal";
 import { StatCard } from "@/components/ui/stat";
-import { PageHeader } from "@/components/ui/page-header";
+import { DashboardBanner } from "@/components/ui/dashboard-banner";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { LowStockBadge, Badge } from "@/components/ui/badge";
 import { Button, ButtonLink } from "@/components/ui/button";
 import { EmptyState } from "@/components/ui/empty-state";
 import { AttentionCard } from "@/components/ui/attention-card";
-import { Package, Banknote, AlertTriangle, TrendingUp, Repeat, Wrench } from "lucide-react";
+import {
+  Package,
+  PackagePlus,
+  ShoppingCart,
+  Banknote,
+  AlertTriangle,
+  TrendingUp,
+  Repeat,
+  Wrench,
+} from "lucide-react";
 
 export default async function ShopDashboardPage() {
   const shop = await requireAttendantShop();
@@ -37,20 +46,22 @@ export default async function ShopDashboardPage() {
 
   return (
     <div className="flex flex-col gap-6">
-      <PageHeader
+      <DashboardBanner
+        eyebrow="Shop overview"
         title={shop.name}
         description={shop.location}
         actions={
-          <div className="flex gap-2">
-            <ItemModal categories={categories} trigger={<Button>Add item</Button>} />
+          <div className="flex flex-wrap gap-2">
+            <ItemModal categories={categories} trigger={<Button><PackagePlus className="size-4" />Add item</Button>} />
             <ButtonLink href="/shop/pos" variant="outline">
+              <ShoppingCart className="size-4" />
               Record sale
             </ButtonLink>
           </div>
         }
       />
 
-      <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
         <StatCard
           label="Inventory items"
           value={stats.itemCount}
@@ -78,7 +89,7 @@ export default async function ShopDashboardPage() {
         />
       </div>
 
-      <div className="grid gap-4 lg:grid-cols-2">
+      <div className="grid gap-4 xl:grid-cols-2">
         <AttentionCard
           title="Pending transfers"
           href="/shop/transfers"
@@ -112,7 +123,7 @@ export default async function ShopDashboardPage() {
         />
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-2">
+      <div className="grid gap-4 xl:grid-cols-2">
         <Card>
           <CardHeader className="flex-row items-center justify-between">
             <CardTitle>Low stock</CardTitle>

@@ -31,7 +31,7 @@ export function AttentionCard({
     <Card>
       <CardHeader className="flex-row items-center justify-between gap-3">
         <CardTitle className="flex items-center gap-2.5">
-          <span className="flex size-7 items-center justify-center rounded-lg bg-surface-strong text-zinc-500 [&_svg]:size-4 dark:text-zinc-400">
+          <span className="flex size-8 items-center justify-center rounded-xl bg-brand-soft text-brand [&_svg]:size-4">
             {icon}
           </span>
           {title}

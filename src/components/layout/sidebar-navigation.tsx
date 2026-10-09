@@ -33,7 +33,7 @@ function SidebarSection({
     <li>
       <p
         className={cn(
-          "px-2.5 pb-2 text-[11px] font-medium text-zinc-400 dark:text-zinc-500",
+          "px-2.5 pb-2 text-[10px] font-semibold tracking-[0.12em] text-muted uppercase",
           collapsed && "sr-only",
         )}
       >

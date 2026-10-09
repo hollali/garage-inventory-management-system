@@ -54,7 +54,7 @@ export function SidebarSubmenu({
                     "group relative ml-6.5 flex items-center gap-2 border-l border-border py-1.5 pl-3 text-sm font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring",
                     active
                       ? "text-brand"
-                      : "text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100",
+                      : "text-muted hover:text-foreground",
                   )}
                 >
                   <span

@@ -78,24 +78,24 @@ export default async function AdminShopsPage() {
                       <div className="space-y-1">
                         <p className="text-muted">
                           Attendants:{" "}
-                          <span className="font-medium text-zinc-900 dark:text-zinc-100">
+                          <span className="font-medium text-foreground">
                             {attendantNames.length > 0 ? attendantNames.join(", ") : "None"}
                           </span>
                         </p>
                         <p className="text-muted">
-                          Items: <span className="font-medium text-zinc-900 dark:text-zinc-100">{itemCount}</span>
+                          Items: <span className="font-medium text-foreground">{itemCount}</span>
                         </p>
                       </div>
                       <div className="space-y-1 text-right">
                         <p className="text-muted">
                           Value:{" "}
-                          <span className="font-medium text-zinc-900 dark:text-zinc-100">
+                          <span className="font-medium text-foreground">
                             {formatMoney(inventoryValueCents)}
                           </span>
                         </p>
                         <p className="text-muted">
                           Revenue:{" "}
-                          <span className="font-medium text-zinc-900 dark:text-zinc-100">
+                          <span className="font-medium text-foreground">
                             {formatMoney(revenueCents)}
                           </span>
                         </p>
